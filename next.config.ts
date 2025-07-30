@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   experimental: {
-    optimizeCss: true,
+    optimizeCss: false, // CSPエラー対応のため一時的に無効化
   },
   poweredByHeader: false,
   compress: true,
@@ -42,6 +42,11 @@ const nextConfig: NextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin'
+          },
+          // CSPを明示的に緩和（一時的な対応）
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self' https: http:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: http:; style-src 'self' 'unsafe-inline' https: http:; img-src 'self' data: https: http: blob:; font-src 'self' data: https: http:; connect-src 'self' https: http: wss: ws:; frame-src 'self' https: http:; object-src 'none'; base-uri 'self'; form-action 'self' https: http:; frame-ancestors 'none';"
           }
         ]
       }
