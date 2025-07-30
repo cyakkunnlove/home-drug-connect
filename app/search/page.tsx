@@ -6,7 +6,17 @@ import { Search, MapPin, Clock, Phone, ChevronLeft } from 'lucide-react'
 
 export default function SearchPage() {
   const [searchAddress, setSearchAddress] = useState('')
-  const [searchResults, setSearchResults] = useState<any[]>([])
+  const [searchResults, setSearchResults] = useState<{
+    id: string
+    name: string
+    address: string
+    phone: string
+    distance: string
+    twentyFourSupport: boolean
+    holidaySupport: boolean
+    currentCapacity: number
+    maxCapacity: number
+  }[]>([])
   const [isSearching, setIsSearching] = useState(false)
 
   const handleSearch = async (e: React.FormEvent) => {

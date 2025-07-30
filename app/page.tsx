@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Search, Clock, Phone, Shield } from "lucide-react"
+import { Search, Clock, Shield } from "lucide-react"
 
 export default function Home() {
   return (
