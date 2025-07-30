@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { Phone, Mail, Clock, MapPin, CheckCircle, Globe } from 'lucide-react';
 import InquiryForm from '@/components/pharmacy/InquiryForm';
-import { GoogleMap } from '@/components/maps/GoogleMap';
+import GoogleMap from '@/components/maps/GoogleMap';
 
 interface PageProps {
   params: Promise<{ id: string }>;

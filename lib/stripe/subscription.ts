@@ -3,6 +3,10 @@ import { createClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 
 export async function createStripeCustomer(email: string, userId: string) {
+  if (!stripe) {
+    throw new Error('Stripe client not initialized');
+  }
+  
   try {
     const customer = await stripe.customers.create({
       email,
@@ -24,6 +28,10 @@ export async function createCheckoutSession(
   successUrl: string,
   cancelUrl: string
 ) {
+  if (!stripe) {
+    throw new Error('Stripe client not initialized');
+  }
+  
   try {
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -50,6 +58,10 @@ export async function createCheckoutSession(
 }
 
 export async function createPortalSession(customerId: string, returnUrl: string) {
+  if (!stripe) {
+    throw new Error('Stripe client not initialized');
+  }
+  
   try {
     const session = await stripe.billingPortal.sessions.create({
       customer: customerId,

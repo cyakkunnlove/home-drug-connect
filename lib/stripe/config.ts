@@ -1,10 +1,13 @@
 import Stripe from 'stripe';
 
-// Server-side Stripe instance
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
-  typescript: true,
-});
+// Server-side Stripe instance - only initialize if key exists
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+export const stripe = stripeSecretKey 
+  ? new Stripe(stripeSecretKey, {
+      apiVersion: '2024-12-18.acacia',
+      typescript: true,
+    })
+  : null;
 
 // Subscription plan configuration
 export const SUBSCRIPTION_PLANS = {

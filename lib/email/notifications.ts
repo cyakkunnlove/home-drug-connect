@@ -16,6 +16,11 @@ interface InquiryNotificationData {
 export async function sendInquiryNotification(data: InquiryNotificationData) {
   const { pharmacyEmail, pharmacyName, inquiryDetails } = data;
 
+  if (!resend) {
+    console.warn('Resend client not initialized. Skipping email notification.');
+    return { success: false, error: 'Email service not configured' };
+  }
+
   try {
     const { data: emailData, error } = await resend.emails.send({
       from: EMAIL_FROM,

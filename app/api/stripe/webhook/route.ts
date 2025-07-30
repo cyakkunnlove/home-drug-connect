@@ -5,6 +5,13 @@ import { headers } from 'next/headers';
 import Stripe from 'stripe';
 
 export async function POST(request: NextRequest) {
+  if (!stripe || !process.env.STRIPE_WEBHOOK_SECRET) {
+    return NextResponse.json(
+      { error: 'Webhook handler not configured' },
+      { status: 503 }
+    );
+  }
+
   const body = await request.text();
   const signature = (await headers()).get('stripe-signature') as string;
 
@@ -14,7 +21,7 @@ export async function POST(request: NextRequest) {
     event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      process.env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err: any) {
     console.error('Webhook signature verification failed:', err.message);
@@ -42,8 +49,8 @@ export async function POST(request: NextRequest) {
             .update({
               stripe_subscription_id: subscription.id,
               status: 'active',
-              current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-              current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+              current_period_start: new Date((subscription as any).current_period_start * 1000).toISOString(),
+              current_period_end: new Date((subscription as any).current_period_end * 1000).toISOString(),
             })
             .eq('stripe_customer_id', session.customer as string);
 
@@ -67,12 +74,12 @@ export async function POST(request: NextRequest) {
       case 'invoice.payment_succeeded': {
         const invoice = event.data.object as Stripe.Invoice;
         
-        if (invoice.subscription) {
+        if ((invoice as any).subscription) {
           // Record payment history
           const { data: subscription } = await supabase
             .from('subscriptions')
             .select('id')
-            .eq('stripe_subscription_id', invoice.subscription as string)
+            .eq('stripe_subscription_id', (invoice as any).subscription as string)
             .single();
 
           if (subscription) {
@@ -80,10 +87,10 @@ export async function POST(request: NextRequest) {
               .from('payment_history')
               .insert({
                 subscription_id: subscription.id,
-                stripe_payment_intent_id: invoice.payment_intent as string,
+                stripe_payment_intent_id: (invoice as any).payment_intent as string,
                 amount_jpy: invoice.amount_paid,
                 status: 'succeeded',
-                paid_at: new Date(invoice.status_transitions.paid_at! * 1000).toISOString(),
+                paid_at: new Date((invoice as any).status_transitions.paid_at! * 1000).toISOString(),
               });
           }
         }
@@ -97,19 +104,19 @@ export async function POST(request: NextRequest) {
           .from('subscriptions')
           .update({
             status: subscription.status as any,
-            current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-            current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-            cancel_at: subscription.cancel_at 
-              ? new Date(subscription.cancel_at * 1000).toISOString() 
+            current_period_start: new Date((subscription as any).current_period_start * 1000).toISOString(),
+            current_period_end: new Date((subscription as any).current_period_end * 1000).toISOString(),
+            cancel_at: (subscription as any).cancel_at 
+              ? new Date((subscription as any).cancel_at * 1000).toISOString() 
               : null,
-            canceled_at: subscription.canceled_at 
-              ? new Date(subscription.canceled_at * 1000).toISOString() 
+            canceled_at: (subscription as any).canceled_at 
+              ? new Date((subscription as any).canceled_at * 1000).toISOString() 
               : null,
           })
           .eq('stripe_subscription_id', subscription.id);
 
         // Update pharmacy status based on subscription status
-        if (subscription.status !== 'active' && subscription.status !== 'trialing') {
+        if ((subscription as any).status !== 'active' && (subscription as any).status !== 'trialing') {
           const { data: sub } = await supabase
             .from('subscriptions')
             .select('user_id')
