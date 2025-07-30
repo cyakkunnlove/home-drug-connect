@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { geocodeAddress } from '@/lib/google-maps/geocoding'
 import { 
   Building2, 
   MapPin, 
@@ -38,10 +39,17 @@ export default function PharmacyForm({ pharmacy }: { pharmacy: Pharmacy | null }
       return
     }
 
-    // 住所から座標を取得（Google Geocoding APIが必要）
-    // 今回は仮の座標を使用
-    const lat = 35.6762 + (Math.random() - 0.5) * 0.1
-    const lng = 139.6503 + (Math.random() - 0.5) * 0.1
+    // 住所から座標を取得
+    const address = formData.get('address') as string
+    const coordinates = await geocodeAddress(address)
+    
+    if (!coordinates) {
+      setError('住所から位置情報を取得できませんでした。正しい住所を入力してください。')
+      setIsLoading(false)
+      return
+    }
+    
+    const { lat, lng } = coordinates
 
     const pharmacyData = {
       user_id: user.id,

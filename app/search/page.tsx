@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Search, MapPin, Clock, Phone, ChevronLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { geocodeAddress } from '@/lib/google-maps/geocoding'
 
 type PharmacyResult = {
   id: string
@@ -34,10 +35,15 @@ export default function SearchPage() {
     
     try {
       // Google Maps Geocoding APIを使用して住所から座標を取得
-      // 注: 実際の実装にはGoogle Maps APIキーが必要
-      // 今回はデモ用に東京周辺のランダムな座標を使用
-      const lat = 35.6762 + (Math.random() - 0.5) * 0.2
-      const lng = 139.6503 + (Math.random() - 0.5) * 0.2
+      const coordinates = await geocodeAddress(searchAddress)
+      
+      if (!coordinates) {
+        setError('住所から位置情報を取得できませんでした。正しい住所を入力してください。')
+        setIsSearching(false)
+        return
+      }
+      
+      const { lat, lng } = coordinates
 
       // 検索ログを記録
       const supabase = createClient()
