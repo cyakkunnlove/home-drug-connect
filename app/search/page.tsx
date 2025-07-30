@@ -3,58 +3,67 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Search, MapPin, Clock, Phone, ChevronLeft } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
+
+type PharmacyResult = {
+  id: string
+  name: string
+  address: string
+  phone: string
+  distance_km: string
+  twenty_four_support: boolean
+  holiday_support: boolean
+  current_capacity: number
+  max_capacity: number
+  lat: number
+  lng: number
+}
 
 export default function SearchPage() {
   const [searchAddress, setSearchAddress] = useState('')
-  const [searchResults, setSearchResults] = useState<{
-    id: string
-    name: string
-    address: string
-    phone: string
-    distance: string
-    twentyFourSupport: boolean
-    holidaySupport: boolean
-    currentCapacity: number
-    maxCapacity: number
-  }[]>([])
+  const [searchResults, setSearchResults] = useState<PharmacyResult[]>([])
   const [isSearching, setIsSearching] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!searchAddress.trim()) return
 
     setIsSearching(true)
-    // TODO: Google Maps Geocoding APIと連携して住所から座標を取得
-    // TODO: Supabaseから薬局データを取得
+    setError(null)
     
-    // ダミーデータで動作確認
-    setTimeout(() => {
-      setSearchResults([
-        {
-          id: '1',
-          name: 'さくら薬局 新宿店',
-          address: '東京都新宿区西新宿1-1-1',
-          phone: '03-1234-5678',
-          distance: '0.5km',
-          twentyFourSupport: true,
-          holidaySupport: true,
-          currentCapacity: 3,
-          maxCapacity: 10,
-        },
-        {
-          id: '2',
-          name: 'みどり薬局',
-          address: '東京都新宿区西新宿2-2-2',
-          phone: '03-2345-6789',
-          distance: '1.2km',
-          twentyFourSupport: false,
-          holidaySupport: true,
-          currentCapacity: 5,
-          maxCapacity: 8,
-        },
-      ])
+    try {
+      // Google Maps Geocoding APIを使用して住所から座標を取得
+      // 注: 実際の実装にはGoogle Maps APIキーが必要
+      // 今回はデモ用に東京周辺のランダムな座標を使用
+      const lat = 35.6762 + (Math.random() - 0.5) * 0.2
+      const lng = 139.6503 + (Math.random() - 0.5) * 0.2
+
+      // 検索ログを記録
+      const supabase = createClient()
+      await supabase
+        .from('search_logs')
+        .insert({
+          search_address: searchAddress,
+          search_location: `POINT(${lng} ${lat})`,
+          search_filters: { radius: 5 },
+        })
+
+      // 薬局を検索
+      const response = await fetch(`/api/pharmacies/search?lat=${lat}&lng=${lng}&radius=5`)
+      
+      if (!response.ok) {
+        throw new Error('検索に失敗しました')
+      }
+
+      const data = await response.json()
+      setSearchResults(data.pharmacies || [])
+    } catch (err) {
+      setError('検索中にエラーが発生しました')
+      console.error(err)
+    } finally {
       setIsSearching(false)
-    }, 1000)
+    }
   }
 
   return (
@@ -97,6 +106,12 @@ export default function SearchPage() {
           </div>
         </form>
 
+        {error && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+            <p className="text-sm">{error}</p>
+          </div>
+        )}
+
         {isSearching && (
           <div className="text-center py-8">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -123,18 +138,18 @@ export default function SearchPage() {
                     </p>
                   </div>
                   <span className="text-sm text-gray-500 font-medium">
-                    {pharmacy.distance}
+                    {pharmacy.distance_km}km
                   </span>
                 </div>
 
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {pharmacy.twentyFourSupport && (
+                  {pharmacy.twenty_four_support && (
                     <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
                       <Clock className="w-3 h-3" />
                       24時間対応
                     </span>
                   )}
-                  {pharmacy.holidaySupport && (
+                  {pharmacy.holiday_support && (
                     <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
                       休日対応
                     </span>
