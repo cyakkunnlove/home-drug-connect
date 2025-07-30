@@ -8,7 +8,10 @@ import {
   Users, 
   CreditCard, 
   Settings,
-  LogOut
+  LogOut,
+  MessageSquare,
+  BarChart3,
+  Shield
 } from 'lucide-react'
 
 export default async function DashboardLayout({
@@ -33,10 +36,14 @@ export default async function DashboardLayout({
   const navigation = [
     { name: 'ダッシュボード', href: '/dashboard', icon: LayoutDashboard },
     { name: '薬局情報', href: '/dashboard/pharmacy', icon: Building2 },
-    { name: '患者管理', href: '/dashboard/patients', icon: Users },
-    { name: '料金プラン', href: '/dashboard/billing', icon: CreditCard },
+    { name: 'お問い合わせ', href: '/dashboard/inquiries', icon: MessageSquare },
+    { name: 'アナリティクス', href: '/dashboard/analytics', icon: BarChart3 },
+    { name: 'サブスクリプション', href: '/dashboard/subscription', icon: CreditCard },
     { name: '設定', href: '/dashboard/settings', icon: Settings },
   ]
+
+  // Check if user is admin
+  const isAdmin = profile?.role === 'admin'
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -67,6 +74,25 @@ export default async function DashboardLayout({
                   </li>
                 ))}
               </ul>
+
+              {isAdmin && (
+                <div className="mt-8">
+                  <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    管理者メニュー
+                  </h3>
+                  <ul className="mt-2 space-y-2">
+                    <li>
+                      <Link
+                        href="/admin"
+                        className="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                      >
+                        <Shield className="w-5 h-5" />
+                        <span>管理者ダッシュボード</span>
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+              )}
             </nav>
 
             <div className="p-4 border-t">

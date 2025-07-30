@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://homedrug-connect.com/sitemap.xml
+
+# Disallow admin and dashboard areas
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /api/
+
+# Allow search engines to access public pages
+Allow: /pharmacy/
+Allow: /search/
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
