@@ -1,7 +1,10 @@
+
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronLeft, Plus, MapPin, Phone, Users, Edit, Eye, Calendar } from 'lucide-react'
+export const dynamic = 'force-dynamic'
+
 
 export default async function PharmaciesListPage() {
   const supabase = await createClient()

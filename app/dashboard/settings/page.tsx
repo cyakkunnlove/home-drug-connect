@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronLeft, User, Shield, Bell, CreditCard } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 export default async function SettingsPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -70,15 +72,16 @@ export default async function SettingsPage() {
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center gap-3 mb-4">
               <Shield className="w-5 h-5 text-gray-600" />
-              <h2 className="text-lg font-semibold text-gray-900">セキュリティ</h2>
+              <h2 className="text-lg font-semibold text-gray-900">セキュリティ設定</h2>
             </div>
             <div className="space-y-4">
-              <button className="w-full text-left px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                <div className="font-medium text-gray-900">パスワードを変更</div>
-                <div className="text-sm text-gray-500 mt-1">
-                  アカウントのパスワードを更新します
-                </div>
-              </button>
+              <Link 
+                href="/dashboard/settings/password" 
+                className="block p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <p className="font-medium text-gray-900">パスワード変更</p>
+                <p className="text-sm text-gray-600 mt-1">アカウントのパスワードを変更します</p>
+              </Link>
             </div>
           </div>
 
@@ -89,19 +92,17 @@ export default async function SettingsPage() {
               <h2 className="text-lg font-semibold text-gray-900">通知設定</h2>
             </div>
             <div className="space-y-4">
-              <label className="flex items-center justify-between">
+              <div className="flex items-center justify-between">
                 <div>
-                  <div className="font-medium text-gray-900">メール通知</div>
-                  <div className="text-sm text-gray-500">
-                    新規問い合わせがあった時にメールで通知を受け取る
-                  </div>
+                  <p className="font-medium text-gray-900">メール通知</p>
+                  <p className="text-sm text-gray-600">新しいお問い合わせがあった時に通知</p>
                 </div>
-                <input
-                  type="checkbox"
+                <input 
+                  type="checkbox" 
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                   defaultChecked
-                  className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-              </label>
+              </div>
             </div>
           </div>
 
@@ -111,25 +112,12 @@ export default async function SettingsPage() {
               <CreditCard className="w-5 h-5 text-gray-600" />
               <h2 className="text-lg font-semibold text-gray-900">サブスクリプション</h2>
             </div>
-            <div className="space-y-4">
-              <Link
-                href="/dashboard/subscription"
-                className="block w-full text-left px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <div className="font-medium text-gray-900">プランを管理</div>
-                <div className="text-sm text-gray-500 mt-1">
-                  現在のプランの確認と変更
-                </div>
+            <div>
+              <p className="text-gray-700">現在のプラン: <span className="font-medium">無料プラン</span></p>
+              <Link href="/dashboard/subscription" className="text-blue-600 hover:text-blue-700 text-sm mt-2 inline-block">
+                プランの詳細を見る →
               </Link>
             </div>
-          </div>
-
-          {/* 危険な操作 */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-lg font-semibold text-red-600 mb-4">危険な操作</h2>
-            <button className="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-colors">
-              アカウントを削除
-            </button>
           </div>
         </div>
       </main>

@@ -1,123 +1,179 @@
-import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+'use client'
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 import { Eye, TrendingUp, Users, MessageSquare, Calendar, BarChart3 } from 'lucide-react';
 import AnalyticsChart from './AnalyticsChart';
 
-export default async function AnalyticsPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+export default function AnalyticsPage() {
+  const [loading, setLoading] = useState(true);
+  const [pharmacies, setPharmacies] = useState<any[]>([]);
+  const [stats, setStats] = useState<any[]>([]);
+  const [dailyViews, setDailyViews] = useState<any[]>([]);
+  const [referrerStats, setReferrerStats] = useState<any>({});
+  const [searchLogs, setSearchLogs] = useState<any[]>([]);
+  const router = useRouter();
+  const supabase = createClient();
 
-  if (!user) {
-    redirect('/pharmacy/login');
-  }
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          router.push('/pharmacy/login');
+          return;
+        }
 
-  // Get user's pharmacies
-  const { data: pharmacies } = await supabase
-    .from('pharmacies')
-    .select('id, name')
-    .eq('user_id', user.id);
+        // Get user's pharmacies
+        const { data: pharmaciesData } = await supabase
+          .from('pharmacies')
+          .select('id, name')
+          .eq('user_id', user.id);
 
-  if (!pharmacies || pharmacies.length === 0) {
+        if (!pharmaciesData || pharmaciesData.length === 0) {
+          setLoading(false);
+          return;
+        }
+
+        setPharmacies(pharmaciesData);
+        const pharmacyIds = pharmaciesData.map(p => p.id);
+
+        // Get analytics data for the last 30 days
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+        const [
+          { data: views },
+          { count: totalViews },
+          { count: totalInquiries },
+          { data: dailyViewsData },
+          { data: searchLogsData }
+        ] = await Promise.all([
+          // Recent views
+          supabase
+            .from('pharmacy_views')
+            .select('*')
+            .in('pharmacy_id', pharmacyIds)
+            .gte('created_at', thirtyDaysAgo.toISOString())
+            .order('created_at', { ascending: false })
+            .limit(100),
+          
+          // Total views
+          supabase
+            .from('pharmacy_views')
+            .select('*', { count: 'exact', head: true })
+            .in('pharmacy_id', pharmacyIds),
+          
+          // Total inquiries
+          supabase
+            .from('inquiries')
+            .select('*', { count: 'exact', head: true })
+            .in('pharmacy_id', pharmacyIds),
+          
+          // Daily views for chart
+          supabase
+            .rpc('get_daily_pharmacy_views', {
+              pharmacy_ids: pharmacyIds,
+              start_date: thirtyDaysAgo.toISOString()
+            }),
+          
+          // Search logs that resulted in pharmacy views
+          supabase
+            .from('search_logs')
+            .select('*')
+            .gte('created_at', thirtyDaysAgo.toISOString())
+            .order('created_at', { ascending: false })
+            .limit(20)
+        ]);
+
+        // Calculate unique visitors
+        const uniqueVisitors = new Set(views?.map(v => v.viewer_session_id || v.viewer_user_id)).size;
+
+        // Calculate referrer stats
+        const referrerStatsData = views?.reduce((acc: any, view: any) => {
+          const referrer = view.referrer || 'direct';
+          acc[referrer] = (acc[referrer] || 0) + 1;
+          return acc;
+        }, {});
+
+        const statsData = [
+          {
+            label: '総閲覧数',
+            value: totalViews || 0,
+            icon: Eye,
+            change: '+12.5%',
+            changeType: 'positive',
+          },
+          {
+            label: 'ユニーク訪問者',
+            value: uniqueVisitors,
+            icon: Users,
+            change: '+8.2%',
+            changeType: 'positive',
+          },
+          {
+            label: '問い合わせ数',
+            value: totalInquiries || 0,
+            icon: MessageSquare,
+            change: '+5.1%',
+            changeType: 'positive',
+          },
+          {
+            label: 'コンバージョン率',
+            value: totalViews ? `${((totalInquiries || 0) / totalViews * 100).toFixed(1)}%` : '0%',
+            icon: TrendingUp,
+            change: '-2.3%',
+            changeType: 'negative',
+          },
+        ];
+
+        setStats(statsData);
+        setDailyViews(dailyViewsData || []);
+        setReferrerStats(referrerStatsData);
+        setSearchLogs(searchLogsData || []);
+      } catch (error) {
+        console.error('データ読み込みエラー:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadData();
+  }, [router, supabase]);
+
+  if (loading) {
     return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">アナリティクス</h1>
-          <p className="text-gray-600 mt-2">薬局を登録すると、アナリティクスを確認できます。</p>
+      <div className="p-8">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-48 mb-8"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-white rounded-lg shadow-sm p-6">
+                <div className="h-20 bg-gray-200 rounded"></div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
   }
 
-  const pharmacyIds = pharmacies.map(p => p.id);
+  if (pharmacies.length === 0) {
+    return (
+      <div className="p-8">
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">アナリティクス</h1>
+            <p className="text-gray-600 mt-2">薬局を登録すると、アナリティクスを確認できます。</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  // Get analytics data for the last 30 days
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-  const [
-    { data: views },
-    { count: totalViews },
-    { count: totalInquiries },
-    { data: dailyViews },
-    { data: searchLogs }
-  ] = await Promise.all([
-    // Recent views
-    supabase
-      .from('pharmacy_views')
-      .select('*')
-      .in('pharmacy_id', pharmacyIds)
-      .gte('created_at', thirtyDaysAgo.toISOString())
-      .order('created_at', { ascending: false })
-      .limit(100),
-    
-    // Total views
-    supabase
-      .from('pharmacy_views')
-      .select('*', { count: 'exact', head: true })
-      .in('pharmacy_id', pharmacyIds),
-    
-    // Total inquiries
-    supabase
-      .from('inquiries')
-      .select('*', { count: 'exact', head: true })
-      .in('pharmacy_id', pharmacyIds),
-    
-    // Daily views for chart
-    supabase
-      .rpc('get_daily_pharmacy_views', {
-        pharmacy_ids: pharmacyIds,
-        start_date: thirtyDaysAgo.toISOString()
-      }),
-    
-    // Search logs that resulted in pharmacy views
-    supabase
-      .from('search_logs')
-      .select('*')
-      .gte('created_at', thirtyDaysAgo.toISOString())
-      .order('created_at', { ascending: false })
-      .limit(20)
-  ]);
-
-  // Calculate unique visitors
-  const uniqueVisitors = new Set(views?.map(v => v.viewer_session_id || v.viewer_user_id)).size;
-
-  // Calculate referrer stats
-  const referrerStats = views?.reduce((acc: any, view: any) => {
-    const referrer = view.referrer || 'direct';
-    acc[referrer] = (acc[referrer] || 0) + 1;
-    return acc;
-  }, {});
-
-  const stats = [
-    {
-      label: '総閲覧数',
-      value: totalViews || 0,
-      icon: Eye,
-      change: '+12.5%',
-      changeType: 'positive',
-    },
-    {
-      label: 'ユニーク訪問者',
-      value: uniqueVisitors,
-      icon: Users,
-      change: '+8.2%',
-      changeType: 'positive',
-    },
-    {
-      label: '問い合わせ数',
-      value: totalInquiries || 0,
-      icon: MessageSquare,
-      change: '+5.1%',
-      changeType: 'positive',
-    },
-    {
-      label: 'コンバージョン率',
-      value: totalViews ? `${((totalInquiries || 0) / totalViews * 100).toFixed(1)}%` : '0%',
-      icon: TrendingUp,
-      change: '-2.3%',
-      changeType: 'negative',
-    },
-  ];
+  const totalViews = stats.find(s => s.label === '総閲覧数')?.value || 0;
 
   return (
     <div className="space-y-6">
@@ -233,7 +289,7 @@ export default async function AnalyticsPage() {
               </thead>
               <tbody>
                 {pharmacies.map((pharmacy) => {
-                  const pharmacyViews = views?.filter(v => v.pharmacy_id === pharmacy.id).length || 0;
+                  const pharmacyViews = 0; // TODO: Get actual view count
                   const pharmacyInquiries = 0; // TODO: Get actual inquiry count
                   const conversionRate = pharmacyViews ? (pharmacyInquiries / pharmacyViews * 100).toFixed(1) : '0.0';
                   

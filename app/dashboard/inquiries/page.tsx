@@ -1,7 +1,10 @@
+
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { Mail, Phone, Calendar, MessageSquare, User } from 'lucide-react';
 import InquiryActions from './InquiryActions';
+export const dynamic = 'force-dynamic'
+
 
 export default async function InquiriesPage() {
   const supabase = await createClient();

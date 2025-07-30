@@ -1,5 +1,8 @@
+
 import { createClient } from '@/lib/supabase/server'
 import PharmacyFormExtended from '@/components/pharmacy/PharmacyFormExtended'
+export const dynamic = 'force-dynamic'
+
 
 export default async function PharmacyPage() {
   const supabase = await createClient()

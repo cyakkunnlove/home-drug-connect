@@ -1,3 +1,4 @@
+
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
@@ -13,6 +14,8 @@ import {
   Calendar,
   Building2
 } from 'lucide-react'
+export const dynamic = 'force-dynamic'
+
 
 export default async function PharmacyDetailPage({ 
   params 

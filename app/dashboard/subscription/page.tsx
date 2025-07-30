@@ -1,7 +1,10 @@
+
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { CreditCard, CheckCircle, AlertCircle, Calendar } from 'lucide-react';
 import SubscriptionActions from './SubscriptionActions';
+export const dynamic = 'force-dynamic'
+
 
 export default async function SubscriptionPage() {
   const supabase = await createClient();

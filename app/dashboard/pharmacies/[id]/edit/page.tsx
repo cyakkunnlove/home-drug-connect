@@ -1,8 +1,11 @@
+
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronLeft } from 'lucide-react'
 import PharmacyFormExtended from '@/components/pharmacy/PharmacyFormExtended'
+export const dynamic = 'force-dynamic'
+
 
 export default async function EditPharmacyPage({ 
   params 
