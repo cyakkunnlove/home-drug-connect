@@ -1,6 +1,8 @@
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
-import { signOut } from '@/lib/auth/actions'
+'use client'
+
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import MobileNav from '@/components/dashboard/MobileNav'
 import { 
@@ -16,24 +18,53 @@ import {
   Store
 } from 'lucide-react'
 
-export default async function DashboardLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const [profile, setProfile] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
+  const supabase = createClient()
 
-  if (!user) {
-    redirect('/pharmacy/login')
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        
+        if (!user) {
+          router.push('/pharmacy/login')
+          return
+        }
+
+        // ユーザープロフィール情報を取得
+        const { data: profileData } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', user.id)
+          .single()
+        
+        setProfile(profileData)
+      } catch (error) {
+        console.error('認証エラー:', error)
+        router.push('/pharmacy/login')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    checkAuth()
+  }, [router, supabase])
+
+  async function handleSignOut() {
+    try {
+      await supabase.auth.signOut()
+      router.push('/pharmacy/login')
+    } catch (error) {
+      console.error('ログアウトエラー:', error)
+    }
   }
-
-  // ユーザープロフィール情報を取得
-  const { data: profile } = await supabase
-    .from('users')
-    .select('*')
-    .eq('id', user.id)
-    .single()
 
   const navigation = [
     { name: 'ダッシュボード', href: '/dashboard', icon: LayoutDashboard },
@@ -46,6 +77,14 @@ export default async function DashboardLayout({
 
   // Check if user is admin
   const isAdmin = profile?.role === 'admin'
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -105,15 +144,13 @@ export default async function DashboardLayout({
             </nav>
 
             <div className="p-4 border-t">
-              <form action={signOut}>
-                <button
-                  type="submit"
-                  className="flex items-center gap-3 w-full px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <LogOut className="w-5 h-5" />
-                  <span>ログアウト</span>
-                </button>
-              </form>
+              <button
+                onClick={handleSignOut}
+                className="flex items-center gap-3 w-full px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <LogOut className="w-5 h-5" />
+                <span>ログアウト</span>
+              </button>
             </div>
           </div>
         </div>

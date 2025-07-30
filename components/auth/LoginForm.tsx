@@ -1,28 +1,56 @@
 'use client'
 
 import { useState } from 'react'
-import { signIn } from '@/lib/auth/actions'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Mail, Lock, AlertCircle } from 'lucide-react'
 
 export default function LoginForm() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
     setIsLoading(true)
     setError(null)
     
-    const result = await signIn(formData)
+    const formData = new FormData(e.currentTarget)
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
     
-    if (result?.error) {
-      setError(result.error)
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      })
+      
+      const data = await response.json()
+      
+      if (!response.ok) {
+        setError(data.error || 'ログインに失敗しました。')
+        setIsLoading(false)
+        return
+      }
+      
+      if (data.success && data.redirectTo) {
+        // ログイン成功時の処理
+        console.log('ログイン成功、リダイレクト中...')
+        // まずページをリフレッシュしてから遷移
+        window.location.href = data.redirectTo
+      }
+    } catch (error) {
+      console.error('ログインエラー:', error)
+      setError('ログイン処理中にエラーが発生しました。')
       setIsLoading(false)
     }
   }
 
   return (
-    <form action={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
         <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
           <AlertCircle className="w-5 h-5 flex-shrink-0" />

@@ -1,4 +1,7 @@
-import { createClient } from '@/lib/supabase/server'
+'use client'
+
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { 
   Building2, 
@@ -8,33 +11,74 @@ import {
   Plus,
   Store 
 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
-export default async function DashboardPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+export default function DashboardPage() {
+  const [userData, setUserData] = useState<any>(null)
+  const [pharmacyCount, setPharmacyCount] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
+  const supabase = createClient()
 
-  // ユーザーの会社情報を取得
-  const { data: userData } = await supabase
-    .from('users')
-    .select('company_id, companies(*)')
-    .eq('id', user?.id)
-    .single()
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        
+        if (!user) {
+          router.push('/pharmacy/login')
+          return
+        }
 
-  // 会社の薬局数を取得（company_idがある場合のみ）
-  let pharmacyCount = 0
-  if (userData?.company_id) {
-    const { count } = await supabase
-      .from('pharmacies')
-      .select('*', { count: 'exact', head: true })
-      .eq('company_id', userData.company_id)
-    pharmacyCount = count || 0
-  } else {
-    // 後方互換性: company_idがない場合はuser_idで検索
-    const { count } = await supabase
-      .from('pharmacies')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', user?.id)
-    pharmacyCount = count || 0
+        // ユーザーの会社情報を取得
+        const { data: userDataResult } = await supabase
+          .from('users')
+          .select('company_id, companies(*)')
+          .eq('id', user.id)
+          .single()
+        
+        setUserData(userDataResult)
+
+        // 会社の薬局数を取得（company_idがある場合のみ）
+        if (userDataResult?.company_id) {
+          const { count } = await supabase
+            .from('pharmacies')
+            .select('*', { count: 'exact', head: true })
+            .eq('company_id', userDataResult.company_id)
+          setPharmacyCount(count || 0)
+        } else {
+          // 後方互換性: company_idがない場合はuser_idで検索
+          const { count } = await supabase
+            .from('pharmacies')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', user.id)
+          setPharmacyCount(count || 0)
+        }
+      } catch (error) {
+        console.error('データ読み込みエラー:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadData()
+  }, [router, supabase])
+
+  if (loading) {
+    return (
+      <div className="p-4 md:p-8">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-48 mb-8"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <div className="h-20 bg-gray-200 rounded"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
   }
 
   // 統計情報（現時点ではモックデータ）

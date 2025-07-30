@@ -78,22 +78,69 @@ export async function signUp(formData: FormData) {
   redirect('/dashboard')
 }
 
-export async function signIn(formData: FormData) {
-  const supabase = await createClient()
+export async function signIn(formData: FormData): Promise<{ error?: string; details?: any } | void> {
+  try {
+    const supabase = await createClient()
 
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
+    console.log('ログイン試行:', { email, passwordLength: password?.length })
 
-  if (error) {
-    return { error: error.message }
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (error) {
+      console.error('Supabaseログインエラー:', {
+        message: error.message,
+        status: error.status,
+        name: error.name,
+      })
+      return { 
+        error: error.message,
+        details: {
+          status: error.status,
+          name: error.name,
+          rawError: JSON.stringify(error)
+        }
+      }
+    }
+
+    console.log('ログイン成功:', { userId: data.user?.id })
+
+    // ユーザー情報を確認
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', data.user.id)
+      .single()
+
+    if (userError) {
+      console.error('ユーザーデータ取得エラー:', userError)
+      return {
+        error: 'ユーザー情報の取得に失敗しました。',
+        details: {
+          userError: JSON.stringify(userError)
+        }
+      }
+    } else {
+      console.log('ユーザーデータ:', userData)
+    }
+
+    redirect('/dashboard')
+  } catch (error) {
+    console.error('予期せぬエラー:', error)
+    return { 
+      error: '予期せぬエラーが発生しました。',
+      details: {
+        errorType: error instanceof Error ? error.constructor.name : 'unknown',
+        message: error instanceof Error ? error.message : JSON.stringify(error),
+        stack: error instanceof Error ? error.stack : undefined
+      }
+    }
   }
-
-  redirect('/dashboard')
 }
 
 export async function signOut() {
