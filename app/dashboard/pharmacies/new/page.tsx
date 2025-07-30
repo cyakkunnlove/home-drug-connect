@@ -19,7 +19,9 @@ export default async function NewPharmacyPage() {
     .eq('id', user.id)
     .single()
 
+  // company_idがない既存ユーザーは薬局作成できないようにする
   if (!userData?.company_id) {
+    // 会社を作成してから薬局を登録するよう促す
     redirect('/dashboard')
   }
 

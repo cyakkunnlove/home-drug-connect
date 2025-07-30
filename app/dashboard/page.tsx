@@ -20,11 +20,22 @@ export default async function DashboardPage() {
     .eq('id', user?.id)
     .single()
 
-  // 会社の薬局数を取得
-  const { count: pharmacyCount } = await supabase
-    .from('pharmacies')
-    .select('*', { count: 'exact', head: true })
-    .eq('company_id', userData?.company_id)
+  // 会社の薬局数を取得（company_idがある場合のみ）
+  let pharmacyCount = 0
+  if (userData?.company_id) {
+    const { count } = await supabase
+      .from('pharmacies')
+      .select('*', { count: 'exact', head: true })
+      .eq('company_id', userData.company_id)
+    pharmacyCount = count || 0
+  } else {
+    // 後方互換性: company_idがない場合はuser_idで検索
+    const { count } = await supabase
+      .from('pharmacies')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user?.id)
+    pharmacyCount = count || 0
+  }
 
   // 統計情報（現時点ではモックデータ）
   const stats = [
@@ -60,7 +71,25 @@ export default async function DashboardPage() {
         ダッシュボード
       </h1>
 
-      {pharmacyCount === 0 && (
+      {!userData?.company_id && (
+        <div className="mb-8 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-800 font-medium mb-2">
+            会社情報の設定が必要です
+          </p>
+          <p className="text-red-700 text-sm mb-3">
+            新しいシステムでは、会社単位で複数の薬局を管理できるようになりました。
+            既存のアカウントを継続してご利用いただくには、会社情報の移行が必要です。
+          </p>
+          <p className="text-red-700 text-sm">
+            お手数ですが、サポートまでお問い合わせください。
+            <Link href="/contact" className="font-medium underline ml-1">
+              お問い合わせはこちら
+            </Link>
+          </p>
+        </div>
+      )}
+      
+      {userData?.company_id && pharmacyCount === 0 && (
         <div className="mb-8 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
           <p className="text-yellow-800">
             薬局情報が未登録です。

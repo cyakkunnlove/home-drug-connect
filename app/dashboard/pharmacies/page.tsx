@@ -30,15 +30,31 @@ export default async function PharmaciesListPage() {
     .single()
 
   // 会社の全薬局を取得
-  const { data: pharmacies } = await supabase
-    .from('pharmacies')
-    .select(`
-      *,
-      current_capacity,
-      max_capacity
-    `)
-    .eq('company_id', userData.company_id)
-    .order('created_at', { ascending: false })
+  let pharmacies = []
+  if (userData?.company_id) {
+    const { data } = await supabase
+      .from('pharmacies')
+      .select(`
+        *,
+        current_capacity,
+        max_capacity
+      `)
+      .eq('company_id', userData.company_id)
+      .order('created_at', { ascending: false })
+    pharmacies = data || []
+  } else {
+    // 後方互換性: company_idがない場合はuser_idで検索
+    const { data } = await supabase
+      .from('pharmacies')
+      .select(`
+        *,
+        current_capacity,
+        max_capacity
+      `)
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+    pharmacies = data || []
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
