@@ -147,6 +147,8 @@ export async function POST() {
 
     // 薬局を一つずつ作成
     const createdPharmacies = []
+    const errors = []
+    
     for (const pharmacy of pharmacies) {
       const { data, error } = await supabase
         .from('pharmacies')
@@ -156,6 +158,12 @@ export async function POST() {
 
       if (error) {
         console.error(`薬局作成エラー (${pharmacy.name}):`, error)
+        errors.push({
+          pharmacy: pharmacy.name,
+          error: error.message,
+          code: error.code,
+          details: error.details
+        })
       } else {
         createdPharmacies.push(data)
       }
@@ -165,7 +173,10 @@ export async function POST() {
       success: true,
       company: companyData,
       pharmacies: createdPharmacies,
-      message: 'テストデータの作成が完了しました'
+      errors: errors,
+      message: errors.length > 0 
+        ? `テストデータの作成が部分的に完了しました（エラー: ${errors.length}件）` 
+        : 'テストデータの作成が完了しました'
     })
   } catch (error) {
     console.error('テストデータ作成エラー:', error)
