@@ -9,23 +9,26 @@ export async function middleware(request: NextRequest) {
     },
   })
 
-  // CSPヘッダーを設定
-  const cspHeader = `
-    default-src 'self';
-    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.supabase.co https://maps.googleapis.com https://maps.gstatic.com;
-    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-    font-src 'self' https://fonts.gstatic.com;
-    img-src 'self' data: https: blob:;
-    connect-src 'self' https://*.supabase.co wss://*.supabase.co https://maps.googleapis.com;
-    frame-src 'self' https://*.stripe.com;
-    object-src 'none';
-    base-uri 'self';
-    form-action 'self';
-    frame-ancestors 'none';
-    upgrade-insecure-requests;
-  `.replace(/\s{2,}/g, ' ').trim()
+  // CSPヘッダーを設定（開発環境では緩い設定）
+  const isDevelopment = process.env.NODE_ENV === 'development'
+  
+  if (!isDevelopment) {
+    const cspHeader = `
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' 'unsafe-eval' https: http:;
+      style-src 'self' 'unsafe-inline' https: http:;
+      font-src 'self' https: http: data:;
+      img-src 'self' data: https: http: blob:;
+      connect-src 'self' https: http: wss: ws:;
+      frame-src 'self' https: http:;
+      object-src 'none';
+      base-uri 'self';
+      form-action 'self' https: http:;
+      frame-ancestors 'none';
+    `.replace(/\s{2,}/g, ' ').trim()
 
-  response.headers.set('Content-Security-Policy', cspHeader)
+    response.headers.set('Content-Security-Policy', cspHeader)
+  }
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
