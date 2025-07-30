@@ -1,29 +1,38 @@
 import { createClient } from '@/lib/supabase/server'
+import Link from 'next/link'
 import { 
   Building2, 
   Users, 
   Eye, 
-  TrendingUp 
+  TrendingUp,
+  Plus,
+  Store 
 } from 'lucide-react'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  // 薬局情報を取得
-  const { data: pharmacy } = await supabase
-    .from('pharmacies')
-    .select('*')
-    .eq('user_id', user?.id)
+  // ユーザーの会社情報を取得
+  const { data: userData } = await supabase
+    .from('users')
+    .select('company_id, companies(*)')
+    .eq('id', user?.id)
     .single()
+
+  // 会社の薬局数を取得
+  const { count: pharmacyCount } = await supabase
+    .from('pharmacies')
+    .select('*', { count: 'exact', head: true })
+    .eq('company_id', userData?.company_id)
 
   // 統計情報（現時点ではモックデータ）
   const stats = [
     {
-      name: '受入可能患者数',
-      value: pharmacy ? `${pharmacy.max_capacity - pharmacy.current_capacity}名` : '未設定',
-      icon: Users,
-      description: pharmacy ? `現在 ${pharmacy.current_capacity}/${pharmacy.max_capacity}名` : '',
+      name: '管理薬局数',
+      value: `${pharmacyCount || 0}店舗`,
+      icon: Store,
+      description: '登録済み薬局',
     },
     {
       name: 'プロフィール閲覧数',
@@ -32,10 +41,10 @@ export default async function DashboardPage() {
       description: '今月',
     },
     {
-      name: 'ステータス',
-      value: pharmacy?.status === 'active' ? '公開中' : '未公開',
+      name: '会社ステータス',
+      value: userData?.companies?.status === 'active' ? '運用中' : '停止中',
       icon: Building2,
-      description: pharmacy?.status === 'pending' ? '審査中' : '',
+      description: userData?.companies?.name || '',
     },
     {
       name: '問い合わせ数',
@@ -46,32 +55,32 @@ export default async function DashboardPage() {
   ]
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-8">
+    <div className="p-4 md:p-8">
+      <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-6 md:mb-8">
         ダッシュボード
       </h1>
 
-      {!pharmacy && (
+      {pharmacyCount === 0 && (
         <div className="mb-8 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
           <p className="text-yellow-800">
             薬局情報が未登録です。
-            <a href="/dashboard/pharmacy" className="font-medium underline ml-1">
-              薬局情報を登録
-            </a>
+            <Link href="/dashboard/pharmacies/new" className="font-medium underline ml-1">
+              薬局を登録
+            </Link>
             してください。
           </p>
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
         {stats.map((stat) => (
           <div
             key={stat.name}
-            className="bg-white rounded-lg shadow-sm p-6 border border-gray-200"
+            className="bg-white rounded-lg shadow-sm p-4 md:p-6 border border-gray-200"
           >
-            <div className="flex items-center justify-between mb-4">
-              <stat.icon className="w-8 h-8 text-blue-600" />
-              <span className="text-2xl font-bold text-gray-900">
+            <div className="flex items-center justify-between mb-2 md:mb-4">
+              <stat.icon className="w-6 h-6 md:w-8 md:h-8 text-blue-600" />
+              <span className="text-xl md:text-2xl font-bold text-gray-900">
                 {stat.value}
               </span>
             </div>
@@ -90,11 +99,40 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            最近の活動
+            クイックアクション
           </h2>
-          <p className="text-gray-600 text-sm">
-            まだ活動履歴がありません。
-          </p>
+          <div className="space-y-3">
+            <Link
+              href="/dashboard/pharmacies"
+              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <Store className="w-5 h-5 text-blue-600" />
+                <span className="text-sm font-medium text-gray-900">薬局一覧</span>
+              </div>
+              <span className="text-sm text-gray-500">→</span>
+            </Link>
+            <Link
+              href="/dashboard/pharmacies/new"
+              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <Plus className="w-5 h-5 text-green-600" />
+                <span className="text-sm font-medium text-gray-900">新規薬局登録</span>
+              </div>
+              <span className="text-sm text-gray-500">→</span>
+            </Link>
+            <Link
+              href="/dashboard/settings"
+              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <Building2 className="w-5 h-5 text-gray-600" />
+                <span className="text-sm font-medium text-gray-900">会社情報設定</span>
+              </div>
+              <span className="text-sm text-gray-500">→</span>
+            </Link>
+          </div>
         </div>
 
         <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">

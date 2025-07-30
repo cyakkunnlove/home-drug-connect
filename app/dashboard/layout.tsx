@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { signOut } from '@/lib/auth/actions'
 import Link from 'next/link'
+import MobileNav from '@/components/dashboard/MobileNav'
 import { 
   LayoutDashboard, 
   Building2, 
@@ -11,7 +12,8 @@ import {
   LogOut,
   MessageSquare,
   BarChart3,
-  Shield
+  Shield,
+  Store
 } from 'lucide-react'
 
 export default async function DashboardLayout({
@@ -35,7 +37,7 @@ export default async function DashboardLayout({
 
   const navigation = [
     { name: 'ダッシュボード', href: '/dashboard', icon: LayoutDashboard },
-    { name: '薬局情報', href: '/dashboard/pharmacy', icon: Building2 },
+    { name: '薬局管理', href: '/dashboard/pharmacies', icon: Store },
     { name: 'お問い合わせ', href: '/dashboard/inquiries', icon: MessageSquare },
     { name: 'アナリティクス', href: '/dashboard/analytics', icon: BarChart3 },
     { name: 'サブスクリプション', href: '/dashboard/subscription', icon: CreditCard },
@@ -47,9 +49,16 @@ export default async function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* モバイルナビゲーション */}
+      <MobileNav 
+        navigation={navigation} 
+        profile={profile || {}} 
+        isAdmin={isAdmin}
+      />
+      
       <div className="flex h-screen">
-        {/* サイドバー */}
-        <div className="w-64 bg-white shadow-md">
+        {/* デスクトップサイドバー */}
+        <div className="hidden lg:block w-64 bg-white shadow-md">
           <div className="flex flex-col h-full">
             <div className="p-4 border-b">
               <h2 className="text-xl font-bold text-gray-900">
@@ -111,6 +120,8 @@ export default async function DashboardLayout({
 
         {/* メインコンテンツ */}
         <div className="flex-1 overflow-auto">
+          {/* モバイル用のトップマージン */}
+          <div className="lg:hidden h-16"></div>
           {children}
         </div>
       </div>

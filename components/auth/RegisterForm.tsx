@@ -41,7 +41,7 @@ export default function RegisterForm() {
 
       <div>
         <label htmlFor="organizationName" className="block text-sm font-medium text-gray-700 mb-2">
-          薬局名
+          会社名
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -53,7 +53,7 @@ export default function RegisterForm() {
             type="text"
             required
             className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="さくら薬局"
+            placeholder="株式会社〇〇ファーマシー"
           />
         </div>
       </div>

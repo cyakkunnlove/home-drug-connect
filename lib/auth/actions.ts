@@ -26,19 +26,52 @@ export async function signUp(formData: FormData) {
   }
 
   if (authData.user) {
-    // public.usersテーブルにプロフィール情報を保存
-    const { error: profileError } = await supabase
-      .from('users')
+    // まず会社を作成
+    const { data: company, error: companyError } = await supabase
+      .from('companies')
       .insert({
-        id: authData.user.id,
-        email,
-        role,
+        name: organizationName,
+        headquarters_phone: phone,
+        headquarters_email: email,
+        status: 'active',
+      })
+      .select()
+      .single()
+
+    if (companyError) {
+      console.error('会社作成エラー:', companyError)
+      return { error: '会社情報の作成に失敗しました。' }
+    }
+
+    // トリガーが自動的にusersテーブルにレコードを作成するので、
+    // organization_name、phone、company_idを更新
+    const { error: updateError } = await supabase
+      .from('users')
+      .update({
         organization_name: organizationName,
         phone,
+        company_id: company.id,
       })
+      .eq('id', authData.user.id)
 
-    if (profileError) {
-      return { error: profileError.message }
+    if (updateError) {
+      // 更新に失敗した場合は、少し待ってから再試行
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      const { error: retryError } = await supabase
+        .from('users')
+        .update({
+          organization_name: organizationName,
+          phone,
+          company_id: company.id,
+        })
+        .eq('id', authData.user.id)
+      
+      if (retryError) {
+        // 会社を削除
+        await supabase.from('companies').delete().eq('id', company.id)
+        return { error: '組織情報の保存に失敗しました。' }
+      }
     }
   }
 

@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import PharmacyForm from '@/components/pharmacy/PharmacyForm'
+import PharmacyFormExtended from '@/components/pharmacy/PharmacyFormExtended'
 
 export default async function PharmacyPage() {
   const supabase = await createClient()
@@ -20,7 +20,7 @@ export default async function PharmacyPage() {
 
       <div className="max-w-4xl">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <PharmacyForm pharmacy={pharmacy} />
+          <PharmacyFormExtended pharmacy={pharmacy} />
         </div>
       </div>
     </div>

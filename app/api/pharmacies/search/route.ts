@@ -6,6 +6,8 @@ export async function GET(request: NextRequest) {
   const lat = parseFloat(searchParams.get('lat') || '0')
   const lng = parseFloat(searchParams.get('lng') || '0')
   const radius = parseFloat(searchParams.get('radius') || '5') // デフォルト5km
+  const excludeFull = searchParams.get('excludeFull') !== 'false' // デフォルトで満床を除外
+  const requiredServices = searchParams.getAll('services') // 必要なサービス
 
   if (!lat || !lng) {
     return NextResponse.json(
@@ -13,6 +15,8 @@ export async function GET(request: NextRequest) {
       { status: 400 }
     )
   }
+  
+  console.log('検索パラメータ:', { lat, lng, radius, excludeFull, requiredServices })
 
   const supabase = await createClient()
 
@@ -20,12 +24,15 @@ export async function GET(request: NextRequest) {
     // PostGISのST_DWithin関数を使用して近隣の薬局を検索
     const { data, error } = await supabase
       .rpc('search_nearby_pharmacies', {
-        user_lat: lat,
-        user_lng: lng,
-        radius_km: radius
+        search_lat: lat,
+        search_lng: lng,
+        radius_km: radius,
+        exclude_full: excludeFull,
+        required_services: requiredServices.length > 0 ? requiredServices : []
       })
 
     if (error) {
+      console.error('RPC関数エラー:', error)
       // RPCが存在しない場合は全薬局を返す（開発用フォールバック）
       const { data: allPharmacies, error: fallbackError } = await supabase
         .from('pharmacies')
@@ -53,6 +60,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ pharmacies: pharmaciesWithDistance })
     }
 
+    console.log('検索結果:', data?.length || 0, '件')
     return NextResponse.json({ pharmacies: data || [] })
   } catch (error) {
     console.error('薬局検索エラー:', error)
