@@ -9,7 +9,9 @@ export async function middleware(request: NextRequest) {
     },
   })
 
-  // CSPヘッダーを設定（開発環境では緩い設定）
+  // CSPヘッダーを一時的に無効化
+  // TODO: 本番環境でのセキュリティ設定を後で再検討
+  /*
   const isDevelopment = process.env.NODE_ENV === 'development'
   
   if (!isDevelopment) {
@@ -29,6 +31,7 @@ export async function middleware(request: NextRequest) {
 
     response.headers.set('Content-Security-Policy', cspHeader)
   }
+  */
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
