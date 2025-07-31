@@ -30,8 +30,13 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files (IMPORTANT: Never commit these!)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.production
 
 # vercel
 .vercel
@@ -39,3 +44,26 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# API Keys and secrets
+**/secrets.json
+**/credentials.json
+.secrets/
+
+# Supabase
+.supabase/
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+
+# Drug data JSON files (generated)
+public/drugs.v*.json
+public/drugs.latest.json

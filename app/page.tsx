@@ -1,9 +1,11 @@
 import Link from "next/link"
 import { Search, Clock, Shield } from "lucide-react"
+import AuthenticatedHeader from "@/components/layout/AuthenticatedHeader"
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      <AuthenticatedHeader />
       <header className="container mx-auto px-4 py-6">
         <nav className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-blue-900">HOME-DRUG CONNECT</h1>
@@ -13,6 +15,9 @@ export default function Home() {
             </Link>
             <Link href="/pharmacy/login" className="text-gray-700 hover:text-blue-900">
               薬局ログイン
+            </Link>
+            <Link href="/doctor/login" className="text-gray-700 hover:text-blue-900">
+              医師ログイン
             </Link>
           </div>
         </nav>
@@ -41,6 +46,12 @@ export default function Home() {
               className="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-8 py-3 rounded-lg border-2 border-blue-600 hover:bg-blue-50 transition-colors text-lg font-medium"
             >
               薬局として登録する
+            </Link>
+            <Link
+              href="/doctor/register"
+              className="inline-flex items-center justify-center gap-2 bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition-colors text-lg font-medium"
+            >
+              医師として登録する
             </Link>
           </div>
         </section>

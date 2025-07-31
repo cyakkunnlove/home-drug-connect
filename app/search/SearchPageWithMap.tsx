@@ -22,6 +22,8 @@ import {
 import { createClient } from '@/lib/supabase/client'
 import { geocodeAddress } from '@/lib/google-maps/geocoding'
 import Modal from '@/components/ui/Modal'
+import { useRouter } from 'next/navigation'
+import AuthenticatedHeader from '@/components/layout/AuthenticatedHeader'
 
 // Google Mapsコンポーネントを動的インポート（SSR対策）
 const PharmacyMap = dynamic(
@@ -52,6 +54,7 @@ type PharmacyResult = {
 }
 
 export default function SearchPageWithMap() {
+  const router = useRouter()
   const [searchAddress, setSearchAddress] = useState('')
   const [searchResults, setSearchResults] = useState<PharmacyResult[]>([])
   const [isSearching, setIsSearching] = useState(false)
@@ -62,6 +65,7 @@ export default function SearchPageWithMap() {
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number } | null>(null)
   const [selectedPharmacyId, setSelectedPharmacyId] = useState<string | null>(null)
   const [currentLocationLoading, setCurrentLocationLoading] = useState(false)
+  const [userRole, setUserRole] = useState<string | null>(null)
   
   // フィルター状態
   const [filters, setFilters] = useState({
@@ -72,6 +76,28 @@ export default function SearchPageWithMap() {
     radius: 5
   })
   const [showFilters, setShowFilters] = useState(false)
+  
+  // ユーザーの役割を確認
+  useEffect(() => {
+    const checkUserRole = async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (user) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', user.id)
+          .single()
+        
+        if (userData) {
+          setUserRole(userData.role)
+        }
+      }
+    }
+    
+    checkUserRole()
+  }, [])
   
   // 現在地を取得
   useEffect(() => {
@@ -249,6 +275,7 @@ export default function SearchPageWithMap() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <AuthenticatedHeader />
       <header className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-3 md:py-4">
           <div className="flex items-center justify-between">
@@ -557,13 +584,23 @@ export default function SearchPageWithMap() {
                               詳細を見る
                             </button>
                           </div>
-                          <a
-                            href={`tel:${pharmacy.phone}`}
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                          >
-                            <Phone className="w-4 h-4" />
-                            電話する
-                          </a>
+                          <div className="flex gap-2">
+                            {userRole === 'doctor' && (
+                              <button
+                                onClick={() => router.push(`/doctor/request/new?pharmacyId=${pharmacy.id}`)}
+                                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                              >
+                                依頼作成
+                              </button>
+                            )}
+                            <a
+                              href={`tel:${pharmacy.phone}`}
+                              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                            >
+                              <Phone className="w-4 h-4" />
+                              電話する
+                            </a>
+                          </div>
                         </div>
                       </div>
                     ))}

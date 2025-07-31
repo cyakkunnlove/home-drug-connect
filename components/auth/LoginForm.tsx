@@ -110,12 +110,20 @@ export default function LoginForm() {
         {isLoading ? 'ログイン中...' : 'ログイン'}
       </button>
 
-      <p className="text-center text-sm text-gray-600">
-        アカウントをお持ちでない方は{' '}
-        <Link href="/pharmacy/register" className="font-medium text-blue-600 hover:text-blue-500">
-          新規登録
-        </Link>
-      </p>
+      <div className="text-center text-sm text-gray-600 space-y-2">
+        <p>
+          薬局として登録する場合は{' '}
+          <Link href="/pharmacy/register" className="font-medium text-blue-600 hover:text-blue-500">
+            薬局新規登録
+          </Link>
+        </p>
+        <p>
+          医師として登録する場合は{' '}
+          <Link href="/doctor/register" className="font-medium text-green-600 hover:text-green-500">
+            医師新規登録
+          </Link>
+        </p>
+      </div>
     </form>
   )
 }

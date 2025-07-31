@@ -340,7 +340,7 @@ export type Database = {
     Enums: {
       pharmacy_status: "active" | "inactive" | "pending"
       subscription_status: "active" | "past_due" | "canceled" | "trialing"
-      user_role: "pharmacy_admin" | "clinic_staff" | "admin"
+      user_role: "pharmacy_admin" | "clinic_staff" | "admin" | "doctor"
     }
     CompositeTypes: {
       geometry_dump: {

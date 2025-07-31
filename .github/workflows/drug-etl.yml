@@ -1,0 +1,45 @@
+name: Drug Master ETL
+
+on:
+  schedule:
+    # Run at 4:00 AM JST on the 1st of every month
+    - cron: '0 19 1 * *'  # UTC time (JST - 9)
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  etl:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run ETL script
+      env:
+        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+        SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      run: npm run etl:drugs
+
+    - name: Commit and push JSON files
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add public/drugs.v*.json public/drugs.latest.json
+        git diff --staged --quiet || git commit -m "chore: update drug master data [skip ci]"
+        git push
+
+    - name: Deploy to Vercel
+      if: success()
+      run: |
+        npm i -g vercel
+        vercel --prod --token=${{ secrets.VERCEL_TOKEN }}

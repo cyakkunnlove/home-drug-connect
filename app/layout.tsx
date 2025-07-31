@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "../styles/mobile-enhancements.css";
 import { Toaster } from 'react-hot-toast';
 
 const geistSans = Geist({
@@ -61,11 +62,42 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="HOME-DRUG CONNECT" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="theme-color" content="#3B82F6" />
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased ios-scroll`}
       >
         {children}
-        <Toaster position="top-right" />
+        <Toaster 
+          position="top-center"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              borderRadius: '12px',
+              padding: '12px 16px',
+              fontSize: '14px',
+              maxWidth: '90vw',
+            },
+            success: {
+              iconTheme: {
+                primary: '#10B981',
+                secondary: 'white',
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: '#EF4444',
+                secondary: 'white',
+              },
+            },
+          }}
+        />
       </body>
     </html>
   );

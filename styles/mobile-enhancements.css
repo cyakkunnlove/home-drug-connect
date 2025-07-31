@@ -1,0 +1,184 @@
+/* iOS-style mobile enhancements */
+
+/* Smooth scrolling and momentum */
+html {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Remove tap highlights and improve touch targets */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* Ensure minimum touch target size */
+button, a, [role="button"], input, select, textarea {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* iOS-style rubber band scrolling */
+.ios-scroll {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+}
+
+/* Safe area padding for devices with notches */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
+
+.pl-safe {
+  padding-left: env(safe-area-inset-left);
+}
+
+.pr-safe {
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Haptic feedback simulation with subtle bounce */
+.haptic-light {
+  transform: scale(0.98);
+  transition: transform 0.1s ease;
+}
+
+.haptic-medium {
+  transform: scale(0.95);
+  transition: transform 0.15s ease;
+}
+
+.haptic-heavy {
+  transform: scale(0.92);
+  transition: transform 0.2s ease;
+}
+
+/* iOS-style card shadows */
+.ios-card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+}
+
+.ios-card-elevated {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+}
+
+/* iOS-style focus rings */
+.ios-focus {
+  outline: none;
+  ring: 2px;
+  ring-color: rgba(59, 130, 246, 0.5);
+  ring-offset: 2px;
+  ring-offset-color: white;
+}
+
+/* Smooth page transitions */
+.page-transition {
+  transition: all 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Loading shimmer effect */
+@keyframes shimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+.shimmer {
+  animation: shimmer 1.5s ease-in-out infinite;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 400% 100%;
+}
+
+/* iOS-style list separators */
+.ios-separator {
+  border-bottom: 0.5px solid rgba(60, 60, 67, 0.12);
+}
+
+/* Smooth modal backdrop */
+.modal-backdrop {
+  backdrop-filter: blur(10px);
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+/* iOS-style button press states */
+.ios-button-press {
+  transform: scale(0.96);
+  transition: transform 0.1s ease;
+}
+
+/* Pull-to-refresh indicator */
+.pull-to-refresh {
+  transform: translateY(-100%);
+  transition: transform 0.2s ease;
+}
+
+.pull-to-refresh.visible {
+  transform: translateY(0);
+}
+
+/* iOS-style navigation transitions */
+.nav-slide-right {
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.nav-slide-left {
+  transform: translateX(-100%);
+  transition: transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Responsive touch improvements */
+@media (max-width: 768px) {
+  /* Increase touch targets on mobile */
+  button, a[role="button"], input[type="submit"] {
+    min-height: 48px;
+    padding: 12px 16px;
+  }
+  
+  /* Improve form inputs on mobile */
+  input, select, textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+    border-radius: 8px;
+  }
+  
+  /* Better spacing for mobile */
+  .mobile-spacing {
+    padding: 16px;
+  }
+  
+  /* Full-width buttons on mobile */
+  .mobile-full-width {
+    width: 100%;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .ios-card {
+    background-color: #1f1f1f;
+    border-color: #333;
+  }
+  
+  .shimmer {
+    background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
