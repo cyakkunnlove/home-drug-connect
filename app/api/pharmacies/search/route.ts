@@ -1,72 +1,131 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createReadOnlyClient } from '@/lib/supabase/server'
+import { withRateLimit } from '@/lib/rate-limit'
+import { QueryMonitor } from '@/lib/supabase/pool'
 
-export async function GET(request: NextRequest) {
+async function searchHandler(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const lat = parseFloat(searchParams.get('lat') || '0')
   const lng = parseFloat(searchParams.get('lng') || '0')
-  const radius = parseFloat(searchParams.get('radius') || '5') // デフォルト5km
+  const radius = Math.min(parseFloat(searchParams.get('radius') || '5'), 50) // 最大50km制限
   const excludeFull = searchParams.get('excludeFull') !== 'false' // デフォルトで満床を除外
   const requiredServices = searchParams.getAll('services') // 必要なサービス
+  const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100) // 最大100件制限
 
-  if (!lat || !lng) {
+  // 入力検証
+  if (!lat || !lng || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
     return NextResponse.json(
-      { error: '座標が指定されていません' },
+      { error: '座標が無効です', code: 'INVALID_COORDINATES' },
+      { status: 400 }
+    )
+  }
+
+  if (radius <= 0 || radius > 50) {
+    return NextResponse.json(
+      { error: '検索半径は1-50kmの範囲で指定してください', code: 'INVALID_RADIUS' },
       { status: 400 }
     )
   }
   
-  console.log('検索パラメータ:', { lat, lng, radius, excludeFull, requiredServices })
-
-  const supabase = await createClient()
+  // Read-only client for better performance
+  const supabase = await createReadOnlyClient()
 
   try {
-    // PostGISのST_DWithin関数を使用して近隣の薬局を検索
-    const { data, error } = await supabase
-      .rpc('search_nearby_pharmacies', {
-        search_lat: lat,
-        search_lng: lng,
-        radius_km: radius,
-        exclude_full: excludeFull,
-        required_services: requiredServices.length > 0 ? requiredServices : []
-      })
+    // Monitor query performance
+    const result = await QueryMonitor.execute('pharmacy_search', async () => {
+      // PostGISのST_DWithin関数を使用して近隣の薬局を検索（最適化版）
+      const { data, error } = await supabase
+        .rpc('search_nearby_pharmacies_optimized', {
+          search_lat: lat,
+          search_lng: lng,
+          radius_km: radius,
+          exclude_full: excludeFull,
+          required_services: requiredServices.length > 0 ? requiredServices : [],
+          result_limit: limit
+        })
 
-    if (error) {
-      console.error('RPC関数エラー:', error)
-      // RPCが存在しない場合は全薬局を返す（開発用フォールバック）
-      const { data: allPharmacies, error: fallbackError } = await supabase
-        .from('pharmacies')
-        .select('*')
-        .eq('status', 'active')
+      if (error) {
+        console.error('RPC関数エラー:', error)
+        
+        // Optimized fallback query with proper distance calculation
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from('pharmacies')
+          .select(`
+            id, name, address, phone, email,
+            twenty_four_support, holiday_support, emergency_support,
+            current_capacity, max_capacity, coverage_radius_km,
+            business_hours, services, description,
+            ST_Y(location::geometry) as lat,
+            ST_X(location::geometry) as lng,
+            ST_Distance(
+              location::geography,
+              ST_Point(${lng}, ${lat})::geography
+            ) / 1000 as distance_km
+          `)
+          .eq('status', 'active')
+          .not('location', 'is', null)
+          .order('distance_km')
+          .limit(limit)
 
-      if (fallbackError) throw fallbackError
+        if (fallbackError) throw fallbackError
 
-      // 簡易的な距離計算
-      const pharmaciesWithDistance = allPharmacies.map(pharmacy => {
-        // locationフィールドから緯度経度を抽出（実際の実装では適切にパース）
-        const pharmLat = lat + (Math.random() - 0.5) * 0.1
-        const pharmLng = lng + (Math.random() - 0.5) * 0.1
-        const distance = Math.random() * radius // 仮の距離
-
-        return {
-          ...pharmacy,
-          distance_km: distance.toFixed(1),
-          lat: pharmLat,
-          lng: pharmLng
+        // Apply filters
+        let filteredData = fallbackData || []
+        
+        // Distance filter
+        filteredData = filteredData.filter(p => p.distance_km <= radius)
+        
+        // Capacity filter
+        if (excludeFull) {
+          filteredData = filteredData.filter(p => p.current_capacity < p.max_capacity)
         }
-      }).filter(p => p.distance_km <= radius)
-      .sort((a, b) => parseFloat(a.distance_km) - parseFloat(b.distance_km))
+        
+        // Service filters
+        if (requiredServices.length > 0) {
+          filteredData = filteredData.filter(pharmacy => {
+            const services = pharmacy.services || {}
+            return requiredServices.every(service => services[service] === true)
+          })
+        }
 
-      return NextResponse.json({ pharmacies: pharmaciesWithDistance })
-    }
+        return filteredData.map(pharmacy => ({
+          ...pharmacy,
+          distance_km: parseFloat(pharmacy.distance_km).toFixed(1)
+        }))
+      }
 
-    console.log('検索結果:', data?.length || 0, '件')
-    return NextResponse.json({ pharmacies: data || [] })
+      return data || []
+    })
+
+    // Add cache headers for better performance
+    const response = NextResponse.json({ 
+      pharmacies: result,
+      total: result.length,
+      radius,
+      center: { lat, lng },
+      timestamp: new Date().toISOString()
+    })
+
+    // Cache for 5 minutes for location-based searches
+    response.headers.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=60')
+    response.headers.set('Vary', 'Accept-Encoding')
+    
+    return response
+    
   } catch (error) {
     console.error('薬局検索エラー:', error)
-    return NextResponse.json(
-      { error: '薬局の検索に失敗しました' },
-      { status: 500 }
-    )
+    
+    // Structured error response
+    const errorResponse = {
+      error: '薬局の検索に失敗しました',
+      code: 'SEARCH_FAILED',
+      timestamp: new Date().toISOString(),
+      requestId: crypto.randomUUID().slice(0, 8)
+    }
+    
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }
+
+// Apply rate limiting to search endpoint
+export const GET = withRateLimit(searchHandler, 'search')
