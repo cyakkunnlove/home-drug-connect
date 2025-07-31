@@ -264,8 +264,12 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          name: string | null
+          clinic_name: string | null
+          medical_license_number: string | null
           organization_name: string | null
           phone: string | null
+          company_id: string | null
           role: Database["public"]["Enums"]["user_role"]
           updated_at: string
         }
@@ -273,8 +277,12 @@ export type Database = {
           created_at?: string
           email: string
           id: string
+          name?: string | null
+          clinic_name?: string | null
+          medical_license_number?: string | null
           organization_name?: string | null
           phone?: string | null
+          company_id?: string | null
           role: Database["public"]["Enums"]["user_role"]
           updated_at?: string
         }
@@ -282,8 +290,12 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          name?: string | null
+          clinic_name?: string | null
+          medical_license_number?: string | null
           organization_name?: string | null
           phone?: string | null
+          company_id?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
         }

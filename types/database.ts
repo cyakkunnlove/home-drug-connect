@@ -8,8 +8,12 @@ export interface User {
   id: string
   email: string
   role: UserRole
+  name?: string
+  clinic_name?: string
+  medical_license_number?: string
   organization_name?: string
   phone?: string
+  company_id?: string
   created_at: string
   updated_at: string
 }

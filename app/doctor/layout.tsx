@@ -17,7 +17,7 @@ export default async function DoctorLayout({
 
   const { data: userData } = await supabase
     .from('users')
-    .select('role, organization_name')
+    .select('role, name, clinic_name, organization_name')
     .eq('id', user.id)
     .single()
 
@@ -32,6 +32,8 @@ export default async function DoctorLayout({
     <div className="min-h-screen bg-gray-50">
       <DoctorLayoutClient 
         userEmail={user.email || ''}
+        doctorName={userData?.name}
+        clinicName={userData?.clinic_name}
         organizationName={userData?.organization_name}
       >
         {children}

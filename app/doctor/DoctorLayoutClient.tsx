@@ -16,12 +16,16 @@ import Logo from '@/components/ui/Logo'
 interface DoctorLayoutClientProps {
   children: ReactNode
   userEmail: string
+  doctorName?: string
+  clinicName?: string
   organizationName?: string
 }
 
 export default function DoctorLayoutClient({ 
   children, 
   userEmail, 
+  doctorName,
+  clinicName,
   organizationName 
 }: DoctorLayoutClientProps) {
   const navigation = [
@@ -43,9 +47,16 @@ export default function DoctorLayoutClient({
               </Link>
             </div>
             <div className="px-4">
-              <p className="text-sm text-gray-600">
-                {organizationName || userEmail}
-              </p>
+              <div className="space-y-1">
+                {doctorName && (
+                  <p className="text-sm font-medium text-gray-900">
+                    {doctorName} 先生
+                  </p>
+                )}
+                <p className="text-sm text-gray-600">
+                  {clinicName || organizationName || userEmail}
+                </p>
+              </div>
             </div>
             <nav className="mt-8 flex-1 px-2 space-y-1">
               {navigation.map((item) => (
@@ -77,7 +88,11 @@ export default function DoctorLayoutClient({
       {/* Mobile Navigation */}
       <MobileNav 
         navigation={navigation} 
-        profile={{ organization_name: organizationName || userEmail, role: 'doctor' }} 
+        profile={{ 
+          name: doctorName, 
+          organization_name: clinicName || organizationName || userEmail, 
+          role: 'doctor' 
+        }} 
         isAdmin={false} 
       />
 

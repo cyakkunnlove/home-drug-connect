@@ -164,7 +164,10 @@ export async function signUpDoctor(formData: FormData) {
         .insert({
           id: authData.user.id,
           email,
-          organization_name: `Dr. ${doctorName} (${clinicName}) - License: ${medicalLicenseNumber}`,
+          name: doctorName,
+          clinic_name: clinicName,
+          medical_license_number: medicalLicenseNumber,
+          organization_name: clinicName, // クリニック名を組織名として設定
           phone,
           role: 'doctor',
           company_id: company.id
@@ -181,7 +184,10 @@ export async function signUpDoctor(formData: FormData) {
       const { error: updateError } = await supabase
         .from('users')
         .update({
-          organization_name: `Dr. ${doctorName} (${clinicName}) - License: ${medicalLicenseNumber}`,
+          name: doctorName,
+          clinic_name: clinicName,
+          medical_license_number: medicalLicenseNumber,
+          organization_name: clinicName, // クリニック名を組織名として設定
           phone,
           role: 'doctor', // 明示的に文字列で指定
           company_id: company.id, // company_idも設定
@@ -195,7 +201,10 @@ export async function signUpDoctor(formData: FormData) {
       const { error: retryError } = await supabase
         .from('users')
         .update({
-          organization_name: `Dr. ${doctorName} (${clinicName}) - License: ${medicalLicenseNumber}`,
+          name: doctorName,
+          clinic_name: clinicName,
+          medical_license_number: medicalLicenseNumber,
+          organization_name: clinicName, // クリニック名を組織名として設定
           phone,
           role: 'doctor', // 明示的に文字列で指定
           company_id: company.id, // company_idも設定

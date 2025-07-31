@@ -58,7 +58,13 @@ export default async function DoctorSettingsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   所属医療機関
                 </label>
-                <p className="text-gray-900">{profile?.organization_name || '-'}</p>
+                <p className="text-gray-900">{profile?.clinic_name || profile?.organization_name || '-'}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  医師免許番号
+                </label>
+                <p className="text-gray-900">{profile?.medical_license_number || '-'}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">

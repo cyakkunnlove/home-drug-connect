@@ -15,6 +15,7 @@ interface NavigationItem {
 interface MobileNavProps {
   navigation: NavigationItem[]
   profile: {
+    name?: string
     organization_name?: string
     role?: string
   }
@@ -34,9 +35,10 @@ export default function MobileNav({ navigation, profile, isAdmin }: MobileNavPro
             <h2 className="text-lg font-bold text-gray-900">
               HOME-DRUG CONNECT
             </h2>
-            <p className="text-xs text-gray-600">
-              {profile?.organization_name}
-            </p>
+            <div className="text-xs text-gray-600">
+              {profile?.name && <p>{profile.name} 先生</p>}
+              <p>{profile?.organization_name}</p>
+            </div>
           </div>
           <button
             onClick={() => setIsOpen(!isOpen)}
