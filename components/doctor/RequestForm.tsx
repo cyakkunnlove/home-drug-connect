@@ -285,50 +285,86 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
 
       {/* Medications */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
           服用中の薬 <span className="text-red-500">*</span>
         </label>
-        <div className="mt-2 space-y-3">
+        <p className="text-xs text-gray-500 mb-3">薬剤名を入力し、用量と頻度を選択してください</p>
+        <div className="space-y-4">
           {medications.map((medication, index) => (
-            <div key={index} className="flex gap-2">
-              <div className="flex-1">
-                <DrugAutocomplete
-                  value={medication.name}
-                  onChange={(value) => updateMedication(index, 'name', value)}
-                  onSelect={(drug) => updateMedication(index, 'name', drug.name)}
-                  placeholder="薬剤名"
-                />
+            <motion.div 
+              key={index}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className="bg-gray-50 rounded-xl p-4 border border-gray-200"
+            >
+              <div className="space-y-3">
+                {/* 薬剤名 - フルサイズ */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                    薬剤名
+                  </label>
+                  <DrugAutocomplete
+                    value={medication.name}
+                    onChange={(value) => updateMedication(index, 'name', value)}
+                    onSelect={(drug) => updateMedication(index, 'name', drug.name)}
+                    placeholder="薬剤名を入力"
+                  />
+                </div>
+                
+                {/* 用量と頻度 - 横並び（スマホでは縦並び） */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                      用量（錠）
+                    </label>
+                    <select
+                      value={medication.dosage}
+                      onChange={(e) => updateMedication(index, 'dosage', e.target.value)}
+                      className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm bg-white min-h-[44px]"
+                    >
+                      <option value="">選択してください</option>
+                      {[...Array(19)].map((_, i) => {
+                        const value = 0.5 + i * 0.5
+                        return (
+                          <option key={value} value={`${value}錠`}>
+                            {value}錠
+                          </option>
+                        )
+                      })}
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                      服用頻度
+                    </label>
+                    <select
+                      value={medication.frequency}
+                      onChange={(e) => updateMedication(index, 'frequency', e.target.value)}
+                      className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm bg-white min-h-[44px]"
+                    >
+                      <option value="">選択してください</option>
+                      {FREQUENCIES.map(freq => (
+                        <option key={freq} value={freq}>{freq}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                
+                {/* 削除ボタン */}
+                {medications.length > 1 && (
+                  <TouchFeedback
+                    onTap={() => removeMedication(index)}
+                    className="w-full py-2 px-4 text-red-600 text-sm font-medium rounded-lg border border-red-200 bg-white hover:bg-red-50 active:bg-red-100 transition-colors flex items-center justify-center min-h-[44px]"
+                    hapticFeedback="light"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    この薬剤を削除
+                  </TouchFeedback>
+                )}
               </div>
-              <input
-                type="text"
-                value={medication.dosage}
-                onChange={(e) => updateMedication(index, 'dosage', e.target.value)}
-                placeholder="用量"
-                className="w-32 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-white"
-              />
-              <select
-                value={medication.frequency}
-                onChange={(e) => updateMedication(index, 'frequency', e.target.value)}
-                className="w-32 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-white"
-              >
-                <option value="">頻度</option>
-                {FREQUENCIES.map(freq => (
-                  <option key={freq} value={freq}>{freq}</option>
-                ))}
-              </select>
-              <TouchFeedback
-                onTap={() => removeMedication(index)}
-                className={`p-3 rounded-lg transition-colors min-h-[44px] flex items-center justify-center ${
-                  medications.length === 1 
-                    ? 'text-gray-400 cursor-not-allowed' 
-                    : 'text-red-600 hover:bg-red-50 active:bg-red-100'
-                }`}
-                disabled={medications.length === 1}
-                hapticFeedback="light"
-              >
-                <Trash2 className="h-5 w-5" />
-              </TouchFeedback>
-            </div>
+            </motion.div>
           ))}
         </div>
         <TouchFeedback

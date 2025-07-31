@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getResend, EMAIL_FROM } from '@/lib/email/client'
+import { generateRequestNotificationEmail } from '@/lib/email/templates/request-notification'
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,7 +36,7 @@ export async function POST(request: NextRequest) {
     // Validate pharmacy exists and is active
     const { data: pharmacy, error: pharmacyError } = await supabase
       .from('pharmacies')
-      .select('id, name, status')
+      .select('id, name, status, email, user_id')
       .eq('id', pharmacyId)
       .single()
 
@@ -43,6 +45,18 @@ export async function POST(request: NextRequest) {
         { error: 'Invalid or inactive pharmacy' },
         { status: 400 }
       )
+    }
+    
+    // Get pharmacy admin email
+    let pharmacyEmail = pharmacy.email
+    if (!pharmacyEmail && pharmacy.user_id) {
+      const { data: pharmacyUser } = await supabase
+        .from('users')
+        .select('email')
+        .eq('id', pharmacy.user_id)
+        .single()
+      
+      pharmacyEmail = pharmacyUser?.email
     }
 
     // Create request
@@ -67,8 +81,39 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Send notification to pharmacy (using existing notification system)
-    // This would integrate with your existing email notification service
+    // Send email notification to pharmacy
+    if (pharmacyEmail) {
+      try {
+        const resend = getResend()
+        
+        if (resend) {
+          const requestUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://home-drug-connect.vercel.app'}/dashboard/requests/${newRequest.id}`
+          
+          const { html, text } = generateRequestNotificationEmail({
+            pharmacyName: pharmacy.name,
+            pharmacyEmail,
+            doctorName: doctorInfo?.name || '医師',
+            doctorOrganization: doctorInfo?.organization || '医療機関',
+            doctorEmail: doctorInfo?.email || user.email || '',
+            requestUrl,
+            patientInfo
+          })
+          
+          await resend.emails.send({
+            from: EMAIL_FROM,
+            to: pharmacyEmail,
+            subject: '【HOME-DRUG CONNECT】新規在宅医療依頼が届きました',
+            html,
+            text
+          })
+          
+          console.log('Email notification sent to:', pharmacyEmail)
+        }
+      } catch (emailError) {
+        console.error('Failed to send email notification:', emailError)
+        // Don't fail the request creation if email fails
+      }
+    }
     
     return NextResponse.json({
       success: true,

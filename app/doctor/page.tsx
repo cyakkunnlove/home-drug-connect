@@ -64,129 +64,141 @@ export default async function DoctorDashboard() {
           </div>
         </div>
 
-        {/* Statistics */}
-        <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="bg-white overflow-hidden shadow rounded-lg">
-            <div className="p-5">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <FileText className="h-6 w-6 text-gray-400" />
+        {/* Statistics - モバイルファースト */}
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-100">
+            <div className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-gray-500">
+                    総依頼数
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">
+                    {stats.total}
+                  </p>
                 </div>
-                <div className="ml-5 w-0 flex-1">
-                  <dl>
-                    <dt className="text-sm font-medium text-gray-500 truncate">
-                      総依頼数
-                    </dt>
-                    <dd className="text-lg font-medium text-gray-900">
-                      {stats.total}
-                    </dd>
-                  </dl>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white overflow-hidden shadow rounded-lg">
-            <div className="p-5">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <Clock className="h-6 w-6 text-yellow-400" />
-                </div>
-                <div className="ml-5 w-0 flex-1">
-                  <dl>
-                    <dt className="text-sm font-medium text-gray-500 truncate">
-                      回答待ち
-                    </dt>
-                    <dd className="text-lg font-medium text-gray-900">
-                      {stats.pending}
-                    </dd>
-                  </dl>
+                <div className="flex-shrink-0 ml-3">
+                  <div className="bg-gray-100 rounded-lg p-2">
+                    <FileText className="h-5 w-5 text-gray-600" />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white overflow-hidden shadow rounded-lg">
-            <div className="p-5">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <CheckCircle className="h-6 w-6 text-green-400" />
+          <div className="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-100">
+            <div className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-gray-500">
+                    回答待ち
+                  </p>
+                  <p className="text-2xl font-bold text-yellow-600 mt-1">
+                    {stats.pending}
+                  </p>
                 </div>
-                <div className="ml-5 w-0 flex-1">
-                  <dl>
-                    <dt className="text-sm font-medium text-gray-500 truncate">
-                      承認済み
-                    </dt>
-                    <dd className="text-lg font-medium text-gray-900">
-                      {stats.accepted}
-                    </dd>
-                  </dl>
+                <div className="flex-shrink-0 ml-3">
+                  <div className="bg-yellow-100 rounded-lg p-2">
+                    <Clock className="h-5 w-5 text-yellow-600" />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white overflow-hidden shadow rounded-lg">
-            <div className="p-5">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <XCircle className="h-6 w-6 text-red-400" />
+          <div className="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-100">
+            <div className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-gray-500">
+                    承認済み
+                  </p>
+                  <p className="text-2xl font-bold text-green-600 mt-1">
+                    {stats.accepted}
+                  </p>
                 </div>
-                <div className="ml-5 w-0 flex-1">
-                  <dl>
-                    <dt className="text-sm font-medium text-gray-500 truncate">
-                      却下済み
-                    </dt>
-                    <dd className="text-lg font-medium text-gray-900">
-                      {stats.rejected}
-                    </dd>
-                  </dl>
+                <div className="flex-shrink-0 ml-3">
+                  <div className="bg-green-100 rounded-lg p-2">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-100">
+            <div className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-gray-500">
+                    却下済み
+                  </p>
+                  <p className="text-2xl font-bold text-red-600 mt-1">
+                    {stats.rejected}
+                  </p>
+                </div>
+                <div className="flex-shrink-0 ml-3">
+                  <div className="bg-red-100 rounded-lg p-2">
+                    <XCircle className="h-5 w-5 text-red-600" />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Recent Requests */}
-        <div className="mt-8">
-          <h3 className="text-lg leading-6 font-medium text-gray-900">
-            最近の依頼
-          </h3>
-          <div className="mt-4 bg-white shadow overflow-hidden sm:rounded-md">
+        {/* Recent Requests - モバイル最適化 */}
+        <div className="mt-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">
+              最近の依頼
+            </h3>
+            <Link 
+              href="/doctor/requests"
+              className="text-sm text-blue-600 hover:text-blue-500 font-medium"
+            >
+              すべて見る →
+            </Link>
+          </div>
+          <div className="bg-white shadow-sm overflow-hidden rounded-xl border border-gray-100">
             {recentRequests && recentRequests.length > 0 ? (
-              <ul className="divide-y divide-gray-200">
+              <ul className="divide-y divide-gray-100">
                 {recentRequests.map((request) => (
                   <li key={request.id}>
                     <Link
                       href={`/doctor/requests/${request.id}`}
-                      className="block hover:bg-gray-50 px-4 py-4 sm:px-6"
+                      className="block hover:bg-gray-50 active:bg-gray-100 px-4 py-4 transition-colors"
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center">
+                      <div className="space-y-3">
+                        <div className="flex items-start justify-between">
                           <div className="min-w-0 flex-1">
-                            <p className="text-sm font-medium text-gray-900 truncate">
+                            <p className="text-sm font-semibold text-gray-900 truncate">
                               {request.pharmacy?.name}
                             </p>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">
                               {request.pharmacy?.address}
                             </p>
                           </div>
-                        </div>
-                        <div className="flex items-center">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            request.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                            request.status === 'accepted' ? 'bg-green-100 text-green-800' :
-                            request.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                            'bg-gray-100 text-gray-800'
+                          <span className={`ml-2 inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium ${
+                            request.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                            request.status === 'accepted' ? 'bg-green-100 text-green-700' :
+                            request.status === 'rejected' ? 'bg-red-100 text-red-700' :
+                            'bg-gray-100 text-gray-700'
                           }`}>
                             {request.status === 'pending' ? '回答待ち' :
                              request.status === 'accepted' ? '承認済み' :
                              request.status === 'rejected' ? '却下' :
                              request.status}
                           </span>
-                          <span className="ml-4 text-sm text-gray-500">
-                            {new Date(request.created_at).toLocaleDateString('ja-JP')}
-                          </span>
+                        </div>
+                        <div className="flex items-center text-xs text-gray-500">
+                          <Clock className="h-3 w-3 mr-1" />
+                          {new Date(request.created_at).toLocaleDateString('ja-JP', {
+                            month: 'numeric',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
                         </div>
                       </div>
                     </Link>
