@@ -17,6 +17,7 @@
     "@stripe/stripe-js": "^7.7.0",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/ssr": "^0.6.1",
+    "@tanstack/react-virtual": "^3.13.12",
     "critters": "^0.0.23",
     "csv-parse": "^5.5.6",
     "dotenv": "^17.2.1",
@@ -28,7 +29,9 @@
     "react-dom": "19.1.0",
     "react-hot-toast": "^2.5.2",
     "resend": "^4.7.0",
-    "stripe": "^18.3.0"
+    "stripe": "^18.3.0",
+    "web-vitals": "^5.0.3",
+    "zustand": "^5.0.7"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

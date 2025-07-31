@@ -1,5 +1,5 @@
 -- Optimized search functions for HOME-DRUG CONNECT
--- These functions improve query performance and reduce database load
+-- These functions improve query performance based on actual schema
 
 -- ============================================
 -- 1. Optimized Pharmacy Search Function
@@ -47,60 +47,64 @@ BEGIN
             p.emergency_support,
             p.current_capacity,
             p.max_capacity,
-            p.location,
-            p.services,
-            -- Use more efficient distance calculation
+            p.latitude,
+            p.longitude,
+            p.has_clean_room,
+            p.handles_narcotics,
             ROUND(
                 ST_Distance(
                     p.location::geography,
-                    ST_SetSRID(ST_MakePoint(p_lng, p_lat), 4326)::geography
-                ) / 1000.0, 2
-            ) AS distance_km
+                    ST_Point(p_lng, p_lat)::geography
+                ) / 1000.0,
+                2
+            ) AS dist_km
         FROM pharmacies p
         WHERE 
             p.status = 'active'
-            -- Use bounding box for initial filtering (much faster)
+            AND p.location IS NOT NULL
+            -- Use ST_DWithin for better performance with spatial index
             AND ST_DWithin(
                 p.location::geography,
-                ST_SetSRID(ST_MakePoint(p_lng, p_lat), 4326)::geography,
+                ST_Point(p_lng, p_lat)::geography,
                 p_radius_km * 1000
             )
-            -- Apply capacity filter if requested
-            AND (NOT p_exclude_full OR p.current_capacity < p.max_capacity)
     )
     SELECT 
         dc.id,
         dc.name,
         dc.address,
         dc.phone,
-        dc.distance_km,
+        dc.dist_km AS distance_km,
         dc.twenty_four_support,
         dc.holiday_support,
         dc.emergency_support,
         dc.current_capacity,
         dc.max_capacity,
         (dc.max_capacity - dc.current_capacity) AS available_spots,
-        ST_Y(dc.location::geometry) AS lat,
-        ST_X(dc.location::geometry) AS lng,
-        COALESCE((dc.services->>'has_clean_room')::boolean, false) AS has_clean_room,
-        COALESCE((dc.services->>'handles_narcotics')::boolean, false) AS handles_narcotics
+        dc.latitude AS lat,
+        dc.longitude AS lng,
+        dc.has_clean_room,
+        dc.handles_narcotics
     FROM distance_calc dc
     WHERE 
-        -- Apply service filters if provided
-        (p_required_services IS NULL OR (
-            ('24時間対応' = ANY(p_required_services) AND dc.twenty_four_support) OR
-            ('休日対応' = ANY(p_required_services) AND dc.holiday_support) OR
-            ('緊急対応' = ANY(p_required_services) AND dc.emergency_support) OR
-            ('無菌調剤' = ANY(p_required_services) AND COALESCE((dc.services->>'has_clean_room')::boolean, false)) OR
-            ('麻薬調剤' = ANY(p_required_services) AND COALESCE((dc.services->>'handles_narcotics')::boolean, false))
-        ))
-    ORDER BY dc.distance_km ASC
+        -- Apply capacity filter
+        (NOT p_exclude_full OR dc.current_capacity < dc.max_capacity)
+        -- Apply service filters
+        AND (
+            p_required_services IS NULL 
+            OR (
+                ('24時間対応' = ANY(p_required_services) AND dc.twenty_four_support)
+                OR ('無菌調剤' = ANY(p_required_services) AND dc.has_clean_room)
+                OR ('麻薬調剤' = ANY(p_required_services) AND dc.handles_narcotics)
+            )
+        )
+    ORDER BY dc.dist_km ASC
     LIMIT p_limit;
 END;
 $$;
 
 -- Create index on function for better performance
-COMMENT ON FUNCTION search_nearby_pharmacies_optimized IS 'Optimized pharmacy search with efficient spatial queries and service filtering';
+COMMENT ON FUNCTION search_nearby_pharmacies_optimized IS 'Optimized pharmacy search using spatial indexes and efficient distance calculation';
 
 -- ============================================
 -- 2. Batch Pharmacy Details Function
@@ -115,12 +119,18 @@ RETURNS TABLE (
     address TEXT,
     phone TEXT,
     email TEXT,
-    description TEXT,
+    services TEXT[],
     business_hours JSONB,
-    services JSONB,
-    capabilities TEXT[],
-    current_requests_count INTEGER,
-    avg_response_time_hours NUMERIC
+    current_capacity INTEGER,
+    max_capacity INTEGER,
+    twenty_four_support BOOLEAN,
+    holiday_support BOOLEAN,
+    emergency_support BOOLEAN,
+    has_clean_room BOOLEAN,
+    handles_narcotics BOOLEAN,
+    accepts_emergency BOOLEAN,
+    created_at TIMESTAMPTZ,
+    updated_at TIMESTAMPTZ
 )
 LANGUAGE plpgsql
 STABLE
@@ -128,51 +138,32 @@ PARALLEL SAFE
 AS $$
 BEGIN
     RETURN QUERY
-    WITH pharmacy_stats AS (
-        SELECT 
-            r.pharmacy_id,
-            COUNT(*) AS request_count,
-            AVG(
-                EXTRACT(EPOCH FROM (r.updated_at - r.created_at)) / 3600
-            ) AS avg_response_hours
-        FROM requests r
-        WHERE 
-            r.pharmacy_id = ANY(p_pharmacy_ids)
-            AND r.status IN ('accepted', 'completed')
-            AND r.created_at > NOW() - INTERVAL '30 days'
-        GROUP BY r.pharmacy_id
-    ),
-    pharmacy_capabilities AS (
-        SELECT 
-            pc.pharmacy_id,
-            ARRAY_AGG(pc.capability_name) AS capabilities
-        FROM pharmacy_capabilities pc
-        WHERE 
-            pc.pharmacy_id = ANY(p_pharmacy_ids)
-            AND pc.is_available = true
-        GROUP BY pc.pharmacy_id
-    )
     SELECT 
         p.id,
         p.name,
         p.address,
         p.phone,
         p.email,
-        p.description,
-        p.business_hours,
         p.services,
-        COALESCE(cap.capabilities, ARRAY[]::TEXT[]) AS capabilities,
-        COALESCE(ps.request_count, 0)::INTEGER AS current_requests_count,
-        ROUND(COALESCE(ps.avg_response_hours, 0), 1) AS avg_response_time_hours
+        p.business_hours,
+        p.current_capacity,
+        p.max_capacity,
+        p.twenty_four_support,
+        p.holiday_support,
+        p.emergency_support,
+        p.has_clean_room,
+        p.handles_narcotics,
+        p.accepts_emergency,
+        p.created_at,
+        p.updated_at
     FROM pharmacies p
-    LEFT JOIN pharmacy_stats ps ON p.id = ps.pharmacy_id
-    LEFT JOIN pharmacy_capabilities cap ON p.id = cap.pharmacy_id
-    WHERE p.id = ANY(p_pharmacy_ids);
+    WHERE p.id = ANY(p_pharmacy_ids)
+    AND p.status = 'active';
 END;
 $$;
 
 -- ============================================
--- 3. Search Analytics Aggregation Function
+-- 3. Search Analytics Aggregation
 -- ============================================
 
 CREATE OR REPLACE FUNCTION aggregate_search_analytics(
@@ -180,186 +171,163 @@ CREATE OR REPLACE FUNCTION aggregate_search_analytics(
     p_end_date TIMESTAMPTZ DEFAULT NOW()
 )
 RETURNS TABLE (
-    date_hour TIMESTAMPTZ,
-    total_searches INTEGER,
-    unique_sessions INTEGER,
+    date DATE,
+    total_searches BIGINT,
+    unique_sessions BIGINT,
     avg_results_count NUMERIC,
-    popular_filters JSONB,
-    geographic_center JSONB
+    most_common_radius INTEGER,
+    filter_usage JSONB
 )
 LANGUAGE plpgsql
 STABLE
 AS $$
 BEGIN
     RETURN QUERY
-    WITH hourly_stats AS (
+    WITH daily_stats AS (
         SELECT 
-            date_trunc('hour', sl.created_at) AS hour,
+            DATE(sl.created_at) AS search_date,
             COUNT(*) AS search_count,
             COUNT(DISTINCT sl.session_id) AS unique_sessions,
             AVG(sl.results_count) AS avg_results,
-            jsonb_object_agg(
-                COALESCE(filter_key, 'unknown'),
-                filter_count
-            ) AS filters,
-            ST_AsGeoJSON(
-                ST_Centroid(
-                    ST_Collect(sl.search_location::geometry)
-                )
-            )::jsonb AS geo_center
+            MODE() WITHIN GROUP (ORDER BY sl.radius_km) AS common_radius,
+            sl.filters
         FROM search_logs sl
-        CROSS JOIN LATERAL (
+        WHERE sl.created_at BETWEEN p_start_date AND p_end_date
+        GROUP BY DATE(sl.created_at), sl.filters
+    ),
+    filter_stats AS (
+        SELECT 
+            search_date,
+            jsonb_object_agg(
+                filter_key,
+                filter_count
+            ) AS filter_usage
+        FROM (
             SELECT 
+                search_date,
                 key AS filter_key,
                 COUNT(*) AS filter_count
-            FROM jsonb_each(sl.search_filters)
-            GROUP BY key
-            ORDER BY filter_count DESC
-            LIMIT 5
-        ) AS filter_stats
-        WHERE 
-            sl.created_at BETWEEN p_start_date AND p_end_date
-            AND sl.search_location IS NOT NULL
-        GROUP BY hour
+            FROM daily_stats
+            CROSS JOIN LATERAL jsonb_each(filters)
+            GROUP BY search_date, key
+        ) fs
+        GROUP BY search_date
     )
     SELECT 
-        hour AS date_hour,
-        search_count::INTEGER AS total_searches,
-        unique_sessions::INTEGER,
-        ROUND(avg_results, 1) AS avg_results_count,
-        filters AS popular_filters,
-        geo_center AS geographic_center
-    FROM hourly_stats
-    ORDER BY hour DESC;
+        ds.search_date AS date,
+        SUM(ds.search_count) AS total_searches,
+        MAX(ds.unique_sessions) AS unique_sessions,
+        ROUND(AVG(ds.avg_results), 2) AS avg_results_count,
+        MAX(ds.common_radius) AS most_common_radius,
+        COALESCE(fs.filter_usage, '{}'::jsonb) AS filter_usage
+    FROM daily_stats ds
+    LEFT JOIN filter_stats fs ON ds.search_date = fs.search_date
+    GROUP BY ds.search_date, fs.filter_usage
+    ORDER BY ds.search_date DESC;
 END;
 $$;
 
 -- ============================================
--- 4. Performance Monitoring Function
+-- 4. Request Volume Analysis
 -- ============================================
 
-CREATE OR REPLACE FUNCTION monitor_query_performance()
+CREATE OR REPLACE FUNCTION analyze_request_volume(
+    p_pharmacy_id UUID DEFAULT NULL,
+    p_days INTEGER DEFAULT 30
+)
 RETURNS TABLE (
-    query_pattern TEXT,
-    avg_duration_ms NUMERIC,
-    total_calls BIGINT,
-    cache_hit_ratio NUMERIC,
-    last_executed TIMESTAMPTZ
+    pharmacy_id UUID,
+    pharmacy_name TEXT,
+    total_requests BIGINT,
+    accepted_requests BIGINT,
+    rejected_requests BIGINT,
+    pending_requests BIGINT,
+    acceptance_rate NUMERIC,
+    avg_daily_requests NUMERIC
 )
 LANGUAGE plpgsql
 STABLE
 AS $$
 BEGIN
-    -- Ensure pg_stat_statements extension is available
-    CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
-    
     RETURN QUERY
     SELECT 
-        -- Simplify query pattern for grouping
-        regexp_replace(
-            regexp_replace(query, '\$\d+', '?', 'g'),
-            '\s+', ' ', 'g'
-        ) AS query_pattern,
-        ROUND(AVG(mean_exec_time), 2) AS avg_duration_ms,
-        SUM(calls) AS total_calls,
-        ROUND(
-            AVG(shared_blks_hit::numeric / NULLIF(shared_blks_hit + shared_blks_read, 0)),
-            3
-        ) AS cache_hit_ratio,
-        MAX(stats_since) AS last_executed
-    FROM pg_stat_statements
+        p.id AS pharmacy_id,
+        p.name AS pharmacy_name,
+        COUNT(r.id) AS total_requests,
+        COUNT(r.id) FILTER (WHERE r.status = 'accepted') AS accepted_requests,
+        COUNT(r.id) FILTER (WHERE r.status = 'rejected') AS rejected_requests,
+        COUNT(r.id) FILTER (WHERE r.status = 'pending') AS pending_requests,
+        CASE 
+            WHEN COUNT(r.id) > 0 THEN
+                ROUND(100.0 * COUNT(r.id) FILTER (WHERE r.status = 'accepted') / COUNT(r.id), 2)
+            ELSE 0
+        END AS acceptance_rate,
+        ROUND(COUNT(r.id)::NUMERIC / p_days, 2) AS avg_daily_requests
+    FROM pharmacies p
+    LEFT JOIN requests r ON r.pharmacy_id = p.id
+        AND r.created_at >= NOW() - (p_days || ' days')::INTERVAL
     WHERE 
-        query NOT LIKE '%pg_%'
-        AND query NOT LIKE '%EXPLAIN%'
-        AND userid = (SELECT oid FROM pg_roles WHERE rolname = current_user)
-    GROUP BY query_pattern
-    ORDER BY avg_duration_ms DESC
-    LIMIT 50;
+        (p_pharmacy_id IS NULL OR p.id = p_pharmacy_id)
+        AND p.status = 'active'
+    GROUP BY p.id, p.name
+    ORDER BY total_requests DESC;
 END;
 $$;
 
 -- ============================================
--- 5. Connection Pool Health Check
+-- 5. Performance Monitoring Function
 -- ============================================
 
-CREATE OR REPLACE FUNCTION check_connection_health()
-RETURNS TABLE (
-    metric_name TEXT,
-    current_value NUMERIC,
-    max_allowed NUMERIC,
-    usage_percentage NUMERIC,
-    status TEXT
+CREATE OR REPLACE FUNCTION log_query_performance(
+    p_query_type TEXT,
+    p_execution_time_ms INTEGER,
+    p_result_count INTEGER DEFAULT NULL,
+    p_parameters JSONB DEFAULT NULL
 )
+RETURNS VOID
 LANGUAGE plpgsql
-STABLE
 AS $$
 BEGIN
-    RETURN QUERY
-    WITH connection_stats AS (
-        SELECT 
-            COUNT(*) FILTER (WHERE state = 'active') AS active_connections,
-            COUNT(*) FILTER (WHERE state = 'idle') AS idle_connections,
-            COUNT(*) FILTER (WHERE state = 'idle in transaction') AS idle_in_transaction,
-            COUNT(*) AS total_connections
-        FROM pg_stat_activity
-        WHERE datname = current_database()
-    ),
-    settings AS (
-        SELECT 
-            setting::integer AS max_connections
-        FROM pg_settings
-        WHERE name = 'max_connections'
-    )
-    SELECT 
-        'Total Connections'::TEXT AS metric_name,
-        cs.total_connections::NUMERIC AS current_value,
-        s.max_connections::NUMERIC AS max_allowed,
-        ROUND((cs.total_connections::NUMERIC / s.max_connections) * 100, 1) AS usage_percentage,
-        CASE 
-            WHEN (cs.total_connections::NUMERIC / s.max_connections) > 0.9 THEN 'CRITICAL'
-            WHEN (cs.total_connections::NUMERIC / s.max_connections) > 0.7 THEN 'WARNING'
-            ELSE 'HEALTHY'
-        END AS status
-    FROM connection_stats cs, settings s
+    INSERT INTO query_performance_log (
+        query_type,
+        execution_time_ms,
+        result_count,
+        parameters
+    ) VALUES (
+        p_query_type,
+        p_execution_time_ms,
+        p_result_count,
+        p_parameters
+    );
     
-    UNION ALL
-    
-    SELECT 
-        'Active Connections'::TEXT,
-        cs.active_connections::NUMERIC,
-        s.max_connections::NUMERIC,
-        ROUND((cs.active_connections::NUMERIC / s.max_connections) * 100, 1),
-        CASE 
-            WHEN cs.active_connections > 50 THEN 'WARNING'
-            ELSE 'HEALTHY'
-        END
-    FROM connection_stats cs, settings s
-    
-    UNION ALL
-    
-    SELECT 
-        'Idle Connections'::TEXT,
-        cs.idle_connections::NUMERIC,
-        s.max_connections::NUMERIC,
-        ROUND((cs.idle_connections::NUMERIC / s.max_connections) * 100, 1),
-        'INFO'::TEXT
-    FROM connection_stats cs, settings s;
+    -- Clean up old logs (keep only last 30 days)
+    DELETE FROM query_performance_log
+    WHERE created_at < NOW() - INTERVAL '30 days';
 END;
 $$;
 
 -- ============================================
--- 6. Create Function Indexes
+-- 6. Refresh Materialized Views Function
 -- ============================================
 
--- Grant execute permissions
-GRANT EXECUTE ON FUNCTION search_nearby_pharmacies_optimized TO authenticated;
-GRANT EXECUTE ON FUNCTION get_pharmacy_details_batch TO authenticated;
-GRANT EXECUTE ON FUNCTION aggregate_search_analytics TO authenticated;
-GRANT EXECUTE ON FUNCTION monitor_query_performance TO service_role;
-GRANT EXECUTE ON FUNCTION check_connection_health TO service_role;
+CREATE OR REPLACE FUNCTION refresh_performance_stats()
+RETURNS VOID
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    -- Refresh the pharmacy performance stats
+    REFRESH MATERIALIZED VIEW CONCURRENTLY v_pharmacy_performance_stats;
+    
+    -- Log the refresh
+    PERFORM log_query_performance(
+        'refresh_materialized_view',
+        EXTRACT(MILLISECOND FROM clock_timestamp() - statement_timestamp())::INTEGER,
+        NULL,
+        jsonb_build_object('view_name', 'v_pharmacy_performance_stats')
+    );
+END;
+$$;
 
--- Add comments for documentation
-COMMENT ON FUNCTION get_pharmacy_details_batch IS 'Efficiently fetch details for multiple pharmacies with stats';
-COMMENT ON FUNCTION aggregate_search_analytics IS 'Aggregate search data for analytics dashboards';
-COMMENT ON FUNCTION monitor_query_performance IS 'Monitor and analyze query performance metrics';
-COMMENT ON FUNCTION check_connection_health IS 'Check database connection pool health';
+-- Create a scheduled job to refresh stats (requires pg_cron extension)
+-- This is a comment for documentation - actual scheduling should be done via Supabase dashboard
+-- SELECT cron.schedule('refresh-pharmacy-stats', '0 2 * * *', 'SELECT refresh_performance_stats();');
