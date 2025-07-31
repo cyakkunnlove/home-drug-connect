@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import OpenAI from 'openai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY!
-})
+// OpenAI APIキーが設定されていない場合の処理を追加
+const openaiApiKey = process.env.OPENAI_API_KEY
+
+const openai = openaiApiKey ? new OpenAI({
+  apiKey: openaiApiKey
+}) : null
 
 interface GenerateRequestBody {
   pharmacyName: string
@@ -90,6 +93,35 @@ ${medicationsList}
 今後の治療方針: ${patientInfo.treatmentPlan || '記載なし'}
 
 備考: ${patientInfo.notes || 'なし'}`
+
+    // OpenAI APIが利用できない場合はテンプレートを返す
+    if (!openai) {
+      const templateDocument = `${pharmacyName} 御中
+
+${doctorInfoText ? doctorInfoText + '\n\n' : ''}この度、以下の患者様の在宅医療における薬剤管理について、貴薬局のご協力を賜りたく、ご連絡差し上げました。
+
+【患者情報】
+■ 服用中の薬剤:
+${medicationsList}
+
+■ 既往・現疾患: ${conditionsList}
+
+■ 今後の治療方針:
+${patientInfo.treatmentPlan || '記載なし'}
+
+■ 備考:
+${patientInfo.notes || 'なし'}
+
+患者様の継続的な薬物療法のため、貴薬局での対応をお願い申し上げます。
+ご不明な点がございましたら、お気軽にお問い合わせください。
+
+何卒よろしくお願い申し上げます。`
+
+      return NextResponse.json({
+        success: true,
+        aiDocument: templateDocument
+      })
+    }
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',

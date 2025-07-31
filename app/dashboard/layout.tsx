@@ -110,7 +110,7 @@ export default function DashboardLayout({
           <div className="flex flex-col h-full">
             <div className="p-4 border-b">
               <h2 className="text-xl font-bold text-gray-900">
-                HOME-DRUG CONNECT
+                在宅薬局ナビ
               </h2>
               <p className="text-sm text-gray-600 mt-1">
                 {profile?.organization_name}

@@ -16,30 +16,30 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "HOME-DRUG CONNECT - 在宅医療マッチングプラットフォーム",
-    template: "%s | HOME-DRUG CONNECT",
+    default: "在宅薬局ナビ - 医師と薬局をつなぐマッチングサービス",
+    template: "%s | 在宅薬局ナビ",
   },
   description: "クリニックと在宅対応薬局をつなぐマッチングプラットフォーム。24時間対応可能な薬局を簡単に検索。",
   keywords: ["在宅医療", "薬局", "24時間対応", "訪問薬剤師", "在宅訪問", "薬局検索"],
-  authors: [{ name: "HOME-DRUG CONNECT" }],
-  creator: "HOME-DRUG CONNECT",
-  publisher: "HOME-DRUG CONNECT",
+  authors: [{ name: "在宅薬局ナビ" }],
+  creator: "在宅薬局ナビ",
+  publisher: "在宅薬局ナビ",
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
   openGraph: {
-    title: "HOME-DRUG CONNECT - 在宅医療マッチングプラットフォーム",
+    title: "在宅薬局ナビ - 医師と薬局をつなぐマッチングサービス",
     description: "クリニックと在宅対応薬局をつなぐマッチングプラットフォーム。",
-    url: process.env.NEXT_PUBLIC_APP_URL || "https://homedrug-connect.com",
-    siteName: "HOME-DRUG CONNECT",
+    url: process.env.NEXT_PUBLIC_APP_URL || "https://zaitaku-yakkyoku-navi.com",
+    siteName: "在宅薬局ナビ",
     locale: "ja_JP",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "HOME-DRUG CONNECT",
+    title: "在宅薬局ナビ",
     description: "クリニックと在宅対応薬局をつなぐマッチングプラットフォーム。",
   },
   robots: {
@@ -66,7 +66,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="HOME-DRUG CONNECT" />
+        <meta name="apple-mobile-web-app-title" content="在宅薬局ナビ" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#3B82F6" />
       </head>
