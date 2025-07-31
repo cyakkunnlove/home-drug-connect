@@ -8,10 +8,9 @@ import AnimatedPage from '@/components/ui/AnimatedPage'
 export default async function NewRequestPage({
   searchParams
 }: {
-  searchParams: Promise<{ pharmacyId?: string }>
+  searchParams: { pharmacyId?: string }
 }) {
-  const params = await searchParams
-  const pharmacyId = params.pharmacyId
+  const pharmacyId = searchParams.pharmacyId
   
   if (!pharmacyId) {
     redirect('/search')

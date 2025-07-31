@@ -5,11 +5,11 @@ import InquiryForm from '@/components/pharmacy/InquiryForm';
 import GoogleMap from '@/components/maps/GoogleMap';
 
 interface PageProps {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }
 
 export default async function PharmacyProfilePage({ params }: PageProps) {
-  const { id } = await params;
+  const { id } = params;
   const supabase = await createClient();
 
   // Fetch pharmacy details

@@ -156,16 +156,26 @@ export default function PharmacyMap({
               ${pharmacy.twenty_four_support ? '<p style="margin: 4px 0; font-size: 12px; color: #34A853;">✓ 24時間対応</p>' : ''}
               ${pharmacy.has_clean_room ? '<p style="margin: 4px 0; font-size: 12px; color: #673AB7;">✓ 無菌室あり</p>' : ''}
               ${pharmacy.handles_narcotics ? '<p style="margin: 4px 0; font-size: 12px; color: #FF5722;">✓ 麻薬取扱い</p>' : ''}
-              ${showRequestButton ? `
-                <button
-                  onclick="window.dispatchEvent(new CustomEvent('pharmacyRequestClick', { detail: { pharmacyId: '${pharmacy.id}' } }))"
-                  style="margin-top: 12px; width: 100%; background-color: #3B82F6; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer;"
-                  onmouseover="this.style.backgroundColor='#2563EB'"
-                  onmouseout="this.style.backgroundColor='#3B82F6'"
+              <div style="display: flex; gap: 8px; margin-top: 12px;">
+                <a
+                  href="/pharmacy/${pharmacy.id}"
+                  style="flex: 1; text-align: center; background-color: #F3F4F6; color: #1F2937; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; display: inline-block;"
+                  onmouseover="this.style.backgroundColor='#E5E7EB'"
+                  onmouseout="this.style.backgroundColor='#F3F4F6'"
                 >
-                  依頼を作成
-                </button>
-              ` : ''}
+                  詳細を見る
+                </a>
+                ${showRequestButton ? `
+                  <button
+                    onclick="window.dispatchEvent(new CustomEvent('pharmacyRequestClick', { detail: { pharmacyId: '${pharmacy.id}' } }))"
+                    style="flex: 1; background-color: #3B82F6; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer;"
+                    onmouseover="this.style.backgroundColor='#2563EB'"
+                    onmouseout="this.style.backgroundColor='#3B82F6'"
+                  >
+                    依頼を作成
+                  </button>
+                ` : ''}
+              </div>
             </div>
           `
           infoWindow.setContent(content)

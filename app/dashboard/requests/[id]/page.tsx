@@ -7,9 +7,9 @@ import ResponseForm from '@/components/pharmacy/ResponseForm'
 export default async function PharmacyRequestDetailPage({
   params
 }: {
-  params: Promise<{ id: string }>
+  params: { id: string }
 }) {
-  const { id } = await params
+  const { id } = params
   const supabase = await createClient()
   
   const { data: { user } } = await supabase.auth.getUser()
@@ -68,12 +68,13 @@ export default async function PharmacyRequestDetailPage({
                 </h1>
                 <div className="mt-1 flex items-center text-sm text-gray-500">
                   <Clock className="h-4 w-4 mr-1" />
-                  {new Date(request.created_at).toLocaleDateString('ja-JP', {
+                  {new Date(request.created_at).toLocaleString('ja-JP', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',
                     hour: '2-digit',
-                    minute: '2-digit'
+                    minute: '2-digit',
+                    timeZone: 'Asia/Tokyo'
                   })}
                 </div>
               </div>

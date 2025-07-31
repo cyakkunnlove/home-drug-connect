@@ -507,7 +507,7 @@ export default function SearchPageMobile() {
                       />
                     </label>
                     <label className="flex items-center justify-between py-3">
-                      <span className="text-gray-700">24時間対応のみ</span>
+                      <span className="text-gray-700">24時間対応</span>
                       <input
                         type="checkbox"
                         checked={filters.showOnly24Hour}
@@ -516,7 +516,7 @@ export default function SearchPageMobile() {
                       />
                     </label>
                     <label className="flex items-center justify-between py-3">
-                      <span className="text-gray-700">無菌調剤室ありのみ</span>
+                      <span className="text-gray-700">無菌調剤室あり</span>
                       <input
                         type="checkbox"
                         checked={filters.showOnlyCleanRoom}
@@ -525,7 +525,7 @@ export default function SearchPageMobile() {
                       />
                     </label>
                     <label className="flex items-center justify-between py-3">
-                      <span className="text-gray-700">麻薬取扱い可能のみ</span>
+                      <span className="text-gray-700">麻薬取扱い可能</span>
                       <input
                         type="checkbox"
                         checked={filters.showOnlyNarcotics}

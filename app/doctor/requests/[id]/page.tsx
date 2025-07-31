@@ -6,9 +6,9 @@ import { ArrowLeft, MapPin, Phone, Clock, CheckCircle, XCircle, AlertCircle } fr
 export default async function RequestDetailPage({
   params
 }: {
-  params: Promise<{ id: string }>
+  params: { id: string }
 }) {
-  const { id } = await params
+  const { id } = params
   const supabase = await createClient()
   
   const { data: { user } } = await supabase.auth.getUser()
@@ -84,12 +84,13 @@ export default async function RequestDetailPage({
                   依頼詳細
                 </h1>
                 <p className="mt-1 text-sm text-gray-500">
-                  作成日時: {new Date(request.created_at).toLocaleDateString('ja-JP', {
+                  作成日時: {new Date(request.created_at).toLocaleString('ja-JP', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',
                     hour: '2-digit',
-                    minute: '2-digit'
+                    minute: '2-digit',
+                    timeZone: 'Asia/Tokyo'
                   })}
                 </p>
               </div>
@@ -254,12 +255,13 @@ export default async function RequestDetailPage({
                 )}
 
                 <p className="mt-3 text-xs text-gray-500">
-                  回答日時: {new Date(response.responded_at).toLocaleDateString('ja-JP', {
+                  回答日時: {new Date(response.responded_at).toLocaleString('ja-JP', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',
                     hour: '2-digit',
-                    minute: '2-digit'
+                    minute: '2-digit',
+                    timeZone: 'Asia/Tokyo'
                   })}
                 </p>
               </div>

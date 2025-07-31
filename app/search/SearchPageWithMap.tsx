@@ -384,7 +384,7 @@ export default function SearchPageWithMap() {
                           onChange={(e) => setFilters({...filters, showOnly24Hour: e.target.checked})}
                           className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded bg-white"
                         />
-                        <span className="ml-2 text-sm text-gray-700">24時間対応のみ</span>
+                        <span className="ml-2 text-sm text-gray-700">24時間対応</span>
                       </label>
                     </div>
 
@@ -396,7 +396,7 @@ export default function SearchPageWithMap() {
                           onChange={(e) => setFilters({...filters, showOnlyCleanRoom: e.target.checked})}
                           className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded bg-white"
                         />
-                        <span className="ml-2 text-sm text-gray-700">無菌調剤室ありのみ</span>
+                        <span className="ml-2 text-sm text-gray-700">無菌調剤室あり</span>
                       </label>
                       
                       <label className="flex items-center">
@@ -406,7 +406,7 @@ export default function SearchPageWithMap() {
                           onChange={(e) => setFilters({...filters, showOnlyNarcotics: e.target.checked})}
                           className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded bg-white"
                         />
-                        <span className="ml-2 text-sm text-gray-700">麻薬取扱い可能のみ</span>
+                        <span className="ml-2 text-sm text-gray-700">麻薬取扱い可能</span>
                       </label>
                     </div>
                   </div>
