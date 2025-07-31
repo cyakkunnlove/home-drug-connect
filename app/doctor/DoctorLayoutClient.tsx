@@ -8,7 +8,8 @@ import {
   PlusCircle, 
   Home,
   LogOut,
-  Menu
+  Menu,
+  Settings
 } from 'lucide-react'
 
 interface DoctorLayoutClientProps {
@@ -26,6 +27,7 @@ export default function DoctorLayoutClient({
     { name: 'ダッシュボード', href: '/doctor', icon: Home },
     { name: '新規依頼作成', href: '/doctor/request/new', icon: PlusCircle },
     { name: '依頼一覧', href: '/doctor/requests', icon: FileText },
+    { name: '設定', href: '/doctor/settings', icon: Settings },
   ]
 
   return (

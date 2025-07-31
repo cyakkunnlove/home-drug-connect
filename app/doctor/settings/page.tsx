@@ -1,17 +1,17 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft, User, Shield, Bell, CreditCard } from 'lucide-react'
+import { ChevronLeft, User, Shield, Bell } from 'lucide-react'
 import DeleteAccountSection from '@/components/settings/DeleteAccountSection'
 
 export const dynamic = 'force-dynamic'
 
-export default async function SettingsPage() {
+export default async function DoctorSettingsPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/pharmacy/login')
+    redirect('/doctor/login')
   }
 
   const { data: profile } = await supabase
@@ -25,7 +25,7 @@ export default async function SettingsPage() {
       <header className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="text-gray-600 hover:text-gray-900">
+            <Link href="/doctor" className="text-gray-600 hover:text-gray-900">
               <ChevronLeft className="w-6 h-6" />
             </Link>
             <h1 className="text-xl font-bold text-gray-900">設定</h1>
@@ -50,7 +50,13 @@ export default async function SettingsPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  組織名
+                  氏名
+                </label>
+                <p className="text-gray-900">{profile?.name || '-'}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  所属医療機関
                 </label>
                 <p className="text-gray-900">{profile?.organization_name || '-'}</p>
               </div>
@@ -64,7 +70,7 @@ export default async function SettingsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   役割
                 </label>
-                <p className="text-gray-900">薬局管理者</p>
+                <p className="text-gray-900">医師</p>
               </div>
             </div>
           </div>
@@ -77,7 +83,7 @@ export default async function SettingsPage() {
             </div>
             <div className="space-y-4">
               <Link 
-                href="/dashboard/settings/password" 
+                href="/doctor/settings/password" 
                 className="block p-4 border rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <p className="font-medium text-gray-900">パスワード変更</p>
@@ -96,7 +102,7 @@ export default async function SettingsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium text-gray-900">メール通知</p>
-                  <p className="text-sm text-gray-600">新しいお問い合わせがあった時に通知</p>
+                  <p className="text-sm text-gray-600">薬局から回答があった時に通知</p>
                 </div>
                 <input 
                   type="checkbox" 
@@ -104,20 +110,6 @@ export default async function SettingsPage() {
                   defaultChecked
                 />
               </div>
-            </div>
-          </div>
-
-          {/* サブスクリプション */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <CreditCard className="w-5 h-5 text-gray-600" />
-              <h2 className="text-lg font-semibold text-gray-900">サブスクリプション</h2>
-            </div>
-            <div>
-              <p className="text-gray-700">現在のプラン: <span className="font-medium">無料プラン</span></p>
-              <Link href="/dashboard/subscription" className="text-blue-600 hover:text-blue-700 text-sm mt-2 inline-block">
-                プランの詳細を見る →
-              </Link>
             </div>
           </div>
 
