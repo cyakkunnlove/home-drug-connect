@@ -55,6 +55,21 @@ export default function PharmacyMap({
               stylers: [{ visibility: 'off' }],
             },
           ],
+          // マップコントロールのカスタマイズ
+          mapTypeControl: true, // 地図タイプコントロールを表示
+          mapTypeControlOptions: {
+            style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+            position: google.maps.ControlPosition.TOP_RIGHT, // 右上に移動
+          },
+          streetViewControl: false, // ストリートビューは非表示
+          fullscreenControl: true,
+          fullscreenControlOptions: {
+            position: google.maps.ControlPosition.TOP_RIGHT,
+          },
+          zoomControl: true,
+          zoomControlOptions: {
+            position: google.maps.ControlPosition.RIGHT_CENTER,
+          },
         })
         
         setMap(googleMap)
@@ -110,13 +125,13 @@ export default function PharmacyMap({
         map,
         title: pharmacy.name,
         icon: {
-          path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
-          scale: 8,
-          fillColor: markerColor,
-          fillOpacity: 0.9,
-          strokeColor: '#ffffff',
-          strokeWeight: 2,
-          rotation: 180,
+          url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+            <svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+              <rect x="5" y="5" width="20" height="20" fill="${markerColor}" stroke="white" stroke-width="2" transform="rotate(45 15 15)"/>
+            </svg>
+          `),
+          scaledSize: new google.maps.Size(30, 30),
+          anchor: new google.maps.Point(15, 15),
         },
       })
 
@@ -162,28 +177,36 @@ export default function PharmacyMap({
       <div ref={mapRef} className="w-full h-full rounded-lg shadow-md" />
       
       {/* マップの凡例 */}
-      <div className="absolute bottom-4 left-4 bg-white rounded-lg shadow-md p-3 text-xs">
-        <p className="font-semibold mb-2">凡例</p>
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-            <span>検索地点</span>
+      <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 bg-white rounded-lg shadow-lg p-3 sm:p-4 text-xs sm:text-sm border border-gray-200 max-w-[180px] sm:max-w-[200px]">
+        <h3 className="font-bold text-gray-800 mb-2 sm:mb-3 text-sm sm:text-base flex items-center gap-2">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+          </svg>
+          マーカーの説明
+        </h3>
+        <div className="space-y-1.5 sm:space-y-2">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="relative flex-shrink-0">
+              <div className="w-3 h-3 sm:w-4 sm:h-4 bg-blue-500 rounded-full"></div>
+              <div className="absolute inset-0 bg-blue-500 rounded-full animate-ping opacity-75"></div>
+            </div>
+            <span className="text-gray-700">検索地点</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-            <span>24時間対応</span>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-sm transform rotate-45 flex-shrink-0"></div>
+            <span className="text-gray-700">24時間対応</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-            <span>空きあり（5名以上）</span>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-yellow-500 rounded-sm transform rotate-45 flex-shrink-0"></div>
+            <span className="text-gray-700">空き多数</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-            <span>空きあり</span>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded-sm transform rotate-45 flex-shrink-0"></div>
+            <span className="text-gray-700">空きあり</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
-            <span>満床</span>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-400 rounded-sm transform rotate-45 flex-shrink-0"></div>
+            <span className="text-gray-500">満床</span>
           </div>
         </div>
       </div>
