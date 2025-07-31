@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     if (resend) {
       try {
         await resend.emails.send({
-        from: '在宅薬局ナビ <noreply@zaitaku-yakkyoku-navi.com>',
+        from: 'HOME-DRUG CONNECT <noreply@home-drug-connect.com>',
         to: email,
         subject: 'パスワードリセットのお知らせ',
         html: `
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
             <p>メールボックスに届いたSupabaseからのメールをご確認ください。</p>
             <p>リクエストに心当たりがない場合は、このメールを無視してください。</p>
             <hr />
-            <p style="color: #666; font-size: 14px;">在宅薬局ナビ</p>
+            <p style="color: #666; font-size: 14px;">HOME-DRUG CONNECT</p>
           </div>
         `,
         })

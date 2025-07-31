@@ -12,4 +12,4 @@ export const getResend = () => {
 
 export const resend = getResend();
 
-export const EMAIL_FROM = '在宅薬局ナビ <noreply@zaitaku-yakkyoku-navi.com>';
+export const EMAIL_FROM = 'HOME-DRUG CONNECT <noreply@home-drug-connect.com>';

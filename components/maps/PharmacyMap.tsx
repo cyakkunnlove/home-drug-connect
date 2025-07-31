@@ -20,6 +20,8 @@ interface PharmacyMapProps {
   onMarkerClick: (pharmacyId: string) => void
   selectedPharmacyId?: string | null
   zoom?: number // ズームレベルを追加
+  onRequestClick?: (pharmacyId: string) => void // 依頼ボタンのコールバック
+  currentUserRole?: string | null // 現在のユーザーロール
 }
 
 export default function PharmacyMap({ 
@@ -27,7 +29,9 @@ export default function PharmacyMap({
   pharmacies, 
   onMarkerClick,
   selectedPharmacyId,
-  zoom = 11 // デフォルトは16km表示のズームレベル
+  zoom = 11, // デフォルトは16km表示のズームレベル
+  onRequestClick,
+  currentUserRole
 }: PharmacyMapProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const [map, setMap] = useState<google.maps.Map | null>(null)
@@ -138,8 +142,9 @@ export default function PharmacyMap({
       // クリックイベント
       marker.addListener('click', () => {
         if (infoWindow) {
+          const showRequestButton = currentUserRole === 'doctor' && pharmacy.available_spots > 0
           const content = `
-            <div style="font-family: sans-serif; min-width: 200px;">
+            <div style="font-family: sans-serif; min-width: 250px;">
               <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: bold;">${pharmacy.name}</h3>
               <p style="margin: 4px 0; font-size: 14px; color: #666;">${pharmacy.address}</p>
               <p style="margin: 4px 0; font-size: 14px;">
@@ -151,6 +156,16 @@ export default function PharmacyMap({
               ${pharmacy.twenty_four_support ? '<p style="margin: 4px 0; font-size: 12px; color: #34A853;">✓ 24時間対応</p>' : ''}
               ${pharmacy.has_clean_room ? '<p style="margin: 4px 0; font-size: 12px; color: #673AB7;">✓ 無菌室あり</p>' : ''}
               ${pharmacy.handles_narcotics ? '<p style="margin: 4px 0; font-size: 12px; color: #FF5722;">✓ 麻薬取扱い</p>' : ''}
+              ${showRequestButton ? `
+                <button
+                  onclick="window.dispatchEvent(new CustomEvent('pharmacyRequestClick', { detail: { pharmacyId: '${pharmacy.id}' } }))"
+                  style="margin-top: 12px; width: 100%; background-color: #3B82F6; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer;"
+                  onmouseover="this.style.backgroundColor='#2563EB'"
+                  onmouseout="this.style.backgroundColor='#3B82F6'"
+                >
+                  依頼を作成
+                </button>
+              ` : ''}
             </div>
           `
           infoWindow.setContent(content)
@@ -170,7 +185,22 @@ export default function PharmacyMap({
       map.panTo(selectedMarker.getPosition()!)
       google.maps.event.trigger(selectedMarker, 'click')
     }
-  }, [map, pharmacies, selectedPharmacyId, onMarkerClick, infoWindow])
+  }, [map, pharmacies, selectedPharmacyId, onMarkerClick, infoWindow, currentUserRole])
+
+  // カスタムイベントリスナーの設定
+  useEffect(() => {
+    const handleRequestClick = (event: any) => {
+      const pharmacyId = event.detail.pharmacyId
+      if (onRequestClick && pharmacyId) {
+        onRequestClick(pharmacyId)
+      }
+    }
+
+    window.addEventListener('pharmacyRequestClick', handleRequestClick)
+    return () => {
+      window.removeEventListener('pharmacyRequestClick', handleRequestClick)
+    }
+  }, [onRequestClick])
 
   return (
     <div className="relative w-full h-full">

@@ -100,35 +100,81 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
     }
 
     setIsGeneratingAI(true)
+    console.log('[RequestForm] Starting AI document generation')
+    
     try {
+      const requestBody = {
+        pharmacyName: pharmacy.name,
+        doctorInfo,
+        patientInfo: {
+          medications: validMedications,
+          conditions: otherCondition 
+            ? [...conditions, `その他: ${otherCondition}`]
+            : conditions,
+          treatmentPlan,
+          notes
+        }
+      }
+      
+      console.log('[RequestForm] Request payload:', {
+        pharmacyName: requestBody.pharmacyName,
+        doctorInfo: requestBody.doctorInfo ? 'present' : 'missing',
+        medicationsCount: requestBody.patientInfo.medications.length,
+        conditionsCount: requestBody.patientInfo.conditions.length
+      })
+      
       const response = await fetch('/api/ai/generate-request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          pharmacyName: pharmacy.name,
-          doctorInfo,
-          patientInfo: {
-            medications: validMedications,
-            conditions: otherCondition 
-              ? [...conditions, `その他: ${otherCondition}`]
-              : conditions,
-            treatmentPlan,
-            notes
-          }
-        })
+        body: JSON.stringify(requestBody)
       })
 
-      const data = await response.json()
+      console.log('[RequestForm] Response status:', response.status)
       
-      if (data.success) {
+      if (!response.ok) {
+        let errorData
+        try {
+          errorData = await response.json()
+        } catch (jsonError) {
+          console.error('[RequestForm] Failed to parse error response:', jsonError)
+          throw new Error(`サーバーエラー（ステータス: ${response.status}）`)
+        }
+        
+        console.error('[RequestForm] API error response:', errorData)
+        const errorMessage = errorData.error ||
+          (response.status === 401 ? '認証が必要です。再度ログインしてください。' :
+           response.status === 403 ? '医師権限が必要です。' :
+           response.status === 500 ? 'サーバー内部エラーが発生しました。' :
+           'AI依頼文の生成に失敗しました')
+        
+        throw new Error(errorMessage)
+      }
+
+      const data = await response.json()
+      console.log('[RequestForm] API response:', {
+        success: data.success,
+        hasDocument: !!data.aiDocument,
+        usingTemplate: data.usingTemplate,
+        fallbackReason: data.fallbackReason
+      })
+      
+      if (data.success && data.aiDocument) {
         setAiDocument(data.aiDocument)
-        toast.success('AI依頼文を生成しました')
+        
+        let successMessage = 'AI依頼文を生成しました'
+        if (data.usingTemplate) {
+          successMessage += '（テンプレートを使用）'
+        }
+        
+        toast.success(successMessage)
       } else {
-        throw new Error(data.error)
+        throw new Error(data.error || 'AI依頼文の生成に失敗しました')
       }
     } catch (error) {
-      console.error('Error generating AI document:', error)
-      toast.error('AI依頼文の生成に失敗しました')
+      console.error('[RequestForm] Error generating AI document:', error)
+      
+      const errorMessage = error instanceof Error ? error.message : 'AI依頼文の生成に失敗しました'
+      toast.error(errorMessage)
     } finally {
       setIsGeneratingAI(false)
     }
@@ -258,12 +304,12 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
                 value={medication.dosage}
                 onChange={(e) => updateMedication(index, 'dosage', e.target.value)}
                 placeholder="用量"
-                className="w-32 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                className="w-32 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-white"
               />
               <select
                 value={medication.frequency}
                 onChange={(e) => updateMedication(index, 'frequency', e.target.value)}
-                className="w-32 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                className="w-32 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-white"
               >
                 <option value="">頻度</option>
                 {FREQUENCIES.map(freq => (
@@ -300,27 +346,29 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
         <label className="block text-sm font-medium text-gray-700 mb-2">
           既往・現疾患
         </label>
-        <div className="space-y-2">
-          {CONDITIONS.map(condition => (
-            <label key={condition} className="inline-flex items-center mr-4">
-              <input
-                type="checkbox"
-                checked={conditions.includes(condition)}
-                onChange={() => toggleCondition(condition)}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <span className="ml-2 text-sm text-gray-700">{condition}</span>
-            </label>
-          ))}
-        </div>
-        <div className="mt-2">
-          <input
-            type="text"
-            value={otherCondition}
-            onChange={(e) => setOtherCondition(e.target.value)}
-            placeholder="その他（自由記入）"
-            className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-          />
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {CONDITIONS.map(condition => (
+              <label key={condition} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md transition-colors">
+                <input
+                  type="checkbox"
+                  checked={conditions.includes(condition)}
+                  onChange={() => toggleCondition(condition)}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4"
+                />
+                <span className="text-sm text-gray-900 select-none">{condition}</span>
+              </label>
+            ))}
+          </div>
+          <div className="mt-4 pt-4 border-t border-gray-100">
+            <input
+              type="text"
+              value={otherCondition}
+              onChange={(e) => setOtherCondition(e.target.value)}
+              placeholder="その他（自由記入）"
+              className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+            />
+          </div>
         </div>
       </div>
 
@@ -334,7 +382,8 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
           value={treatmentPlan}
           onChange={(e) => setTreatmentPlan(e.target.value)}
           rows={3}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-white"
+          placeholder="今後の治療方針を入力してください"
         />
       </div>
 
@@ -348,7 +397,8 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           rows={2}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-white"
+          placeholder="その他備考があれば入力してください"
         />
       </div>
 

@@ -38,6 +38,28 @@ select {
   -webkit-text-fill-color: #111827 !important; /* Safari対策 */
 }
 
+/* 入力済みフィールドの背景色 */
+input[type="text"]:not(:placeholder-shown),
+input[type="email"]:not(:placeholder-shown),
+input[type="password"]:not(:placeholder-shown),
+input[type="tel"]:not(:placeholder-shown),
+input[type="number"]:not(:placeholder-shown),
+textarea:not(:placeholder-shown),
+select:has(option:checked:not([value=""])) {
+  background-color: #dbeafe !important; /* bg-blue-100 - 淡い青色背景 */
+}
+
+/* フォーカス時の背景色 */
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="tel"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+  background-color: #e0e7ff !important; /* bg-indigo-100 - フォーカス時は少し濃い青 */
+}
+
 /* セレクトボックスのオプション */
 select option {
   color: #111827 !important; /* text-gray-900 */
@@ -66,20 +88,50 @@ input[type="checkbox"] {
   input[type="number"],
   textarea,
   select {
-    color: #f3f4f6 !important; /* text-gray-100 */
-    background-color: #1f2937 !important; /* bg-gray-800 */
-    -webkit-text-fill-color: #f3f4f6 !important;
+    color: #1f2937 !important; /* text-gray-800 - より濃い色で読みやすく */
+    background-color: #f9fafb !important; /* bg-gray-50 - 明るい背景 */
+    -webkit-text-fill-color: #1f2937 !important;
+    border-color: #d1d5db !important; /* border-gray-300 */
+  }
+  
+  /* ダークモードでも入力済みフィールドの背景色 */
+  input[type="text"]:not(:placeholder-shown),
+  input[type="email"]:not(:placeholder-shown),
+  input[type="password"]:not(:placeholder-shown),
+  input[type="tel"]:not(:placeholder-shown),
+  input[type="number"]:not(:placeholder-shown),
+  textarea:not(:placeholder-shown),
+  select:has(option:checked:not([value=""])) {
+    background-color: #dbeafe !important; /* bg-blue-100 - 淡い青色背景 */
+  }
+
+  /* ダークモードでのフォーカス時の背景色 */
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="password"]:focus,
+  input[type="tel"]:focus,
+  input[type="number"]:focus,
+  textarea:focus,
+  select:focus {
+    background-color: #e0e7ff !important; /* bg-indigo-100 */
   }
   
   select option {
-    color: #f3f4f6 !important;
-    background-color: #1f2937 !important;
-    -webkit-text-fill-color: #f3f4f6 !important;
+    color: #1f2937 !important;
+    background-color: #ffffff !important;
+    -webkit-text-fill-color: #1f2937 !important;
   }
   
   input[type="checkbox"] {
-    background-color: #1f2937 !important;
-    border-color: #4b5563 !important;
+    background-color: #ffffff !important;
+    border-color: #d1d5db !important;
+  }
+  
+  /* プレースホルダーの色もダークモードで調整 */
+  input::placeholder,
+  textarea::placeholder {
+    color: #6b7280 !important; /* text-gray-500 */
+    opacity: 1 !important;
   }
 }
 

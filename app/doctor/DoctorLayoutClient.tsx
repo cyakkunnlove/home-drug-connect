@@ -11,6 +11,7 @@ import {
   Menu,
   Settings
 } from 'lucide-react'
+import Logo from '@/components/ui/Logo'
 
 interface DoctorLayoutClientProps {
   children: ReactNode
@@ -36,12 +37,12 @@ export default function DoctorLayoutClient({
       <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
         <div className="flex-1 flex flex-col min-h-0 bg-white border-r border-gray-200">
           <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-            <div className="flex items-center flex-shrink-0 px-4">
-              <h1 className="text-xl font-semibold text-gray-900">
-                ドクターパネル
-              </h1>
+            <div className="px-4 mb-4">
+              <Link href="/" className="block">
+                <Logo size="medium" showText={true} href={undefined} />
+              </Link>
             </div>
-            <div className="mt-2 px-4">
+            <div className="px-4">
               <p className="text-sm text-gray-600">
                 {organizationName || userEmail}
               </p>

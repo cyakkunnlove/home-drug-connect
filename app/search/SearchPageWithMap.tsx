@@ -24,6 +24,7 @@ import { geocodeAddress } from '@/lib/google-maps/geocoding'
 import Modal from '@/components/ui/Modal'
 import { useRouter } from 'next/navigation'
 import AuthenticatedHeader from '@/components/layout/AuthenticatedHeader'
+import Header from '@/components/layout/Header'
 
 // Google Mapsコンポーネントを動的インポート（SSR対策）
 const PharmacyMap = dynamic(
@@ -275,14 +276,12 @@ export default function SearchPageWithMap() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Header />
       <AuthenticatedHeader />
       <header className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-3 md:py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 md:gap-4">
-              <Link href="/" className="text-gray-600 hover:text-gray-900">
-                <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
-              </Link>
+            <div>
               <h1 className="text-lg md:text-xl font-bold text-gray-900">薬局検索</h1>
             </div>
             <div className="flex items-center gap-1 md:gap-2">
@@ -446,6 +445,13 @@ export default function SearchPageWithMap() {
                         pharmacies={searchResults}
                         onMarkerClick={handleMarkerClick}
                         selectedPharmacyId={selectedPharmacyId}
+                        onRequestClick={(pharmacyId) => {
+                          const pharmacy = searchResults.find(p => p.id === pharmacyId)
+                          if (pharmacy) {
+                            router.push(`/doctor/request/new?pharmacyId=${pharmacy.id}`)
+                          }
+                        }}
+                        currentUserRole={userRole}
                       />
                     )}
                   </div>

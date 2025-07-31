@@ -22,7 +22,7 @@ export default function PrivacyPage() {
         <div className="bg-white rounded-lg shadow-md p-8 space-y-8">
           <section>
             <p className="text-gray-600 mb-6">
-              在宅薬局ナビ（以下、「当社」といいます。）は、本ウェブサイト上で提供するサービス（以下、「本サービス」といいます。）における、ユーザーの個人情報の取扱いについて、以下のとおりプライバシーポリシー（以下、「本ポリシー」といいます。）を定めます。
+              HOME-DRUG CONNECT（以下、「当社」といいます。）は、本ウェブサイト上で提供するサービス（以下、「本サービス」といいます。）における、ユーザーの個人情報の取扱いについて、以下のとおりプライバシーポリシー（以下、「本ポリシー」といいます。）を定めます。
             </p>
           </section>
 

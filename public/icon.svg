@@ -1,0 +1,20 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="512" height="512" rx="96" fill="url(#gradient)"/>
+  
+  <!-- ホームアイコン -->
+  <path d="M256 128L128 224V352C128 369.673 142.327 384 160 384H352C369.673 384 384 369.673 384 352V224L256 128Z" fill="white" opacity="0.9"/>
+  <path d="M256 96L384 192V160C384 142.327 369.673 128 352 128H160C142.327 128 128 142.327 128 160V192L256 96Z" fill="white"/>
+  
+  <!-- ハートアイコン（右下） -->
+  <circle cx="360" cy="360" r="64" fill="white"/>
+  <path d="M360 324C344 308 316 308 300 324C284 308 256 308 240 324C224 340 224 368 240 384L360 464L480 384C496 368 496 340 480 324C464 308 436 308 420 324C404 340 376 340 360 324Z" fill="#EF4444" transform="scale(0.4) translate(640, 640)"/>
+  
+  <!-- グラデーション定義 -->
+  <defs>
+    <linearGradient id="gradient" x1="0" y1="0" x2="512" y2="512">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+  </defs>
+</svg>

@@ -17,6 +17,7 @@ import {
   Shield,
   Store
 } from 'lucide-react'
+import Logo from '@/components/ui/Logo'
 
 export default function DashboardLayout({
   children,
@@ -109,10 +110,10 @@ export default function DashboardLayout({
         <div className="hidden lg:block w-64 bg-white shadow-md">
           <div className="flex flex-col h-full">
             <div className="p-4 border-b">
-              <h2 className="text-xl font-bold text-gray-900">
-                在宅薬局ナビ
-              </h2>
-              <p className="text-sm text-gray-600 mt-1">
+              <Link href="/" className="block">
+                <Logo size="medium" showText={true} href={undefined} />
+              </Link>
+              <p className="text-sm text-gray-600 mt-3 pl-1">
                 {profile?.organization_name}
               </p>
             </div>

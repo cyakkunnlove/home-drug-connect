@@ -1,10 +1,12 @@
 import Link from "next/link"
 import { Search, Clock, Shield, MapPin, CheckCircle, Users, Sparkles, ArrowRight } from "lucide-react"
 import AuthenticatedHeader from "@/components/layout/AuthenticatedHeader"
+import Header from "@/components/layout/Header"
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-white">
+      <Header />
       <AuthenticatedHeader />
       
       {/* ヒーローセクション */}
@@ -198,7 +200,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
-              <h3 className="text-lg font-bold mb-4">在宅薬局ナビ</h3>
+              <h3 className="text-lg font-bold mb-4">HOME-DRUG CONNECT</h3>
               <p className="text-gray-400 text-sm">
                 在宅医療をもっとスムーズに
               </p>
@@ -233,7 +235,7 @@ export default function Home() {
           </div>
           
           <div className="pt-8 border-t border-gray-800 text-center text-sm text-gray-400">
-            <p>© 2025 在宅薬局ナビ. All rights reserved.</p>
+            <p>© 2025 HOME-DRUG CONNECT. All rights reserved.</p>
           </div>
         </div>
       </footer>
