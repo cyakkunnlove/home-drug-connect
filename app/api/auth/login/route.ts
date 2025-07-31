@@ -26,10 +26,18 @@ export async function POST(request: Request) {
       .eq('id', data.user.id)
       .single()
 
+    // ロールに応じて適切なリダイレクト先を決定
+    let redirectTo = '/dashboard'
+    if (userData?.role === 'doctor') {
+      redirectTo = '/doctor'
+    } else if (userData?.role === 'admin') {
+      redirectTo = '/admin'
+    }
+
     return NextResponse.json({
       success: true,
       user: userData,
-      redirectTo: '/dashboard'
+      redirectTo
     })
   } catch (error) {
     console.error('Login error:', error)

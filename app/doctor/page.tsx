@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { PlusCircle, Clock, CheckCircle, XCircle } from 'lucide-react'
+import { PlusCircle, Clock, CheckCircle, XCircle, FileText } from 'lucide-react'
 
 export default async function DoctorDashboard() {
   const supabase = await createClient()

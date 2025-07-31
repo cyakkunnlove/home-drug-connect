@@ -54,6 +54,7 @@ export default function DoctorRegisterForm() {
             required
             className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="田中 太郎"
+            style={{ color: '#111827', backgroundColor: '#ffffff' }}
           />
         </div>
       </div>
@@ -73,6 +74,7 @@ export default function DoctorRegisterForm() {
             required
             className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="doctor@example.com"
+            style={{ color: '#111827', backgroundColor: '#ffffff' }}
           />
         </div>
       </div>
@@ -92,6 +94,7 @@ export default function DoctorRegisterForm() {
             required
             className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="○○クリニック"
+            style={{ color: '#111827', backgroundColor: '#ffffff' }}
           />
         </div>
       </div>
@@ -111,6 +114,7 @@ export default function DoctorRegisterForm() {
             required
             className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="03-1234-5678"
+            style={{ color: '#111827', backgroundColor: '#ffffff' }}
           />
         </div>
       </div>
@@ -130,6 +134,7 @@ export default function DoctorRegisterForm() {
             required
             className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="第123456号"
+            style={{ color: '#111827', backgroundColor: '#ffffff' }}
           />
         </div>
       </div>
@@ -150,6 +155,7 @@ export default function DoctorRegisterForm() {
             minLength={6}
             className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="6文字以上"
+            style={{ color: '#111827', backgroundColor: '#ffffff' }}
           />
         </div>
       </div>
@@ -170,6 +176,7 @@ export default function DoctorRegisterForm() {
             minLength={6}
             className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="もう一度入力"
+            style={{ color: '#111827', backgroundColor: '#ffffff' }}
           />
         </div>
       </div>

@@ -1,0 +1,108 @@
+
+> home-drug-connect-new@0.1.0 build
+> next build
+
+ ⚠ Warning: Found multiple lockfiles. Selecting /Users/takuyakatou/package-lock.json.
+   Consider removing the lockfiles at:
+   * /Users/takuyakatou/Projects/home-drug-connect/package-lock.json
+
+   ▲ Next.js 15.4.5
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 3.0s
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+TypeError: Cannot read properties of undefined (reading 'get')
+    at <unknown> (.next/server/app/api/pharmacies/search/route.js:1:2839)
+    at y (.next/server/app/api/pharmacies/search/route.js:1:2945)
+    at z (.next/server/app/api/pharmacies/search/route.js:1:3409)
+    at 77784 (.next/server/app/api/pharmacies/search/route.js:1:6151)
+    at c (.next/server/webpack-runtime.js:1:128)
+    at <unknown> (.next/server/app/api/pharmacies/search/route.js:12:6532)
+    at c.X (.next/server/webpack-runtime.js:1:2125)
+    at <unknown> (.next/server/app/api/pharmacies/search/route.js:12:6502)
+    at Object.<anonymous> (.next/server/app/api/pharmacies/search/route.js:12:6564)
+   Generating static pages (0/41) ...
+TypeError: Cannot read properties of undefined (reading 'get')
+    at <unknown> (.next/server/app/api/pharmacies/search/route.js:1:2839)
+    at y (.next/server/app/api/pharmacies/search/route.js:1:2945)
+    at z (.next/server/app/api/pharmacies/search/route.js:1:3409)
+    at 77784 (.next/server/app/api/pharmacies/search/route.js:1:6151)
+    at c (.next/server/webpack-runtime.js:1:128)
+    at <unknown> (.next/server/app/api/pharmacies/search/route.js:12:6532)
+    at c.X (.next/server/webpack-runtime.js:1:2125)
+    at <unknown> (.next/server/app/api/pharmacies/search/route.js:12:6502)
+    at Object.<anonymous> (.next/server/app/api/pharmacies/search/route.js:12:6564)
+   Generating static pages (10/41) 
+   Generating static pages (20/41) 
+   Generating static pages (30/41) 
+ ✓ Generating static pages (41/41)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                    1.74 kB         146 kB
+├ ○ /_not-found                            208 B        99.9 kB
+├ ƒ /admin                                 208 B        99.9 kB
+├ ƒ /admin/pharmacies                    1.76 kB         106 kB
+├ ƒ /api/admin/pharmacies/[id]/approve     208 B        99.9 kB
+├ ƒ /api/admin/pharmacies/[id]/reject      208 B        99.9 kB
+├ ƒ /api/ai/generate-request               208 B        99.9 kB
+├ ƒ /api/auth/login                        208 B        99.9 kB
+├ ƒ /api/contact                           208 B        99.9 kB
+├ ƒ /api/debug/check-pharmacies            208 B        99.9 kB
+├ ƒ /api/debug/check-user-role             208 B        99.9 kB
+├ ƒ /api/debug/login                       208 B        99.9 kB
+├ ƒ /api/debug/test-direct                 208 B        99.9 kB
+├ ƒ /api/debug/test-login                  208 B        99.9 kB
+├ ƒ /api/drugs/search                      208 B        99.9 kB
+├ ƒ /api/inquiries                         208 B        99.9 kB
+├ ƒ /api/inquiries/[id]/close              208 B        99.9 kB
+├ ƒ /api/inquiries/[id]/read               208 B        99.9 kB
+├ ƒ /api/monitoring/performance            208 B        99.9 kB
+├ ƒ /api/pharmacies/search                 208 B        99.9 kB
+├ ƒ /api/requests                          208 B        99.9 kB
+├ ƒ /api/requests/[id]                     208 B        99.9 kB
+├ ƒ /api/responses                         208 B        99.9 kB
+├ ƒ /api/stripe/checkout                   208 B        99.9 kB
+├ ƒ /api/stripe/portal                     208 B        99.9 kB
+├ ƒ /api/stripe/webhook                    208 B        99.9 kB
+├ ƒ /api/test/create-account               208 B        99.9 kB
+├ ƒ /api/test/create-data                  208 B        99.9 kB
+├ ○ /contact                             3.37 kB         106 kB
+├ ○ /dashboard                           2.96 kB         147 kB
+├ ○ /dashboard/analytics                 3.63 kB         145 kB
+├ ƒ /dashboard/inquiries                 1.83 kB         106 kB
+├ ƒ /dashboard/pharmacies                  189 B         103 kB
+├ ƒ /dashboard/pharmacies/[id]             189 B         103 kB
+├ ƒ /dashboard/pharmacies/[id]/edit        183 B         149 kB
+├ ƒ /dashboard/pharmacies/new              183 B         149 kB
+├ ƒ /dashboard/pharmacy                    167 B         146 kB
+├ ƒ /dashboard/requests                  4.44 kB         146 kB
+├ ƒ /dashboard/requests/[id]                3 kB         111 kB
+├ ƒ /dashboard/settings                    189 B         103 kB
+├ ƒ /dashboard/subscription              1.81 kB         106 kB
+├ ○ /dashboard/test-data                 1.09 kB         106 kB
+├ ƒ /doctor                                189 B         103 kB
+├ ○ /doctor/login                        2.44 kB         105 kB
+├ ○ /doctor/register                        3 kB         106 kB
+├ ƒ /doctor/request/new                  6.28 kB         153 kB
+├ ƒ /doctor/requests                       189 B         103 kB
+├ ƒ /doctor/requests/[id]                  189 B         103 kB
+├ ƒ /pharmacy/[id]                       3.89 kB         108 kB
+├ ○ /pharmacy/login                      2.71 kB         106 kB
+├ ○ /pharmacy/register                   2.73 kB         106 kB
+├ ○ /robots.txt                              0 B            0 B
+├ ○ /search                              8.78 kB         153 kB
+└ ƒ /sitemap.xml                           208 B        99.9 kB
++ First Load JS shared by all            99.7 kB
+  ├ chunks/4bd1b696-602635ee57868870.js  54.1 kB
+  ├ chunks/5964-65b29b990a9f3302.js      43.6 kB
+  └ other shared chunks (total)          1.96 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

@@ -130,15 +130,30 @@ export async function signUpDoctor(formData: FormData) {
     }
 
     // トリガーが自動的にusersテーブルにレコードを作成するが、
-    // タイミングの問題があるので、まず存在を確認
-    await new Promise(resolve => setTimeout(resolve, 1000)) // 1秒待機
+    // タイミングの問題があるので、リトライロジックを実装
+    let existingUser = null
+    let checkError = null
+    let retryCount = 0
+    const maxRetries = 5
     
-    // まずレコードが存在するか確認
-    const { data: existingUser, error: checkError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', authData.user.id)
-      .single()
+    while (retryCount < maxRetries) {
+      await new Promise(resolve => setTimeout(resolve, 1000)) // 1秒待機
+      
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', authData.user.id)
+        .single()
+      
+      if (data || (error && error.code !== 'PGRST116')) { // PGRST116 = no rows
+        existingUser = data
+        checkError = error
+        break
+      }
+      
+      retryCount++
+      console.log(`ユーザーレコード待機中... (${retryCount}/${maxRetries})`)
+    }
     
     console.log('既存ユーザー確認:', { existingUser, checkError })
     
@@ -205,6 +220,7 @@ export async function signUpDoctor(formData: FormData) {
     console.log('医師登録完了 - 最終ユーザー情報:', finalUserData)
   }
 
+  console.log('医師登録完了 - /doctorにリダイレクトします')
   redirect('/doctor')
 }
 

@@ -46,36 +46,35 @@ export async function POST(request: NextRequest) {
                     request.headers.get('x-real-ip') || 
                     'unknown'
     
-    // Store performance metrics
-    const performanceData = {
-      url: data.url,
-      timestamp: new Date(data.timestamp).toISOString(),
-      user_agent: userAgent,
-      client_ip: clientIP,
-      
-      // Web Vitals
-      fcp: data.webVitals.FCP,
-      lcp: data.webVitals.LCP,
-      fid: data.webVitals.FID,
-      cls: data.webVitals.CLS,
-      ttfb: data.webVitals.TTFB,
-      
-      // Navigation timing
-      dom_content_loaded: data.navigationTiming?.domContentLoadedEventEnd || null,
-      load_event: data.navigationTiming?.loadEventEnd || null,
-      
-      // Custom metrics as JSONB
-      custom_metrics: data.customMetrics || [],
-      
-      // Additional metadata
-      connection_type: request.headers.get('connection') || null,
-      device_memory: null, // Would need to be passed from client
-    }
+    // Generate session ID
+    const sessionId = crypto.randomUUID()
+    
+    // Store Web Vitals metrics
+    const metricsToStore = []
+    
+    // Add each Web Vital metric
+    Object.entries(data.webVitals).forEach(([metricName, value]) => {
+      if (value !== null) {
+        metricsToStore.push({
+          session_id: sessionId,
+          metric_name: metricName,
+          metric_value: value,
+          rating: getMetricRating(metricName, value),
+          url: data.url,
+          user_agent: userAgent,
+          metadata: {
+            timestamp: data.timestamp,
+            customMetrics: data.customMetrics,
+            navigationTiming: data.navigationTiming
+          }
+        })
+      }
+    })
 
-    // Insert into performance_logs table
+    // Insert into performance_metrics table
     const { error: insertError } = await supabase
-      .from('performance_logs')
-      .insert(performanceData)
+      .from('performance_metrics')
+      .insert(metricsToStore)
 
     if (insertError) {
       console.error('Failed to insert performance data:', insertError)
@@ -91,17 +90,21 @@ export async function POST(request: NextRequest) {
       // Log alerts or send notifications
       console.warn('Performance alerts detected:', alerts)
       
-      // Store alerts in alerts table
+      // Store alerts in error_logs table as performance warnings
       for (const alert of alerts) {
         await supabase
-          .from('performance_alerts')
+          .from('error_logs')
           .insert({
-            metric_name: alert.metric,
-            metric_value: alert.value,
-            threshold: alert.threshold,
+            error_type: 'performance_alert',
+            error_message: `${alert.metric} exceeded threshold: ${alert.value} > ${alert.threshold}`,
             url: data.url,
             user_agent: userAgent,
-            created_at: new Date().toISOString(),
+            metadata: {
+              metric: alert.metric,
+              value: alert.value,
+              threshold: alert.threshold,
+              severity: alert.severity
+            }
           })
       }
     }
@@ -134,16 +137,20 @@ export async function GET(request: NextRequest) {
 
     // Base query
     let query = supabase
-      .from('performance_logs')
+      .from('performance_metrics')
       .select('*')
-      .gte('timestamp', startDate)
-      .lte('timestamp', endDate)
-      .order('timestamp', { ascending: false })
+      .gte('created_at', startDate)
+      .lte('created_at', endDate)
+      .order('created_at', { ascending: false })
       .limit(1000)
 
     // Apply filters
     if (url) {
       query = query.ilike('url', `%${url}%`)
+    }
+    
+    if (metric) {
+      query = query.eq('metric_name', metric)
     }
 
     const { data: performanceLogs, error } = await query
@@ -159,10 +166,11 @@ export async function GET(request: NextRequest) {
     // Calculate statistics
     const stats = calculatePerformanceStats(performanceLogs || [])
     
-    // Get recent alerts
+    // Get recent alerts from error_logs
     const { data: alerts } = await supabase
-      .from('performance_alerts')
+      .from('error_logs')
       .select('*')
+      .eq('error_type', 'performance_alert')
       .gte('created_at', startDate)
       .lte('created_at', endDate)
       .order('created_at', { ascending: false })
@@ -191,6 +199,23 @@ const PERFORMANCE_THRESHOLDS = {
   FID: 300,  // First Input Delay - 300ms
   CLS: 0.25, // Cumulative Layout Shift - 0.25
   TTFB: 1800, // Time to First Byte - 1.8s
+}
+
+// Get rating based on thresholds
+function getMetricRating(metricName: string, value: number): 'good' | 'needs-improvement' | 'poor' {
+  const threshold = PERFORMANCE_THRESHOLDS[metricName as keyof typeof PERFORMANCE_THRESHOLDS]
+  if (!threshold) return 'good'
+  
+  if (metricName === 'CLS') {
+    if (value <= 0.1) return 'good'
+    if (value <= 0.25) return 'needs-improvement'
+    return 'poor'
+  }
+  
+  // For time-based metrics
+  if (value <= threshold * 0.75) return 'good'
+  if (value <= threshold) return 'needs-improvement'
+  return 'poor'
 }
 
 function checkPerformanceAlerts(data: PerformanceReport): Array<{
@@ -251,14 +276,15 @@ function calculatePerformanceStats(logs: any[]): {
     }
   }
 
-  const metrics = ['fcp', 'lcp', 'fid', 'cls', 'ttfb']
+  const metrics = ['FCP', 'LCP', 'FID', 'CLS', 'TTFB']
   const averages: Record<string, number> = {}
   const percentiles: Record<string, { p50: number; p90: number; p95: number }> = {}
   const trends: Record<string, 'improving' | 'degrading' | 'stable'> = {}
 
   metrics.forEach(metric => {
     const values = logs
-      .map(log => log[metric])
+      .filter(log => log.metric_name === metric)
+      .map(log => log.metric_value)
       .filter(val => val !== null && val !== undefined)
       .sort((a, b) => a - b)
 
@@ -279,9 +305,10 @@ function calculatePerformanceStats(logs: any[]): {
     }
 
     // Calculate trend (simplified - compare first half vs second half)
-    const midpoint = Math.floor(logs.length / 2)
-    const firstHalf = logs.slice(0, midpoint).map(log => log[metric]).filter(val => val !== null)
-    const secondHalf = logs.slice(midpoint).map(log => log[metric]).filter(val => val !== null)
+    const metricLogs = logs.filter(log => log.metric_name === metric)
+    const midpoint = Math.floor(metricLogs.length / 2)
+    const firstHalf = metricLogs.slice(0, midpoint).map(log => log.metric_value).filter(val => val !== null)
+    const secondHalf = metricLogs.slice(midpoint).map(log => log.metric_value).filter(val => val !== null)
 
     if (firstHalf.length > 0 && secondHalf.length > 0) {
       const firstAvg = firstHalf.reduce((sum, val) => sum + val, 0) / firstHalf.length

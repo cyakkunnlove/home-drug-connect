@@ -321,7 +321,8 @@ export default function SearchPageWithMap() {
                   value={searchAddress}
                   onChange={(e) => setSearchAddress(e.target.value)}
                   placeholder="例: 東京都新宿区西新宿1-1-1"
-                  className="flex-1 px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base"
+                  className="flex-1 px-3 md:px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base"
+                  style={{ color: '#111827', backgroundColor: '#ffffff' }}
                 />
                 <div className="flex gap-2">
                   <button
@@ -357,12 +358,12 @@ export default function SearchPageWithMap() {
                       <select
                         value={filters.radius}
                         onChange={(e) => setFilters({...filters, radius: parseInt(e.target.value)})}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                       >
-                        <option value="3">3km以内</option>
-                        <option value="5">5km以内</option>
-                        <option value="10">10km以内</option>
-                        <option value="20">20km以内</option>
+                        <option value="3" className="text-gray-900">3km以内</option>
+                        <option value="5" className="text-gray-900">5km以内</option>
+                        <option value="10" className="text-gray-900">10km以内</option>
+                        <option value="20" className="text-gray-900">20km以内</option>
                       </select>
                     </div>
 
@@ -372,7 +373,7 @@ export default function SearchPageWithMap() {
                           type="checkbox"
                           checked={filters.excludeFull}
                           onChange={(e) => setFilters({...filters, excludeFull: e.target.checked})}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded bg-white"
                         />
                         <span className="ml-2 text-sm text-gray-700">満床の薬局を除外</span>
                       </label>
@@ -382,7 +383,7 @@ export default function SearchPageWithMap() {
                           type="checkbox"
                           checked={filters.showOnly24Hour}
                           onChange={(e) => setFilters({...filters, showOnly24Hour: e.target.checked})}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded bg-white"
                         />
                         <span className="ml-2 text-sm text-gray-700">24時間対応のみ</span>
                       </label>
@@ -394,7 +395,7 @@ export default function SearchPageWithMap() {
                           type="checkbox"
                           checked={filters.showOnlyCleanRoom}
                           onChange={(e) => setFilters({...filters, showOnlyCleanRoom: e.target.checked})}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded bg-white"
                         />
                         <span className="ml-2 text-sm text-gray-700">無菌調剤室ありのみ</span>
                       </label>
@@ -404,7 +405,7 @@ export default function SearchPageWithMap() {
                           type="checkbox"
                           checked={filters.showOnlyNarcotics}
                           onChange={(e) => setFilters({...filters, showOnlyNarcotics: e.target.checked})}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded bg-white"
                         />
                         <span className="ml-2 text-sm text-gray-700">麻薬取扱い可能のみ</span>
                       </label>

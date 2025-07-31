@@ -73,6 +73,7 @@ export default function LoginForm() {
             required
             className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="pharmacy@example.com"
+            style={{ color: '#111827', backgroundColor: '#ffffff' }}
           />
         </div>
       </div>
@@ -92,12 +93,13 @@ export default function LoginForm() {
             required
             className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="••••••••"
+            style={{ color: '#111827', backgroundColor: '#ffffff' }}
           />
         </div>
       </div>
 
       <div className="flex items-center justify-between">
-        <Link href="/pharmacy/forgot-password" className="text-sm text-blue-600 hover:text-blue-500">
+        <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:text-blue-500">
           パスワードを忘れた方
         </Link>
       </div>
@@ -115,6 +117,12 @@ export default function LoginForm() {
           薬局として登録する場合は{' '}
           <Link href="/pharmacy/register" className="font-medium text-blue-600 hover:text-blue-500">
             薬局新規登録
+          </Link>
+        </p>
+        <p>
+          医師としてログインする場合は{' '}
+          <Link href="/doctor/login" className="font-medium text-green-600 hover:text-green-500">
+            医師ログイン
           </Link>
         </p>
         <p>

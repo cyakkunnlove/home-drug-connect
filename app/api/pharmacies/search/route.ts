@@ -3,45 +3,47 @@ import { createClient, createReadOnlyClient } from '@/lib/supabase/server'
 import { withRateLimit } from '@/lib/rate-limit'
 import { QueryMonitor } from '@/lib/supabase/pool'
 
-async function searchHandler(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams
-  const lat = parseFloat(searchParams.get('lat') || '0')
-  const lng = parseFloat(searchParams.get('lng') || '0')
-  const radius = Math.min(parseFloat(searchParams.get('radius') || '5'), 50) // 最大50km制限
-  const excludeFull = searchParams.get('excludeFull') !== 'false' // デフォルトで満床を除外
-  const requiredServices = searchParams.getAll('services') // 必要なサービス
-  const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100) // 最大100件制限
+export async function GET(request: NextRequest) {
+  // Apply rate limiting
+  const rateLimitResult = await withRateLimit(request, async () => {
+    const searchParams = request.nextUrl.searchParams
+    const lat = parseFloat(searchParams.get('lat') || '0')
+    const lng = parseFloat(searchParams.get('lng') || '0')
+    const radius = Math.min(parseFloat(searchParams.get('radius') || '5'), 50) // 最大50km制限
+    const excludeFull = searchParams.get('excludeFull') !== 'false' // デフォルトで満床を除外
+    const requiredServices = searchParams.getAll('services') // 必要なサービス
+    const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100) // 最大100件制限
 
-  // 入力検証
-  if (!lat || !lng || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-    return NextResponse.json(
-      { error: '座標が無効です', code: 'INVALID_COORDINATES' },
-      { status: 400 }
-    )
-  }
+    // 入力検証
+    if (!lat || !lng || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      return NextResponse.json(
+        { error: '座標が無効です', code: 'INVALID_COORDINATES' },
+        { status: 400 }
+      )
+    }
 
-  if (radius <= 0 || radius > 50) {
-    return NextResponse.json(
-      { error: '検索半径は1-50kmの範囲で指定してください', code: 'INVALID_RADIUS' },
-      { status: 400 }
-    )
-  }
-  
-  // Read-only client for better performance
-  const supabase = await createReadOnlyClient()
+    if (radius <= 0 || radius > 50) {
+      return NextResponse.json(
+        { error: '検索半径は1-50kmの範囲で指定してください', code: 'INVALID_RADIUS' },
+        { status: 400 }
+      )
+    }
+    
+    // Read-only client for better performance
+    const supabase = await createReadOnlyClient()
 
-  try {
-    // Monitor query performance
-    const result = await QueryMonitor.execute('pharmacy_search', async () => {
+    try {
+      // Monitor query performance
+      const result = await QueryMonitor.execute('pharmacy_search', async () => {
       // PostGISのST_DWithin関数を使用して近隣の薬局を検索（最適化版）
       const { data, error } = await supabase
         .rpc('search_nearby_pharmacies_optimized', {
-          search_lat: lat,
-          search_lng: lng,
-          radius_km: radius,
-          exclude_full: excludeFull,
-          required_services: requiredServices.length > 0 ? requiredServices : [],
-          result_limit: limit
+          p_lat: lat,
+          p_lng: lng,
+          p_radius_km: radius,
+          p_exclude_full: excludeFull,
+          p_required_services: requiredServices.length > 0 ? requiredServices : null,
+          p_limit: limit
         })
 
       if (error) {
@@ -112,20 +114,20 @@ async function searchHandler(request: NextRequest) {
     
     return response
     
-  } catch (error) {
-    console.error('薬局検索エラー:', error)
-    
-    // Structured error response
-    const errorResponse = {
-      error: '薬局の検索に失敗しました',
-      code: 'SEARCH_FAILED',
-      timestamp: new Date().toISOString(),
-      requestId: crypto.randomUUID().slice(0, 8)
+    } catch (error) {
+      console.error('薬局検索エラー:', error)
+      
+      // Structured error response
+      const errorResponse = {
+        error: '薬局の検索に失敗しました',
+        code: 'SEARCH_FAILED',
+        timestamp: new Date().toISOString(),
+        requestId: crypto.randomUUID().slice(0, 8)
+      }
+      
+      return NextResponse.json(errorResponse, { status: 500 })
     }
-    
-    return NextResponse.json(errorResponse, { status: 500 })
-  }
-}
+  })
 
-// Apply rate limiting to search endpoint
-export const GET = withRateLimit(searchHandler, 'search')
+  return rateLimitResult
+}

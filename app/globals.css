@@ -35,12 +35,26 @@ textarea,
 select {
   color: #111827 !important; /* text-gray-900 */
   opacity: 1 !important;
+  -webkit-text-fill-color: #111827 !important; /* Safari対策 */
+}
+
+/* セレクトボックスのオプション */
+select option {
+  color: #111827 !important; /* text-gray-900 */
+  background-color: #ffffff !important;
+  -webkit-text-fill-color: #111827 !important;
 }
 
 input::placeholder,
 textarea::placeholder {
   color: #9ca3af !important; /* text-gray-400 */
   opacity: 1 !important;
+}
+
+/* チェックボックスの背景を確実に白に */
+input[type="checkbox"] {
+  background-color: #ffffff !important;
+  border-color: #d1d5db !important;
 }
 
 /* ダークモードでの入力フィールド */
@@ -54,5 +68,55 @@ textarea::placeholder {
   select {
     color: #f3f4f6 !important; /* text-gray-100 */
     background-color: #1f2937 !important; /* bg-gray-800 */
+    -webkit-text-fill-color: #f3f4f6 !important;
   }
+  
+  select option {
+    color: #f3f4f6 !important;
+    background-color: #1f2937 !important;
+    -webkit-text-fill-color: #f3f4f6 !important;
+  }
+  
+  input[type="checkbox"] {
+    background-color: #1f2937 !important;
+    border-color: #4b5563 !important;
+  }
+}
+
+/* モバイルデバイス向けの追加スタイル */
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px !important; /* ズーム防止 */
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+  
+  /* iOS特有のスタイル上書き */
+  input:not([type="checkbox"]):not([type="radio"]),
+  textarea,
+  select {
+    -webkit-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+  }
+}
+
+/* Tailwindクラスを上書きして、確実に文字色を設定 */
+.bg-gray-50 input:not([type="checkbox"]):not([type="radio"]),
+.bg-gray-100 input:not([type="checkbox"]):not([type="radio"]),
+.bg-gray-200 input:not([type="checkbox"]):not([type="radio"]),
+.bg-gray-300 input:not([type="checkbox"]):not([type="radio"]),
+.bg-gray-400 input:not([type="checkbox"]):not([type="radio"]),
+.bg-gray-500 input:not([type="checkbox"]):not([type="radio"]),
+.bg-gray-600 input:not([type="checkbox"]):not([type="radio"]),
+.bg-gray-700 input:not([type="checkbox"]):not([type="radio"]),
+.bg-gray-800 input:not([type="checkbox"]):not([type="radio"]),
+.bg-gray-900 input:not([type="checkbox"]):not([type="radio"]) {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
 }

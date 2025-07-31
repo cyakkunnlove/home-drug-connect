@@ -45,6 +45,15 @@ export default function DashboardLayout({
           .eq('id', user.id)
           .single()
         
+        console.log('薬局ダッシュボードレイアウト - ユーザー情報:', { userId: user.id, role: profileData?.role })
+        
+        // 医師の場合は医師ダッシュボードにリダイレクト
+        if (profileData?.role === 'doctor') {
+          console.log('薬局ダッシュボードレイアウト - 医師ユーザーを検出、/doctorにリダイレクト')
+          router.push('/doctor')
+          return
+        }
+        
         setProfile(profileData)
       } catch (error) {
         console.error('認証エラー:', error)

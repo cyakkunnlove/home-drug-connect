@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { ChevronLeft, Send, Mail, Phone, MapPin, AlertCircle } from 'lucide-react'
+import AuthenticatedHeader from '@/components/layout/AuthenticatedHeader'
 
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -46,6 +47,7 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <AuthenticatedHeader />
       <header className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
@@ -154,6 +156,7 @@ export default function ContactPage() {
                         type="text"
                         required
                         className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                        style={{ color: '#111827', backgroundColor: '#ffffff' }}
                       />
                     </div>
 
@@ -167,6 +170,7 @@ export default function ContactPage() {
                         type="email"
                         required
                         className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                        style={{ color: '#111827', backgroundColor: '#ffffff' }}
                       />
                     </div>
                   </div>
