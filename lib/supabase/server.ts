@@ -1,16 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-// Connection reuse for better performance
-let globalServerClient: ReturnType<typeof createServerClient> | null = null
-
 export async function createClient() {
   const cookieStore = await cookies()
-
-  // In production, reuse client when possible for connection pooling
-  if (process.env.NODE_ENV === 'production' && globalServerClient) {
-    return globalServerClient
-  }
 
   const client = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -39,11 +31,6 @@ export async function createClient() {
       },
     }
   )
-
-  // Cache client in production
-  if (process.env.NODE_ENV === 'production') {
-    globalServerClient = client
-  }
 
   return client
 }

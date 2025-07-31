@@ -7,11 +7,23 @@ export default async function DoctorDashboard() {
   
   const { data: { user } } = await supabase.auth.getUser()
   
+  if (!user) {
+    return (
+      <div className="py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-red-50 border border-red-200 rounded-md p-4">
+            <p className="text-red-800">認証エラー: ユーザー情報が取得できませんでした。</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+  
   // Get request statistics
   const { data: requests } = await supabase
     .from('requests')
     .select('status')
-    .eq('doctor_id', user?.id)
+    .eq('doctor_id', user.id)
 
   const stats = {
     total: requests?.length || 0,
