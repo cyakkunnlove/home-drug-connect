@@ -109,10 +109,10 @@ SELECT
     metric_name,
     date_trunc('hour', created_at) AS hour,
     COUNT(*) AS sample_count,
-    ROUND(AVG(metric_value), 2) AS avg_value,
-    ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY metric_value), 2) AS median_value,
-    ROUND(PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY metric_value), 2) AS p75_value,
-    ROUND(PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY metric_value), 2) AS p95_value,
+    ROUND(AVG(metric_value)::NUMERIC, 2) AS avg_value,
+    ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY metric_value)::NUMERIC, 2) AS median_value,
+    ROUND(PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY metric_value)::NUMERIC, 2) AS p75_value,
+    ROUND(PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY metric_value)::NUMERIC, 2) AS p95_value,
     COUNT(*) FILTER (WHERE rating = 'good') AS good_count,
     COUNT(*) FILTER (WHERE rating = 'needs-improvement') AS needs_improvement_count,
     COUNT(*) FILTER (WHERE rating = 'poor') AS poor_count
@@ -129,13 +129,13 @@ SELECT
     method,
     date_trunc('hour', created_at) AS hour,
     COUNT(*) AS request_count,
-    ROUND(AVG(duration_ms), 0) AS avg_duration_ms,
-    ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY duration_ms), 0) AS median_duration_ms,
-    ROUND(PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY duration_ms), 0) AS p95_duration_ms,
+    ROUND(AVG(duration_ms)::NUMERIC, 0) AS avg_duration_ms,
+    ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY duration_ms)::NUMERIC, 0) AS median_duration_ms,
+    ROUND(PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY duration_ms)::NUMERIC, 0) AS p95_duration_ms,
     COUNT(*) FILTER (WHERE status_code >= 200 AND status_code < 300) AS success_count,
     COUNT(*) FILTER (WHERE status_code >= 400 AND status_code < 500) AS client_error_count,
     COUNT(*) FILTER (WHERE status_code >= 500) AS server_error_count,
-    ROUND(100.0 * COUNT(*) FILTER (WHERE status_code >= 400) / COUNT(*), 2) AS error_rate
+    ROUND((100.0 * COUNT(*) FILTER (WHERE status_code >= 400) / COUNT(*))::NUMERIC, 2) AS error_rate
 FROM api_performance
 WHERE created_at > NOW() - INTERVAL '24 hours'
 GROUP BY endpoint, method, hour

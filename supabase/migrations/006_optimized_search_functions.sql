@@ -52,10 +52,10 @@ BEGIN
             p.has_clean_room,
             p.handles_narcotics,
             ROUND(
-                ST_Distance(
+                (ST_Distance(
                     p.location::geography,
                     ST_Point(p_lng, p_lat)::geography
-                ) / 1000.0,
+                ) / 1000.0)::NUMERIC,
                 2
             ) AS dist_km
         FROM pharmacies p
@@ -217,7 +217,7 @@ BEGIN
         ds.search_date AS date,
         SUM(ds.search_count) AS total_searches,
         MAX(ds.unique_sessions) AS unique_sessions,
-        ROUND(AVG(ds.avg_results), 2) AS avg_results_count,
+        ROUND(AVG(ds.avg_results)::NUMERIC, 2) AS avg_results_count,
         MAX(ds.common_radius) AS most_common_radius,
         COALESCE(fs.filter_usage, '{}'::jsonb) AS filter_usage
     FROM daily_stats ds
@@ -259,7 +259,7 @@ BEGIN
         COUNT(r.id) FILTER (WHERE r.status = 'pending') AS pending_requests,
         CASE 
             WHEN COUNT(r.id) > 0 THEN
-                ROUND(100.0 * COUNT(r.id) FILTER (WHERE r.status = 'accepted') / COUNT(r.id), 2)
+                ROUND((100.0 * COUNT(r.id) FILTER (WHERE r.status = 'accepted') / COUNT(r.id))::NUMERIC, 2)
             ELSE 0
         END AS acceptance_rate,
         ROUND(COUNT(r.id)::NUMERIC / p_days, 2) AS avg_daily_requests

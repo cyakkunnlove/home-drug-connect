@@ -148,7 +148,7 @@ SELECT
     COUNT(DISTINCT r.id) FILTER (WHERE r.status = 'rejected') as rejected_requests,
     COUNT(DISTINCT r.doctor_id) as unique_doctors,
     COUNT(DISTINCT rv.id) as total_reviews,
-    ROUND(AVG(rv.rating), 2) as avg_rating,
+    ROUND(AVG(rv.rating)::NUMERIC, 2) as avg_rating,
     MAX(r.created_at) as last_request_at
 FROM pharmacies p
 LEFT JOIN requests r ON r.pharmacy_id = p.id
