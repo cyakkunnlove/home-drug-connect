@@ -1,6 +1,7 @@
 -- Performance optimization indexes for HOME-DRUG CONNECT
 -- This migration adds comprehensive indexes to improve query performance at scale
 -- Note: CONCURRENTLY removed for Supabase migration compatibility
+-- Note: INCLUDE clause removed for PostgreSQL compatibility
 
 -- ============================================
 -- 1. Pharmacy Search Optimization
@@ -42,8 +43,14 @@ ON search_logs USING GIST(search_location);
 
 -- Composite index for analytics queries
 CREATE INDEX IF NOT EXISTS idx_search_logs_analytics 
-ON search_logs(created_at DESC, session_id) 
-INCLUDE (search_filters, results_count);
+ON search_logs(created_at DESC, session_id);
+
+-- Additional indexes for search_logs columns
+CREATE INDEX IF NOT EXISTS idx_search_logs_filters 
+ON search_logs USING GIN(search_filters);
+
+CREATE INDEX IF NOT EXISTS idx_search_logs_results 
+ON search_logs(results_count);
 
 -- ============================================
 -- 3. User and Authentication Optimization
