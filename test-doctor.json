@@ -1,0 +1,8 @@
+{
+  "email": "test-doctor-20250801@example.com",
+  "password": "TestPassword123!",
+  "name": "テスト医師 太郎",
+  "phone": "090-1234-5678",
+  "hospitalName": "テスト病院",
+  "department": "内科"
+}
