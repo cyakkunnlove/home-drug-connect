@@ -22,6 +22,11 @@ export async function signUp(formData: FormData) {
   })
 
   if (authError) {
+    console.error('SignUp Auth Error:', {
+      message: authError.message,
+      status: authError.status,
+      code: authError.code,
+    })
     return { error: authError.message }
   }
 
@@ -39,8 +44,13 @@ export async function signUp(formData: FormData) {
       .single()
 
     if (companyError) {
-      console.error('会社作成エラー:', companyError)
-      return { error: '会社情報の作成に失敗しました。' }
+      console.error('会社作成エラー:', {
+        message: companyError.message,
+        code: companyError.code,
+        details: companyError.details,
+        hint: companyError.hint
+      })
+      return { error: `会社情報の作成に失敗しました: ${companyError.message}` }
     }
 
     // トリガーが自動的にusersテーブルにレコードを作成するので、
