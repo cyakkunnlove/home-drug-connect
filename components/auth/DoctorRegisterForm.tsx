@@ -3,11 +3,14 @@
 import { useState } from 'react'
 import { signUpDoctor } from '@/lib/auth/actions'
 import Link from 'next/link'
-import { Mail, Lock, Building2, Phone, AlertCircle, User, FileText } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Mail, Lock, Building2, Phone, AlertCircle, User, FileText, CheckCircle } from 'lucide-react'
 
 export default function DoctorRegisterForm() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const router = useRouter()
 
   async function handleSubmit(formData: FormData) {
     setIsLoading(true)
@@ -27,7 +30,28 @@ export default function DoctorRegisterForm() {
     if (result?.error) {
       setError(result.error)
       setIsLoading(false)
+    } else {
+      setSuccess(true)
+      setIsLoading(false)
+      setTimeout(() => {
+        router.push('/doctor')
+      }, 3000)
     }
+  }
+
+  if (success) {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col items-center gap-4 p-8 bg-green-50 border border-green-200 rounded-lg">
+          <CheckCircle className="w-16 h-16 text-green-600" />
+          <h3 className="text-lg font-semibold text-green-900">登録が完了しました！</h3>
+          <p className="text-sm text-green-700 text-center">
+            アカウントが正常に作成されました。<br />
+            3秒後にダッシュボードへ移動します...
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (

@@ -74,7 +74,7 @@ export default function SearchPageWithMap() {
     showOnly24Hour: false,
     showOnlyCleanRoom: false,
     showOnlyNarcotics: false,
-    radius: 5
+    radius: 16
   })
   const [showFilters, setShowFilters] = useState(false)
   
@@ -707,12 +707,21 @@ export default function SearchPageWithMap() {
               >
                 詳細ページへ
               </Link>
-              <a
-                href={`tel:${selectedPharmacy.phone}`}
-                className="flex-1 text-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                電話で問い合わせる
-              </a>
+              {userRole === 'doctor' ? (
+                <Link
+                  href={`/doctor/request/new?pharmacyId=${selectedPharmacy.id}`}
+                  className="flex-1 text-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  依頼する
+                </Link>
+              ) : (
+                <a
+                  href={`tel:${selectedPharmacy.phone}`}
+                  className="flex-1 text-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  電話で問い合わせる
+                </a>
+              )}
             </div>
           </div>
         )}

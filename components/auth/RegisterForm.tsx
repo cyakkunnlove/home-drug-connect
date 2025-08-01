@@ -3,11 +3,14 @@
 import { useState } from 'react'
 import { signUp } from '@/lib/auth/actions'
 import Link from 'next/link'
-import { Mail, Lock, Building2, Phone, AlertCircle } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Mail, Lock, Building2, Phone, AlertCircle, CheckCircle } from 'lucide-react'
 
 export default function RegisterForm() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const router = useRouter()
 
   async function handleSubmit(formData: FormData) {
     setIsLoading(true)
@@ -43,12 +46,31 @@ export default function RegisterForm() {
         throw new Error(result.error || '登録に失敗しました')
       }
       
-      // 成功時はダッシュボードへリダイレクト
-      window.location.href = '/dashboard'
+      // 成功時は成功メッセージを表示してからリダイレクト
+      setSuccess(true)
+      setIsLoading(false)
+      setTimeout(() => {
+        router.push('/dashboard')
+      }, 3000)
     } catch (err) {
       setError(err instanceof Error ? err.message : '登録に失敗しました')
       setIsLoading(false)
     }
+  }
+
+  if (success) {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col items-center gap-4 p-8 bg-green-50 border border-green-200 rounded-lg">
+          <CheckCircle className="w-16 h-16 text-green-600" />
+          <h3 className="text-lg font-semibold text-green-900">登録が完了しました！</h3>
+          <p className="text-sm text-green-700 text-center">
+            アカウントが正常に作成されました。<br />
+            3秒後にダッシュボードへ移動します...
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (
