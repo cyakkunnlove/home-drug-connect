@@ -1,19 +1,18 @@
 # HOME-DRUG CONNECT Project Structure
 
 ## Root Directory Organization
-
 ```
 home-drug-connect/
-├── app/                    # Next.js App Router pages and API routes
+├── app/                    # Next.js 15 App Router pages and API routes
 ├── components/             # Reusable React components
 ├── lib/                    # Utility functions and service clients
 ├── hooks/                  # Custom React hooks
 ├── types/                  # TypeScript type definitions
 ├── public/                 # Static assets
-├── scripts/                # Build and utility scripts
-├── supabase/              # Database migrations and schemas
-├── docs/                   # Project documentation
-└── .claude-specs/         # AI steering and specification documents
+├── supabase/              # Database migrations and configurations
+├── scripts/               # Development and deployment scripts
+├── docs/                  # Project documentation
+└── .claude-specs/         # AI steering and specifications
 ```
 
 ## Subdirectory Structures
@@ -21,152 +20,210 @@ home-drug-connect/
 ### `/app` - Next.js App Router
 ```
 app/
-├── (auth)/                # Auth-related grouped routes
-├── admin/                 # Admin dashboard pages
-│   ├── layout.tsx        # Admin layout wrapper
-│   ├── page.tsx          # Admin dashboard home
-│   └── pharmacies/       # Pharmacy management
+├── (public)/              # Unauthenticated routes group
+│   └── doctor/           
+│       ├── login/        # Doctor login page
+│       └── register/     # Doctor registration
 ├── api/                   # API routes
 │   ├── auth/             # Authentication endpoints
-│   ├── admin/            # Admin-only endpoints
-│   ├── inquiries/        # Inquiry management
-│   ├── pharmacies/       # Pharmacy data endpoints
+│   ├── pharmacies/       # Pharmacy CRUD operations
+│   ├── requests/         # Medical request management
+│   ├── responses/        # Pharmacy responses
+│   ├── inquiries/        # Direct messaging
 │   ├── stripe/           # Payment webhooks
-│   └── test/             # Test/debug endpoints
-├── dashboard/             # User dashboard
-│   ├── analytics/        # Analytics pages
-│   ├── inquiries/        # Inquiry management
-│   ├── pharmacies/       # Pharmacy CRUD
-│   └── subscription/     # Billing management
-├── pharmacy/              # Public pharmacy pages
-│   ├── [id]/            # Dynamic pharmacy profiles
-│   ├── login/           # Pharmacy login
-│   └── register/        # Pharmacy registration
-├── search/               # Search functionality
-├── layout.tsx           # Root layout
-├── page.tsx             # Home page
-└── globals.css          # Global styles
+│   └── admin/            # Admin-only endpoints
+├── dashboard/             # Authenticated pharmacy dashboard
+├── doctor/               # Doctor portal
+├── admin/                # System admin interface
+├── search/               # Public search interface
+├── pharmacy/             # Public pharmacy profiles
+│   └── [id]/            # Dynamic pharmacy pages
+├── login/                # General login
+├── layout.tsx            # Root layout
+├── page.tsx              # Homepage
+└── globals.css           # Global styles
 ```
 
-### `/components` - React Components
+### `/components` - UI Components
 ```
 components/
-├── auth/                  # Authentication components
+├── auth/                  # Authentication forms
 │   ├── LoginForm.tsx
-│   └── RegisterForm.tsx
+│   ├── RegisterForm.tsx
+│   └── DoctorRegisterForm.tsx
 ├── dashboard/             # Dashboard-specific components
 │   └── MobileNav.tsx
-├── pharmacy/              # Pharmacy-related components
+├── doctor/               # Doctor portal components
+│   ├── RequestForm.tsx
+│   └── DrugAutocomplete.tsx
+├── pharmacy/             # Pharmacy management
 │   ├── PharmacyForm.tsx
+│   ├── RequestList.tsx
+│   ├── ResponseForm.tsx
 │   └── InquiryForm.tsx
-├── maps/                  # Map components
+├── maps/                 # Map components
 │   ├── GoogleMap.tsx
 │   └── PharmacyMap.tsx
-└── ui/                    # Generic UI components
-    ├── Modal.tsx
-    └── LoadingSpinner.tsx
+├── layout/               # Layout components
+│   ├── Header.tsx
+│   └── AuthenticatedHeader.tsx
+├── ui/                   # Generic UI components
+│   ├── Modal.tsx
+│   ├── LoadingSpinner.tsx
+│   └── TouchFeedback.tsx
+└── settings/             # Settings components
+    └── DeleteAccountSection.tsx
 ```
 
-### `/lib` - Utilities and Services
+### `/lib` - Core Libraries
 ```
 lib/
-├── auth/                  # Authentication utilities
-│   └── actions.ts        # Auth server actions
-├── email/                 # Email service
-│   ├── client.ts         # Resend client
-│   └── notifications.ts  # Email templates
-├── google-maps/           # Maps integration
-│   └── geocoding.ts      # Geocoding utilities
-├── stripe/                # Payment integration
-│   ├── client.ts         # Stripe client
-│   ├── config.ts         # Stripe configuration
-│   └── subscription.ts   # Subscription logic
-├── supabase/              # Database clients
-│   ├── client.ts         # Browser client
-│   └── server.ts         # Server client
-└── utils/                 # General utilities
+├── supabase/             # Supabase client configuration
+│   ├── client.ts        # Client-side instance
+│   ├── server.ts        # Server-side instance
+│   └── pool.ts          # Connection pooling
+├── auth/                 # Authentication utilities
+│   └── actions.ts       # Server actions
+├── stripe/               # Stripe integration
+│   ├── client.ts
+│   ├── config.ts
+│   └── subscription.ts
+├── google-maps/          # Maps integration
+│   └── geocoding.ts
+├── email/                # Email service
+│   ├── client.ts
+│   ├── notifications.ts
+│   └── templates/
+├── cache/                # Caching utilities
+│   ├── redis.ts
+│   └── integration.ts
+├── monitoring/           # Performance monitoring
+│   └── performance.ts
+├── rate-limit/           # API rate limiting
+│   └── index.ts
+├── state/                # State management
+│   └── search-store.ts
+└── utils/                # General utilities
+```
+
+### `/types` - TypeScript Definitions
+```
+types/
+├── database.ts           # Database schema types
+└── supabase.ts          # Auto-generated Supabase types
+```
+
+### `/supabase` - Database Configuration
+```
+supabase/
+└── migrations/           # SQL migration files
+    ├── 001_initial_schema.sql
+    ├── 002_analytics_functions.sql
+    ├── 003_doctor_features.sql
+    ├── 004_performance_indexes.sql
+    └── 009_fix_registration_issues.sql
 ```
 
 ## Code Organization Patterns
 
-### Page Components
-- Server Components by default for better performance
-- Client Components marked with `'use client'` when needed
-- Dynamic routes use bracket notation `[id]`
-- Route groups use parentheses `(auth)`
-
-### API Routes
-- RESTful naming conventions
-- Request handlers export named functions (GET, POST, etc.)
-- Consistent error handling and response formats
-- Authentication checks at route level
-
 ### Component Structure
-- Functional components with TypeScript
-- Props interfaces defined inline or in types/
-- Hooks for state and side effects
-- Server actions for form submissions
+- **Presentational Components**: Pure UI components in `/components/ui`
+- **Feature Components**: Business logic components organized by feature
+- **Page Components**: Top-level route components in `/app`
+
+### API Route Pattern
+```typescript
+// Standard API route structure
+export async function GET(request: Request) { }
+export async function POST(request: Request) { }
+export async function PUT(request: Request, { params }: { params: { id: string } }) { }
+export async function DELETE(request: Request, { params }: { params: { id: string } }) { }
+```
+
+### Service Layer Pattern
+- Database queries isolated in service modules
+- External API integrations wrapped in client libraries
+- Business logic separated from route handlers
 
 ## File Naming Conventions
 
-### General Rules
-- **Components**: PascalCase (e.g., `PharmacyForm.tsx`)
-- **Pages**: lowercase with hyphens (e.g., `page.tsx`, `not-found.tsx`)
-- **API Routes**: lowercase with hyphens (e.g., `route.ts`)
-- **Utilities**: camelCase (e.g., `geocoding.ts`)
-- **Types**: PascalCase with `.ts` extension (e.g., `Database.ts`)
+### Components
+- **PascalCase**: Component files (e.g., `PharmacyForm.tsx`)
+- **Index files**: For component directories (e.g., `components/auth/index.ts`)
 
-### Special Files
-- `layout.tsx`: Layout wrapper for route segment
-- `page.tsx`: Page component for route
-- `loading.tsx`: Loading UI
-- `error.tsx`: Error boundary
-- `route.ts`: API route handler
+### Pages & Routes
+- **kebab-case**: Route segments (e.g., `forgot-password/page.tsx`)
+- **Brackets**: Dynamic routes (e.g., `[id]/page.tsx`)
+- **Parentheses**: Route groups (e.g., `(public)/`)
+
+### Utilities & Hooks
+- **camelCase**: Utility functions (e.g., `geocodeAddress.ts`)
+- **use prefix**: Custom hooks (e.g., `usePharmacySearch.ts`)
+
+### Database & Migrations
+- **snake_case**: Database tables and columns
+- **Numbered prefix**: Migration files (e.g., `001_initial_schema.sql`)
 
 ## Import Organization
-
-### Import Order
-1. External packages (React, Next.js, etc.)
-2. Internal aliases (`@/components`, `@/lib`)
-3. Relative imports (`./`, `../`)
-4. Type imports (`import type`)
-
-### Example:
 ```typescript
+// 1. React/Next.js imports
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+
+// 2. External libraries
+import { createClient } from '@supabase/supabase-js'
+import { z } from 'zod'
+
+// 3. Internal absolute imports
+import { Button } from '@/components/ui/Button'
 import { createClient } from '@/lib/supabase/client'
-import { PharmacyForm } from '@/components/pharmacy/PharmacyForm'
-import { validatePharmacy } from './utils'
-import type { Pharmacy } from '@/types/database'
+
+// 4. Relative imports
+import { PharmacyCard } from './PharmacyCard'
+
+// 5. Type imports
+import type { Database } from '@/types/supabase'
 ```
 
 ## Key Architectural Principles
 
 ### 1. Server-First Approach
-- Leverage Server Components for data fetching
-- Minimize client-side JavaScript bundle
-- Use Server Actions for mutations
+- Prefer Server Components for data fetching
+- Use Client Components only when necessary (interactivity)
+- Implement Server Actions for mutations
 
 ### 2. Type Safety
-- Strict TypeScript configuration
+- Full TypeScript coverage
 - Generated types from Supabase schema
-- Comprehensive type coverage
+- Zod validation for runtime safety
 
-### 3. Security by Design
-- Authentication checks in middleware
-- Row Level Security in database
-- Environment variables for secrets
-- Input validation and sanitization
+### 3. Security by Default
+- Row Level Security (RLS) on all tables
+- API routes check authentication
+- Input validation at all boundaries
 
 ### 4. Performance Optimization
 - Static generation where possible
 - Dynamic imports for code splitting
-- Image optimization with Next.js Image
-- Efficient database queries
+- Optimistic UI updates
 
-### 5. Maintainability
-- Clear separation of concerns
-- Reusable component library
-- Consistent naming and structure
-- Comprehensive documentation
+### 5. Mobile-First Design
+- Responsive components by default
+- Touch-optimized interactions
+- Progressive Web App capabilities
+
+### 6. Separation of Concerns
+- Business logic in services
+- UI logic in components
+- Data access in dedicated modules
+
+### 7. Error Handling
+- Graceful degradation
+- User-friendly error messages
+- Proper error boundaries
+
+### 8. Testing Strategy
+- Unit tests for utilities
+- Integration tests for API routes
+- E2E tests for critical user flows
+EOF < /dev/null

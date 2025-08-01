@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { geocodeAddress } from '@/lib/google-maps/geocoding'
+// geocodeAddress関数はAPIルート経由で呼び出す
 import { 
   Building2, 
   MapPin, 
@@ -39,25 +39,36 @@ export default function PharmacyForm({ pharmacy }: { pharmacy: Pharmacy | null }
       return
     }
 
-    // 住所から座標を取得
+    // 住所から座標を取得（エラーがあっても続行）
     const address = formData.get('address') as string
-    const coordinates = await geocodeAddress(address)
+    let locationData = null
     
-    if (!coordinates) {
-      setError('住所から位置情報を取得できませんでした。正しい住所を入力してください。')
-      setIsLoading(false)
-      return
+    try {
+      const response = await fetch('/api/geocode', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ address })
+      })
+      
+      if (response.ok) {
+        const coordinates = await response.json()
+        const { lat, lng } = coordinates
+        locationData = `POINT(${lng} ${lat})`
+      } else {
+        console.warn('位置情報の取得に失敗しましたが、登録を続行します')
+      }
+    } catch (err) {
+      console.warn('位置情報の取得に失敗しましたが、登録を続行します:', err)
     }
-    
-    const { lat, lng } = coordinates
 
-    const pharmacyData = {
+    const pharmacyData: any = {
       user_id: user.id,
       name: formData.get('name') as string,
       address: formData.get('address') as string,
       phone: formData.get('phone') as string,
       email: formData.get('email') as string,
-      location: `POINT(${lng} ${lat})`,
       twenty_four_support: formData.get('twenty_four_support') === 'on',
       holiday_support: formData.get('holiday_support') === 'on',
       emergency_support: formData.get('emergency_support') === 'on',
@@ -65,6 +76,11 @@ export default function PharmacyForm({ pharmacy }: { pharmacy: Pharmacy | null }
       current_capacity: parseInt(formData.get('current_capacity') as string),
       coverage_radius_km: parseFloat(formData.get('coverage_radius_km') as string),
       status: 'pending' as const,
+    }
+    
+    // 位置情報があれば追加
+    if (locationData) {
+      pharmacyData.location = locationData
     }
 
     try {

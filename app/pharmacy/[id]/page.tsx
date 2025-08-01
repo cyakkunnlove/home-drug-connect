@@ -133,25 +133,27 @@ export default async function PharmacyProfilePage({ params }: PageProps) {
               </div>
 
               {/* Map */}
-              <div>
-                <h2 className="text-xl font-semibold mb-4">アクセス</h2>
-                <div className="h-64 rounded-lg overflow-hidden">
-                  <GoogleMap
-                    center={{
-                      lat: pharmacy.location.coordinates[1],
-                      lng: pharmacy.location.coordinates[0],
-                    }}
-                    zoom={15}
-                    markers={[{
-                      position: {
+              {pharmacy.location && (
+                <div>
+                  <h2 className="text-xl font-semibold mb-4">アクセス</h2>
+                  <div className="h-64 rounded-lg overflow-hidden">
+                    <GoogleMap
+                      center={{
                         lat: pharmacy.location.coordinates[1],
                         lng: pharmacy.location.coordinates[0],
-                      },
-                      title: pharmacy.name,
-                    }]}
-                  />
+                      }}
+                      zoom={15}
+                      markers={[{
+                        position: {
+                          lat: pharmacy.location.coordinates[1],
+                          lng: pharmacy.location.coordinates[0],
+                        },
+                        title: pharmacy.name,
+                      }]}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Sidebar */}

@@ -1,144 +1,162 @@
 # HOME-DRUG CONNECT Technology Stack
 
 ## Architecture
-
-**Type**: Monolithic Next.js application with serverless deployment
-**Pattern**: Full-stack React application with API routes
-**Deployment**: Vercel serverless functions
-**Database**: Supabase (PostgreSQL with PostGIS extension)
+- **Type**: Full-stack monolithic application with serverless functions
+- **Deployment Model**: JAMstack architecture on Vercel
+- **Database**: Hosted PostgreSQL with PostGIS extension (Supabase)
+- **API Pattern**: Next.js API routes + Supabase client SDK
+- **Real-time**: Supabase Realtime subscriptions (when needed)
 
 ## Frontend
-
 ### Core Framework
-- **Next.js 15.4.5**: React framework with App Router
-- **React 19.1.0**: UI library
-- **TypeScript 5.x**: Type-safe JavaScript
+- **Next.js 15**: React-based framework with App Router
+- **React 19**: UI library with Server Components
+- **TypeScript**: Type-safe development
 
-### Styling & UI
-- **Tailwind CSS 4**: Utility-first CSS framework
-- **Lucide React**: Icon library
-- **React Hot Toast**: Toast notifications
+### UI & Styling
+- **Tailwind CSS v4**: Utility-first CSS framework
+- **Lucide Icons**: Consistent icon library
+- **Radix UI**: Accessible component primitives (planned)
 
 ### State Management
-- **React Context API**: Built-in state management
-- **Supabase Realtime**: Live data updates
+- **React Context API**: Global state management
+- **Zustand**: For complex client state (search filters)
+- **React Hook Form**: Form management
+- **Zod**: Schema validation
 
-### Maps Integration
-- **@googlemaps/js-api-loader**: Google Maps loader
-- **@react-google-maps/api**: React Google Maps components
+### Build & Development
+- **Turbopack**: Fast development builds
+- **ESLint**: Code linting
+- **Prettier**: Code formatting
 
 ## Backend
-
 ### API Layer
-- **Next.js API Routes**: Serverless API endpoints
-- **TypeScript**: Type-safe backend code
+- **Next.js API Routes**: Serverless functions on Vercel
+- **Supabase SDK**: Database and auth client
+- **Edge Runtime**: For performance-critical endpoints
 
-### Authentication & Database
-- **Supabase Auth**: User authentication and session management
-- **Supabase Database**: PostgreSQL with Row Level Security
+### Database
+- **PostgreSQL 15**: Primary database (via Supabase)
 - **PostGIS**: Geospatial queries for location-based search
+- **Row Level Security (RLS)**: Fine-grained access control
 
 ### External Services
-- **Stripe**: Payment processing and subscription management
-- **Resend**: Transactional email service
-- **Google Maps API**: Geocoding and map services
+- **Supabase Auth**: Authentication and user management
+- **Stripe**: Payment processing and subscriptions
+- **Google Maps API**: Geocoding and map display
+- **Resend**: Transactional email delivery
+
+### Caching & Performance
+- **Vercel Edge Cache**: CDN and edge caching
+- **Database Indexes**: Optimized query performance
+- **React Suspense**: Progressive rendering
 
 ## Development Environment
-
 ### Prerequisites
-- Node.js 18+ 
-- npm or yarn package manager
-- Git for version control
+```bash
+node >= 18.0.0
+npm >= 9.0.0
+```
 
 ### Local Setup
 ```bash
 # Clone repository
-git clone <repository-url>
+git clone [repository-url]
 
 # Install dependencies
 npm install
 
-# Set up environment variables
+# Copy environment variables
 cp .env.example .env.local
 
 # Run development server
 npm run dev
 ```
 
-## Common Commands
+### Required Tools
+- **Node.js 18+**: JavaScript runtime
+- **npm/yarn**: Package manager
+- **Git**: Version control
+- **Supabase CLI** (optional): Local development
+- **Vercel CLI** (optional): Deployment testing
 
+## Common Commands
 ```bash
 # Development
-npm run dev          # Start development server with Turbopack
-npm run build        # Build production bundle
+npm run dev          # Start development server (http://localhost:3000)
+npm run build        # Build for production
 npm run start        # Start production server
 npm run lint         # Run ESLint
+npm run type-check   # Run TypeScript compiler
 
 # Database
-# Access Supabase dashboard for migrations and queries
+npm run db:migrate   # Run database migrations
+npm run db:seed      # Seed test data
+
+# Testing
+npm run test         # Run test suite
+npm run test:e2e     # Run E2E tests
 
 # Deployment
-vercel               # Deploy to Vercel
+vercel               # Deploy preview
 vercel --prod        # Deploy to production
 ```
 
 ## Environment Variables
-
 ### Required Variables
 ```env
 # Supabase
-NEXT_PUBLIC_SUPABASE_URL=https://[project].supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
-SUPABASE_SERVICE_ROLE_KEY=eyJ...
-
-# Google Maps
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=AIza...
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
 
 # Stripe
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_...
-STRIPE_SECRET_KEY=sk_...
-STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 
-# Resend
-RESEND_API_KEY=re_...
+# Google Maps
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
+
+# Email (Resend)
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=
 
 # App Configuration
-NEXT_PUBLIC_APP_URL=https://your-domain.com
+NEXT_PUBLIC_APP_URL=
 ```
 
-### Optional Variables
+### Development Variables
 ```env
 # Feature Flags
-NEXT_PUBLIC_ENABLE_ANALYTICS=true
-NEXT_PUBLIC_ENABLE_PWA=true
-
-# Development
-NEXT_PUBLIC_CSP_DISABLED=true
+NEXT_PUBLIC_ENABLE_ANALYTICS=false
+NEXT_PUBLIC_ENABLE_PWA=false
 ```
 
 ## Port Configuration
+- **3000**: Next.js development server
+- **3001**: Supabase Studio (local)
+- **54321**: Supabase API (local)
+- **54322**: Supabase Database (local)
 
-- **Development Server**: `http://localhost:3000`
-- **Production**: Managed by Vercel
+## API Endpoints
+### Public Routes
+- `/api/pharmacies/search`: Search pharmacies
+- `/api/auth/login`: User authentication
+- `/api/contact`: Public contact form
 
-## Build & Deployment
+### Protected Routes
+- `/api/requests/*`: Medical requests management
+- `/api/responses/*`: Pharmacy responses
+- `/api/inquiries/*`: Direct inquiries
+- `/api/admin/*`: Admin operations
 
-### Build Process
-1. TypeScript compilation
-2. Next.js optimization
-3. Static page generation where possible
-4. API routes bundled as serverless functions
+### Webhook Endpoints
+- `/api/stripe/webhook`: Stripe payment events
 
-### Deployment Pipeline
-1. Push to GitHub main branch
-2. Vercel automatic deployment triggered
-3. Build and deploy to Vercel edge network
-4. Environment variables injected at build time
-
-## Security Considerations
-
-- All API routes protected by authentication middleware
-- Supabase Row Level Security policies enforced
-- Environment variables never exposed to client
-- CSP headers configured for XSS protection
-- Rate limiting on API endpoints
+## Performance Targets
+- **Initial Load**: < 2s on 3G
+- **API Response**: < 500ms p95
+- **Search Results**: < 1s including geocoding
+- **Lighthouse Score**: > 90 for all metrics
+EOF < /dev/null

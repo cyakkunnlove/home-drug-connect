@@ -1,53 +1,58 @@
 # Claude Specs Steering Documents
 
-This directory contains foundational steering documents that provide persistent knowledge about the HOME-DRUG CONNECT project. These documents guide AI interactions to ensure consistency with established patterns and standards.
+This directory contains foundational steering documents that provide persistent project knowledge for AI interactions. These documents are automatically included in every Claude Code session to ensure consistent and aligned assistance.
 
 ## Documents
 
-### 1. [product.md](./product.md)
+### 📋 product.md
 Comprehensive product overview including:
-- What HOME-DRUG CONNECT is
-- Core features for each user type
-- Target use cases and scenarios
+- Product description and vision
+- Core features and capabilities
+- Target users and use cases
 - Key value propositions
 
-### 2. [tech.md](./tech.md)
-Complete technology landscape including:
+### 🛠 tech.md
+Complete technology landscape:
 - System architecture
-- Frontend and backend technologies
+- Frontend and backend stack
 - Development environment setup
-- Common commands and workflows
-- Environment variables
-- Port configurations
+- Common commands and configurations
+- API endpoints and performance targets
 
-### 3. [structure.md](./structure.md)
-Codebase organization including:
+### 📁 structure.md
+Codebase organization guide:
 - Directory structure and purpose
 - Code organization patterns
-- File naming conventions
-- Import organization standards
-- Key architectural principles
-
-## Purpose
-
-These documents serve as the foundation for spec-driven development by:
-- Providing consistent context for AI interactions
-- Documenting existing patterns and conventions
-- Guiding technical decisions
-- Ensuring generated code aligns with project standards
+- Naming conventions
+- Import standards
+- Architectural principles
 
 ## Usage
 
-When working with Claude Code or other AI assistants:
-1. These documents are automatically loaded to provide context
-2. Reference them when making architectural decisions
-3. Update them when patterns or technologies change
-4. Use them as the source of truth for project standards
+These documents are automatically loaded into Claude Code's context at the start of each session. They ensure that:
+
+1. **Consistency**: All generated code follows established patterns
+2. **Context**: AI understands the product's purpose and constraints
+3. **Efficiency**: No need to repeatedly explain project basics
+4. **Quality**: Suggestions align with architectural decisions
 
 ## Maintenance
 
-Keep these documents updated when:
-- Adding new technologies or dependencies
-- Changing architectural patterns
-- Modifying directory structures
-- Establishing new conventions
+Update these documents when:
+- Major architectural changes occur
+- New technologies are adopted
+- Core patterns or conventions change
+- Product direction shifts
+
+Use the `/steering-update` command to refresh these documents based on current codebase state.
+
+## Custom Steering
+
+For specialized contexts, create additional steering documents:
+- API documentation
+- Testing strategies
+- Security policies
+- Performance guidelines
+
+Place custom steering files in this directory and they'll be automatically included.
+EOF < /dev/null
