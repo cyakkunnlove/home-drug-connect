@@ -22,10 +22,31 @@ export default function RegisterForm() {
       return
     }
     
-    const result = await signUp(formData)
-    
-    if (result?.error) {
-      setError(result.error)
+    // 新しいAPIエンドポイントを使用
+    try {
+      const response = await fetch('/api/auth/register-pharmacy-v2', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.get('email'),
+          password: formData.get('password'),
+          organizationName: formData.get('organizationName'),
+          phone: formData.get('phone'),
+        })
+      })
+      
+      const result = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(result.error || '登録に失敗しました')
+      }
+      
+      // 成功時はダッシュボードへリダイレクト
+      window.location.href = '/dashboard'
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '登録に失敗しました')
       setIsLoading(false)
     }
   }
