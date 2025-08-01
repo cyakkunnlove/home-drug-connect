@@ -2,10 +2,12 @@ import Link from "next/link"
 import { Search, Clock, Shield, MapPin, CheckCircle, Users, Sparkles, ArrowRight } from "lucide-react"
 import AuthenticatedHeader from "@/components/layout/AuthenticatedHeader"
 import Header from "@/components/layout/Header"
+import ScrollToHash from "@/components/ui/ScrollToHash"
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-white">
+      <ScrollToHash />
       <Header />
       <AuthenticatedHeader />
       
@@ -80,7 +82,7 @@ export default function Home() {
       </section>
 
       {/* サービス紹介セクション - 大幅改善 */}
-      <section className="py-24 bg-gradient-to-b from-white to-blue-50">
+      <section id="features" className="py-24 bg-gradient-to-b from-white to-blue-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-20">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
@@ -191,7 +193,7 @@ export default function Home() {
       </section>
 
       {/* 利用方法セクション - 視覚的に改善 */}
-      <section className="py-24 bg-gradient-to-b from-gray-50 to-white">
+      <section id="how-to-use" className="py-24 bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-20">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
