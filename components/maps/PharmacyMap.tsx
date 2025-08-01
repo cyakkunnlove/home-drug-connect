@@ -21,6 +21,7 @@ interface PharmacyMapProps {
   selectedPharmacyId?: string | null
   zoom?: number // ズームレベルを追加
   onRequestClick?: (pharmacyId: string) => void // 依頼ボタンのコールバック
+  onDetailClick?: (pharmacyId: string) => void // 詳細ボタンのコールバック
   currentUserRole?: string | null // 現在のユーザーロール
 }
 
@@ -31,55 +32,70 @@ export default function PharmacyMap({
   selectedPharmacyId,
   zoom = 11, // デフォルトは16km表示のズームレベル
   onRequestClick,
+  onDetailClick,
   currentUserRole
 }: PharmacyMapProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const [map, setMap] = useState<google.maps.Map | null>(null)
   const [markers, setMarkers] = useState<Map<string, google.maps.Marker>>(new Map())
   const [infoWindow, setInfoWindow] = useState<google.maps.InfoWindow | null>(null)
+  const [mapError, setMapError] = useState<string | null>(null)
 
   // マップの初期化
   useEffect(() => {
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+    
+    if (!apiKey) {
+      console.error('Google Maps APIキーが設定されていません')
+      setMapError('Google Maps APIキーが設定されていません')
+      return
+    }
+
     const loader = new Loader({
-      apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+      apiKey,
       version: 'weekly',
       libraries: ['places'],
       language: 'ja',
     })
 
-    loader.load().then(() => {
-      if (mapRef.current && !map) {
-        const googleMap = new google.maps.Map(mapRef.current, {
-          center,
-          zoom: zoom,
-          styles: [
-            {
-              featureType: 'poi.business',
-              elementType: 'labels',
-              stylers: [{ visibility: 'off' }],
+    loader.load()
+      .then(() => {
+        if (mapRef.current && !map) {
+          const googleMap = new google.maps.Map(mapRef.current, {
+            center,
+            zoom: zoom,
+            styles: [
+              {
+                featureType: 'poi.business',
+                elementType: 'labels',
+                stylers: [{ visibility: 'off' }],
+              },
+            ],
+            // マップコントロールのカスタマイズ
+            mapTypeControl: true, // 地図タイプコントロールを表示
+            mapTypeControlOptions: {
+              style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+              position: google.maps.ControlPosition.TOP_RIGHT, // 右上に移動
             },
-          ],
-          // マップコントロールのカスタマイズ
-          mapTypeControl: true, // 地図タイプコントロールを表示
-          mapTypeControlOptions: {
-            style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-            position: google.maps.ControlPosition.TOP_RIGHT, // 右上に移動
-          },
-          streetViewControl: false, // ストリートビューは非表示
-          fullscreenControl: true,
-          fullscreenControlOptions: {
-            position: google.maps.ControlPosition.TOP_RIGHT,
-          },
-          zoomControl: true,
-          zoomControlOptions: {
-            position: google.maps.ControlPosition.RIGHT_CENTER,
-          },
-        })
-        
-        setMap(googleMap)
-        setInfoWindow(new google.maps.InfoWindow())
-      }
-    })
+            streetViewControl: false, // ストリートビューは非表示
+            fullscreenControl: true,
+            fullscreenControlOptions: {
+              position: google.maps.ControlPosition.TOP_RIGHT,
+            },
+            zoomControl: true,
+            zoomControlOptions: {
+              position: google.maps.ControlPosition.RIGHT_CENTER,
+            },
+          })
+          
+          setMap(googleMap)
+          setInfoWindow(new google.maps.InfoWindow())
+        }
+      })
+      .catch((error) => {
+        console.error('Google Maps 読み込みエラー:', error)
+        setMapError('Google Maps の読み込みに失敗しました')
+      })
   }, [zoom])
 
   // 中心位置の更新
@@ -157,14 +173,14 @@ export default function PharmacyMap({
               ${pharmacy.has_clean_room ? '<p style="margin: 4px 0; font-size: 12px; color: #673AB7;">✓ 無菌室あり</p>' : ''}
               ${pharmacy.handles_narcotics ? '<p style="margin: 4px 0; font-size: 12px; color: #FF5722;">✓ 麻薬取扱い</p>' : ''}
               <div style="display: flex; gap: 8px; margin-top: 12px;">
-                <a
-                  href="/pharmacy/${pharmacy.id}"
-                  style="flex: 1; text-align: center; background-color: #F3F4F6; color: #1F2937; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; display: inline-block;"
+                <button
+                  onclick="window.dispatchEvent(new CustomEvent('pharmacyDetailClick', { detail: { pharmacyId: '${pharmacy.id}' } }))"
+                  style="flex: 1; background-color: #F3F4F6; color: #1F2937; border: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer;"
                   onmouseover="this.style.backgroundColor='#E5E7EB'"
                   onmouseout="this.style.backgroundColor='#F3F4F6'"
                 >
                   詳細を見る
-                </a>
+                </button>
                 ${showRequestButton ? `
                   <button
                     onclick="window.dispatchEvent(new CustomEvent('pharmacyRequestClick', { detail: { pharmacyId: '${pharmacy.id}' } }))"
@@ -206,18 +222,43 @@ export default function PharmacyMap({
       }
     }
 
+    const handleDetailClick = (event: any) => {
+      const pharmacyId = event.detail.pharmacyId
+      if (onDetailClick && pharmacyId) {
+        onDetailClick(pharmacyId)
+      }
+    }
+
     window.addEventListener('pharmacyRequestClick', handleRequestClick)
+    window.addEventListener('pharmacyDetailClick', handleDetailClick)
+    
     return () => {
       window.removeEventListener('pharmacyRequestClick', handleRequestClick)
+      window.removeEventListener('pharmacyDetailClick', handleDetailClick)
     }
-  }, [onRequestClick])
+  }, [onRequestClick, onDetailClick])
 
   return (
     <div className="relative w-full h-full">
-      <div ref={mapRef} className="w-full h-full rounded-lg shadow-md" />
+      {mapError ? (
+        <div className="w-full h-full flex items-center justify-center bg-gray-100 rounded-lg">
+          <div className="text-center">
+            <div className="text-red-500 mb-2">
+              <svg className="w-12 h-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <p className="text-gray-600 text-sm">{mapError}</p>
+            <p className="text-gray-500 text-xs mt-2">管理者に問い合わせてください</p>
+          </div>
+        </div>
+      ) : (
+        <div ref={mapRef} className="w-full h-full rounded-lg shadow-md" />
+      )}
       
       {/* マップの凡例 */}
-      <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 bg-white rounded-lg shadow-lg p-3 sm:p-4 text-xs sm:text-sm border border-gray-200 max-w-[180px] sm:max-w-[200px]">
+      {!mapError && (
+        <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 bg-white rounded-lg shadow-lg p-3 sm:p-4 text-xs sm:text-sm border border-gray-200 max-w-[180px] sm:max-w-[200px]">
         <h3 className="font-bold text-gray-800 mb-2 sm:mb-3 text-sm sm:text-base flex items-center gap-2">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
@@ -249,7 +290,8 @@ export default function PharmacyMap({
             <span className="text-gray-500">満床</span>
           </div>
         </div>
-      </div>
+        </div>
+      )}
     </div>
   )
 }

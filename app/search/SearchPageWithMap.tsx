@@ -451,6 +451,12 @@ export default function SearchPageWithMap() {
                             router.push(`/doctor/request/new?pharmacyId=${pharmacy.id}`)
                           }
                         }}
+                        onDetailClick={(pharmacyId) => {
+                          const pharmacy = searchResults.find(p => p.id === pharmacyId)
+                          if (pharmacy) {
+                            handlePharmacyClick(pharmacy)
+                          }
+                        }}
                         currentUserRole={userRole}
                       />
                     )}

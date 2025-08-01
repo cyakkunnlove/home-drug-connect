@@ -63,30 +63,55 @@ export async function POST(request: NextRequest) {
         throw new Error('ユーザー作成に失敗しました')
       }
       
-      // 3. public.usersテーブルに直接レコードを作成
-      const { error: userError } = await supabase
+      // 3. public.usersテーブルのレコードを確認・更新
+      // トリガーが正常に動作していれば既にレコードが存在するはず
+      const { data: existingUser, error: checkError } = await supabase
         .from('users')
-        .insert({
-          id: adminData.user.id,
-          email,
-          role: 'pharmacy_admin',
-          organization_name: organizationName,
-          phone,
-          company_id: company.id,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        })
+        .select('*')
+        .eq('id', adminData.user.id)
+        .single()
       
-      if (userError) {
-        console.error('User record creation error:', userError)
-        // ロールバック
-        await supabase.from('companies').delete().eq('id', company.id)
-        await supabase.auth.admin.deleteUser(adminData.user.id)
+      if (!existingUser) {
+        // トリガーが失敗した場合のフォールバック
+        const { error: userError } = await supabase
+          .from('users')
+          .insert({
+            id: adminData.user.id,
+            email,
+            role: 'pharmacy_admin',
+            organization_name: organizationName,
+            phone,
+            company_id: company.id,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
         
-        return NextResponse.json({
-          error: 'ユーザー情報の保存に失敗しました',
-          details: userError.message
-        }, { status: 400 })
+        if (userError) {
+          console.error('User record creation error:', userError)
+          // ロールバック
+          await supabase.from('companies').delete().eq('id', company.id)
+          await supabase.auth.admin.deleteUser(adminData.user.id)
+          
+          return NextResponse.json({
+            error: 'ユーザー情報の保存に失敗しました',
+            details: userError.message
+          }, { status: 400 })
+        }
+      } else {
+        // 既存レコードを更新（組織情報を追加）
+        const { error: updateError } = await supabase
+          .from('users')
+          .update({
+            organization_name: organizationName,
+            phone,
+            company_id: company.id,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', adminData.user.id)
+        
+        if (updateError) {
+          console.error('User record update error:', updateError)
+        }
       }
       
       // 4. セッションを作成

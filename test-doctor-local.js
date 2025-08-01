@@ -1,20 +1,22 @@
 const http = require('http');
 
-// ローカルホストでテスト
-const testPharmacyLocal = () => {
+// ローカルホストで医師登録テスト
+const testDoctorLocal = () => {
   return new Promise((resolve) => {
     const testData = {
-      email: `test-pharmacy-local-${Date.now()}@example.com`,
+      email: `test-doctor-local-${Date.now()}@example.com`,
       password: 'TestPassword123!',
-      organizationName: `テスト薬局 ${new Date().toISOString()}`,
-      phone: '03-1234-5678'
+      name: `テスト医師 ${Date.now()}`,
+      phone: '090-1234-5678',
+      hospitalName: 'テスト病院',
+      department: '内科'
     };
 
     const postData = JSON.stringify(testData);
     const options = {
       hostname: 'localhost',
       port: 3000,
-      path: '/api/auth/register-pharmacy-v2',
+      path: '/api/auth/register-doctor',
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -22,7 +24,7 @@ const testPharmacyLocal = () => {
       }
     };
 
-    console.log('=== ローカル薬局登録テスト ===');
+    console.log('=== ローカル医師登録テスト ===');
     console.log('Email:', testData.email);
 
     const req = http.request(options, (res) => {
@@ -57,4 +59,4 @@ const testPharmacyLocal = () => {
 };
 
 // 実行
-testPharmacyLocal();
+testDoctorLocal();

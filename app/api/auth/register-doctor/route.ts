@@ -32,26 +32,36 @@ export async function POST(request: NextRequest) {
         throw new Error('ユーザー作成に失敗しました')
       }
       
-      // 2. public.usersテーブルにレコードを作成
-      const { error: userError } = await supabase
+      // 2. public.usersテーブルのレコードを確認
+      // トリガーが正常に動作していれば既にレコードが存在するはず
+      const { data: existingUser, error: checkError } = await supabase
         .from('users')
-        .insert({
-          id: adminData.user.id,
-          email,
-          role: 'doctor',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        })
+        .select('*')
+        .eq('id', adminData.user.id)
+        .single()
       
-      if (userError) {
-        console.error('User record creation error:', userError)
-        // ロールバック
-        await supabase.auth.admin.deleteUser(adminData.user.id)
+      if (!existingUser && checkError?.code === 'PGRST116') {
+        // トリガーが失敗した場合のフォールバック
+        const { error: userError } = await supabase
+          .from('users')
+          .insert({
+            id: adminData.user.id,
+            email,
+            role: 'doctor',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
         
-        return NextResponse.json({
-          error: 'ユーザー情報の保存に失敗しました',
-          details: userError.message
-        }, { status: 400 })
+        if (userError) {
+          console.error('User record creation error:', userError)
+          // ロールバック
+          await supabase.auth.admin.deleteUser(adminData.user.id)
+          
+          return NextResponse.json({
+            error: 'ユーザー情報の保存に失敗しました',
+            details: userError.message
+          }, { status: 400 })
+        }
       }
       
       // 3. doctorsテーブルにレコードを作成
