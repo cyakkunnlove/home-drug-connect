@@ -79,95 +79,321 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 特徴セクション */}
-      <section className="py-20 bg-white">
+      {/* サービス紹介セクション - 大幅改善 */}
+      <section className="py-24 bg-gradient-to-b from-white to-blue-50">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              なぜHOME-DRUG CONNECTなのか
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              HOME-DRUG CONNECTのサービス
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              在宅医療の現場で必要とされる機能を全て搭載
+            <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              在宅医療の現場で発生する「薬局が見つからない」という問題を<br />
+              テクノロジーの力で解決します
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <div className="group hover:shadow-xl transition-all duration-300 rounded-2xl p-8 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100">
-              <div className="bg-gradient-to-br from-blue-500 to-indigo-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Clock className="w-8 h-8 text-white" />
+          {/* メインサービス紹介 */}
+          <div className="max-w-6xl mx-auto mb-20">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div className="order-2 md:order-1">
+                <div className="text-6xl mb-6">🏥</div>
+                <h3 className="text-3xl font-bold mb-4 text-gray-900">
+                  医師の悩みを解決
+                </h3>
+                <p className="text-lg text-gray-700 mb-6 leading-relaxed">
+                  「夜間・休日に対応できる薬局が見つからない...」<br />
+                  「無菌調剤が必要だけど、どこに頼めばいいか分からない...」<br />
+                  「緊急の処方箋を受けてくれる薬局を探すのに時間がかかる...」
+                </p>
+                <div className="bg-blue-100 border-l-4 border-blue-600 p-4 rounded">
+                  <p className="text-blue-900 font-medium">
+                    💡 HOME-DRUG CONNECTなら、条件に合う薬局を瞬時に検索！
+                  </p>
+                </div>
               </div>
-              <h3 className="text-2xl font-bold mb-3 text-gray-900">24時間対応</h3>
-              <p className="text-gray-600 leading-relaxed">
-                休日・夜間・緊急時でも対応可能な薬局をリアルタイムで検索
+              <div className="order-1 md:order-2 bg-white rounded-3xl shadow-2xl p-8 transform hover:scale-105 transition-transform duration-300">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23f0f9ff' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' font-size='80' fill='%233b82f6'%3E🔍%3C/text%3E%3Ctext x='200' y='200' text-anchor='middle' font-size='20' fill='%236b7280'%3E薬局を瞬時に検索%3C/text%3E%3C/svg%3E" alt="検索イメージ" className="w-full h-64 object-cover rounded-lg" />
+              </div>
+            </div>
+          </div>
+
+          {/* 3つの主要機能 */}
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <div className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 text-center transform hover:-translate-y-2">
+              <div className="text-6xl mb-6 group-hover:scale-110 transition-transform">⏰</div>
+              <h3 className="text-2xl font-bold mb-4 text-gray-900">24時間365日対応</h3>
+              <p className="text-gray-700 leading-relaxed mb-6">
+                深夜でも休日でも<br />
+                対応可能な薬局が<br />
+                すぐに見つかります
               </p>
+              <div className="flex flex-wrap gap-2 justify-center">
+                <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">夜間対応</span>
+                <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">休日対応</span>
+                <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">緊急対応</span>
+              </div>
             </div>
             
-            <div className="group hover:shadow-xl transition-all duration-300 rounded-2xl p-8 bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100">
-              <div className="bg-gradient-to-br from-green-500 to-emerald-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Search className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold mb-3 text-gray-900">スマート検索</h3>
-              <p className="text-gray-600 leading-relaxed">
-                患者様の住所から最寄りの対応可能薬局を即座に表示
+            <div className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 text-center transform hover:-translate-y-2">
+              <div className="text-6xl mb-6 group-hover:scale-110 transition-transform">📍</div>
+              <h3 className="text-2xl font-bold mb-4 text-gray-900">位置情報で最適化</h3>
+              <p className="text-gray-700 leading-relaxed mb-6">
+                患者様のご自宅から<br />
+                最も近い薬局を<br />
+                自動的に表示します
               </p>
+              <div className="flex flex-wrap gap-2 justify-center">
+                <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">GPS対応</span>
+                <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">距離表示</span>
+                <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">ルート案内</span>
+              </div>
             </div>
             
-            <div className="group hover:shadow-xl transition-all duration-300 rounded-2xl p-8 bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100">
-              <div className="bg-gradient-to-br from-purple-500 to-pink-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Shield className="w-8 h-8 text-white" />
+            <div className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 text-center transform hover:-translate-y-2">
+              <div className="text-6xl mb-6 group-hover:scale-110 transition-transform">🔒</div>
+              <h3 className="text-2xl font-bold mb-4 text-gray-900">安心の認証制度</h3>
+              <p className="text-gray-700 leading-relaxed mb-6">
+                全ての薬局は<br />
+                厳格な審査を通過<br />
+                安心してご利用可能
+              </p>
+              <div className="flex flex-wrap gap-2 justify-center">
+                <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm">審査済み</span>
+                <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm">評価制度</span>
+                <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm">実績公開</span>
               </div>
-              <h3 className="text-2xl font-bold mb-3 text-gray-900">安心・安全</h3>
-              <p className="text-gray-600 leading-relaxed">
-                厳格な審査を通過した信頼できる薬局のみが登録
+            </div>
+          </div>
+
+          {/* 特殊対応 */}
+          <div className="mt-20 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-8 md:p-12 text-white">
+            <h3 className="text-3xl font-bold mb-6 text-center">特殊な要望にも対応</h3>
+            <div className="grid md:grid-cols-4 gap-6 text-center">
+              <div>
+                <div className="text-5xl mb-3">💊</div>
+                <p className="font-medium">麻薬取扱い</p>
+              </div>
+              <div>
+                <div className="text-5xl mb-3">🧪</div>
+                <p className="font-medium">無菌調剤</p>
+              </div>
+              <div>
+                <div className="text-5xl mb-3">🚗</div>
+                <p className="font-medium">訪問対応</p>
+              </div>
+              <div>
+                <div className="text-5xl mb-3">🏠</div>
+                <p className="font-medium">在宅専門</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 利用方法セクション - 視覚的に改善 */}
+      <section className="py-24 bg-gradient-to-b from-gray-50 to-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              使い方はとってもかんたん！
+            </h2>
+            <p className="text-xl md:text-2xl text-gray-600">
+              3つのステップで薬局との連携が完了します
+            </p>
+          </div>
+          
+          <div className="max-w-6xl mx-auto">
+            {/* ステップ1 */}
+            <div className="mb-16">
+              <div className="grid md:grid-cols-2 gap-8 items-center">
+                <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12">
+                  <div className="flex items-center mb-6">
+                    <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg">
+                      1
+                    </div>
+                    <div className="ml-6">
+                      <h3 className="text-2xl md:text-3xl font-bold text-gray-900">住所を入力</h3>
+                      <p className="text-gray-600">まずは患者様の情報から</p>
+                    </div>
+                  </div>
+                  <div className="bg-blue-50 rounded-2xl p-6">
+                    <p className="text-lg text-gray-700 mb-4">
+                      🏠 患者様のご自宅の住所を入力<br />
+                      📍 または現在地から検索も可能
+                    </p>
+                    <div className="bg-white rounded-lg p-4 border-2 border-blue-200">
+                      <p className="text-sm text-gray-600 mb-2">検索例：</p>
+                      <p className="font-mono text-blue-600">東京都新宿区〇〇1-2-3</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-9xl">🏘️</div>
+                  <p className="text-gray-600 mt-4">患者様のご自宅から検索</p>
+                </div>
+              </div>
+            </div>
+
+            {/* 矢印 */}
+            <div className="text-center mb-16">
+              <div className="text-4xl text-blue-500 animate-bounce">⬇️</div>
+            </div>
+
+            {/* ステップ2 */}
+            <div className="mb-16">
+              <div className="grid md:grid-cols-2 gap-8 items-center">
+                <div className="order-2 md:order-1 text-center">
+                  <div className="text-9xl">🏪</div>
+                  <p className="text-gray-600 mt-4">条件に合う薬局が表示</p>
+                </div>
+                <div className="order-1 md:order-2 bg-white rounded-3xl shadow-xl p-8 md:p-12">
+                  <div className="flex items-center mb-6">
+                    <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg">
+                      2
+                    </div>
+                    <div className="ml-6">
+                      <h3 className="text-2xl md:text-3xl font-bold text-gray-900">薬局を選択</h3>
+                      <p className="text-gray-600">ニーズに合った薬局を</p>
+                    </div>
+                  </div>
+                  <div className="bg-green-50 rounded-2xl p-6">
+                    <p className="text-lg text-gray-700 mb-4">
+                      ✅ 24時間対応可能な薬局<br />
+                      ✅ 無菌調剤室がある薬局<br />
+                      ✅ 現在受入可能な薬局
+                    </p>
+                    <div className="flex gap-2 flex-wrap">
+                      <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">距離順</span>
+                      <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">条件絞込</span>
+                      <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">マップ表示</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 矢印 */}
+            <div className="text-center mb-16">
+              <div className="text-4xl text-green-500 animate-bounce">⬇️</div>
+            </div>
+
+            {/* ステップ3 */}
+            <div className="mb-16">
+              <div className="grid md:grid-cols-2 gap-8 items-center">
+                <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12">
+                  <div className="flex items-center mb-6">
+                    <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg">
+                      3
+                    </div>
+                    <div className="ml-6">
+                      <h3 className="text-2xl md:text-3xl font-bold text-gray-900">依頼送信</h3>
+                      <p className="text-gray-600">必要事項を入力して完了</p>
+                    </div>
+                  </div>
+                  <div className="bg-purple-50 rounded-2xl p-6">
+                    <p className="text-lg text-gray-700 mb-4">
+                      📝 患者情報を入力<br />
+                      💊 処方内容を記載<br />
+                      📤 ワンクリックで送信
+                    </p>
+                    <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg p-4 text-center font-bold">
+                      送信完了！ 🎉
+                    </div>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-9xl">📨</div>
+                  <p className="text-gray-600 mt-4">薬局へ依頼が送信されます</p>
+                </div>
+              </div>
+            </div>
+
+            {/* 完了メッセージ */}
+            <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-3xl p-8 text-white text-center">
+              <div className="text-6xl mb-4">🎊</div>
+              <h3 className="text-3xl font-bold mb-4">これで完了！</h3>
+              <p className="text-xl">
+                薬局から連絡が来るのを待つだけ。<br />
+                平均応答時間は約15分です。
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 使い方セクション */}
-      <section className="py-20 bg-gray-50">
+      {/* ユーザータイプ別ガイド */}
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              かんたん3ステップ
+              あなたはどちらですか？
             </h2>
             <p className="text-xl text-gray-600">
-              薬局検索から依頼まで、すぐに完了
+              ご利用方法をお選びください
             </p>
           </div>
           
-          <div className="max-w-4xl mx-auto">
-            <div className="space-y-8">
-              <div className="flex items-center gap-6">
-                <div className="flex-shrink-0 w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center text-2xl font-bold">
-                  1
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold mb-2">患者様の住所を入力</h3>
-                  <p className="text-gray-600">住所または現在地から検索を開始</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-6">
-                <div className="flex-shrink-0 w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center text-2xl font-bold">
-                  2
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold mb-2">対応可能な薬局を選択</h3>
-                  <p className="text-gray-600">条件に合う薬局をリストから選択</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-6">
-                <div className="flex-shrink-0 w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center text-2xl font-bold">
-                  3
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold mb-2">依頼を送信</h3>
-                  <p className="text-gray-600">必要事項を入力して依頼完了</p>
-                </div>
-              </div>
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {/* 医師向け */}
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-8 text-center hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+              <div className="text-8xl mb-6">👨‍⚕️</div>
+              <h3 className="text-2xl font-bold mb-4 text-gray-900">医師の方</h3>
+              <p className="text-gray-700 mb-6">
+                在宅患者様への処方箋対応で<br />
+                薬局をお探しの方
+              </p>
+              <ul className="text-left space-y-3 mb-8">
+                <li className="flex items-center gap-3">
+                  <span className="text-blue-600">✓</span>
+                  <span>24時間対応薬局を検索</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-blue-600">✓</span>
+                  <span>特殊調剤対応の確認</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-blue-600">✓</span>
+                  <span>受入状況をリアルタイム確認</span>
+                </li>
+              </ul>
+              <Link
+                href="/doctor/register"
+                className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-300 font-bold"
+              >
+                医師として登録する
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            </div>
+            
+            {/* 薬局向け */}
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-8 text-center hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+              <div className="text-8xl mb-6">💊</div>
+              <h3 className="text-2xl font-bold mb-4 text-gray-900">薬局の方</h3>
+              <p className="text-gray-700 mb-6">
+                在宅医療に対応可能な<br />
+                薬局として登録したい方
+              </p>
+              <ul className="text-left space-y-3 mb-8">
+                <li className="flex items-center gap-3">
+                  <span className="text-green-600">✓</span>
+                  <span>新規患者様の獲得</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-green-600">✓</span>
+                  <span>効率的な受注管理</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-green-600">✓</span>
+                  <span>地域医療への貢献</span>
+                </li>
+              </ul>
+              <Link
+                href="/pharmacy/register"
+                className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-300 font-bold"
+              >
+                薬局として登録する
+                <ArrowRight className="w-5 h-5" />
+              </Link>
             </div>
           </div>
         </div>
