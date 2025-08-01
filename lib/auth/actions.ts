@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import type { Database } from '@/types/supabase'
 
@@ -31,8 +31,10 @@ export async function signUp(formData: FormData) {
   }
 
   if (authData.user) {
-    // まず会社を作成
-    const { data: company, error: companyError } = await supabase
+    // Service clientを使用して会社を作成（RLSをバイパス）
+    const serviceClient = await createServiceClient()
+    
+    const { data: company, error: companyError } = await serviceClient
       .from('companies')
       .insert({
         name: organizationName,
@@ -53,9 +55,8 @@ export async function signUp(formData: FormData) {
       return { error: `会社情報の作成に失敗しました: ${companyError.message}` }
     }
 
-    // トリガーが自動的にusersテーブルにレコードを作成するので、
-    // organization_name、phone、company_idを更新
-    const { error: updateError } = await supabase
+    // Service clientを使用してusersテーブルを更新（RLSをバイパス）
+    const { error: updateError } = await serviceClient
       .from('users')
       .update({
         organization_name: organizationName,
@@ -68,7 +69,7 @@ export async function signUp(formData: FormData) {
       // 更新に失敗した場合は、少し待ってから再試行
       await new Promise(resolve => setTimeout(resolve, 1000))
       
-      const { error: retryError } = await supabase
+      const { error: retryError } = await serviceClient
         .from('users')
         .update({
           organization_name: organizationName,
@@ -79,7 +80,7 @@ export async function signUp(formData: FormData) {
       
       if (retryError) {
         // 会社を削除
-        await supabase.from('companies').delete().eq('id', company.id)
+        await serviceClient.from('companies').delete().eq('id', company.id)
         return { error: '組織情報の保存に失敗しました。' }
       }
     }
@@ -122,8 +123,10 @@ export async function signUpDoctor(formData: FormData) {
   }
 
   if (authData.user) {
-    // まずクリニック/病院の会社を作成
-    const { data: company, error: companyError } = await supabase
+    // Service clientを使用してクリニック/病院の会社を作成（RLSをバイパス）
+    const serviceClient = await createServiceClient()
+    
+    const { data: company, error: companyError } = await serviceClient
       .from('companies')
       .insert({
         name: clinicName,
@@ -149,7 +152,7 @@ export async function signUpDoctor(formData: FormData) {
     while (retryCount < maxRetries) {
       await new Promise(resolve => setTimeout(resolve, 1000)) // 1秒待機
       
-      const { data, error } = await supabase
+      const { data, error } = await serviceClient
         .from('users')
         .select('*')
         .eq('id', authData.user.id)
@@ -169,7 +172,7 @@ export async function signUpDoctor(formData: FormData) {
     
     if (!existingUser && !checkError) {
       // レコードが存在しない場合は作成
-      const { error: insertError } = await supabase
+      const { error: insertError } = await serviceClient
         .from('users')
         .insert({
           id: authData.user.id,
@@ -185,13 +188,13 @@ export async function signUpDoctor(formData: FormData) {
       
       if (insertError) {
         console.error('ユーザー作成エラー:', insertError)
-        await supabase.from('companies').delete().eq('id', company.id)
+        await serviceClient.from('companies').delete().eq('id', company.id)
         return { error: 'ユーザー情報の作成に失敗しました。' }
       }
     } else {
       // レコードが存在する場合は更新
       console.log('医師登録 - ロール設定:', { userId: authData.user.id, role })
-      const { error: updateError } = await supabase
+      const { error: updateError } = await serviceClient
         .from('users')
         .update({
           name: doctorName,
@@ -208,7 +211,7 @@ export async function signUpDoctor(formData: FormData) {
         // 更新に失敗した場合は、少し待ってから再試行
         await new Promise(resolve => setTimeout(resolve, 1000))
       
-      const { error: retryError } = await supabase
+      const { error: retryError } = await serviceClient
         .from('users')
         .update({
           name: doctorName,
@@ -223,14 +226,14 @@ export async function signUpDoctor(formData: FormData) {
       
         if (retryError) {
           // 会社を削除
-          await supabase.from('companies').delete().eq('id', company.id)
+          await serviceClient.from('companies').delete().eq('id', company.id)
           return { error: '医師情報の保存に失敗しました。' }
         }
       }
     }
     
     // 更新後のユーザー情報を確認
-    const { data: finalUserData } = await supabase
+    const { data: finalUserData } = await serviceClient
       .from('users')
       .select('*')
       .eq('id', authData.user.id)

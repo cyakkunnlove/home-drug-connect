@@ -30,7 +30,7 @@ NEXT_PUBLIC_APP_URL=https://[your-project-name].vercel.app
 NEXT_PUBLIC_CSP_DISABLED=true
 
 # Resend Email
-RESEND_API_KEY=re_AdLw16f6_hfkigqKxqTGwxUP5rRxjaw83
+RESEND_API_KEY=[Resendダッシュボードから取得]
 ```
 
 ### 今後設定が必要な環境変数
