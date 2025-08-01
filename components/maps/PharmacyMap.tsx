@@ -98,10 +98,11 @@ export default function PharmacyMap({
       })
   }, [zoom])
 
-  // 中心位置の更新
+  // 中心位置とズームレベルの更新
   useEffect(() => {
     if (map && center) {
       map.setCenter(center)
+      map.setZoom(zoom)
       
       // 患者位置にマーカーを追加
       new google.maps.Marker({
@@ -118,7 +119,7 @@ export default function PharmacyMap({
         },
       })
     }
-  }, [map, center])
+  }, [map, center, zoom])
 
   // 薬局マーカーの更新
   useEffect(() => {

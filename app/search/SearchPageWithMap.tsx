@@ -257,6 +257,15 @@ export default function SearchPageWithMap() {
     }
   }
 
+  // 検索半径に基づいてズームレベルを計算
+  const calculateZoomLevel = (radiusKm: number): number => {
+    if (radiusKm <= 3) return 14      // 3km以内: かなりズームイン
+    if (radiusKm <= 5) return 13      // 5km以内: ズームイン
+    if (radiusKm <= 10) return 12     // 10km以内: 中程度のズーム
+    if (radiusKm <= 16) return 11     // 16km以内: デフォルト
+    return 10                          // 20km以上: ズームアウト
+  }
+
   const handlePharmacyClick = (pharmacy: PharmacyResult) => {
     setSelectedPharmacy(pharmacy)
     setShowModal(true)
@@ -445,6 +454,7 @@ export default function SearchPageWithMap() {
                         pharmacies={searchResults}
                         onMarkerClick={handleMarkerClick}
                         selectedPharmacyId={selectedPharmacyId}
+                        zoom={calculateZoomLevel(filters.radius)}
                         onRequestClick={(pharmacyId) => {
                           const pharmacy = searchResults.find(p => p.id === pharmacyId)
                           if (pharmacy) {
