@@ -32,6 +32,13 @@ export async function POST(request: NextRequest) {
     
     // 2. Admin APIでユーザーを作成（トリガーをバイパス）
     try {
+      // Service role keyが設定されているかチェック
+      if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+        throw new Error('SUPABASE_SERVICE_ROLE_KEY is not configured. Please set it in .env.local')
+      }
+
+      console.log('Creating user with Admin API:', { email, hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY })
+      
       const { data: adminData, error: adminError } = await supabase.auth.admin.createUser({
         email,
         password,
@@ -43,6 +50,12 @@ export async function POST(request: NextRequest) {
       })
       
       if (adminError) {
+        console.error('Supabase Admin API Error Details:', {
+          message: adminError.message,
+          status: adminError.status,
+          name: adminError.name,
+          stack: adminError.stack
+        })
         throw adminError
       }
       
