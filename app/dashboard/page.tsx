@@ -176,6 +176,16 @@ export default function DashboardPage() {
           </h2>
           <div className="space-y-3">
             <Link
+              href="/dashboard/requests"
+              className="flex items-center justify-between p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <Users className="w-5 h-5 text-blue-600" />
+                <span className="text-sm font-medium text-gray-900">患者受け入れ依頼</span>
+              </div>
+              <span className="text-sm text-gray-500">→</span>
+            </Link>
+            <Link
               href="/dashboard/pharmacies"
               className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
             >
