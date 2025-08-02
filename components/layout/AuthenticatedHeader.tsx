@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { User, LogOut, Search, Home, FileText } from 'lucide-react'
+import NotificationCenter from '@/components/pharmacy/NotificationCenter'
 
 export default function AuthenticatedHeader() {
   const [user, setUser] = useState<any>(null)
@@ -81,10 +82,13 @@ export default function AuthenticatedHeader() {
           )}
           
           {(userRole === 'pharmacy_admin' || userRole === 'clinic_staff') && (
-            <Link href="/dashboard" className="flex items-center gap-1 hover:opacity-80 transition-opacity">
-              <User className="w-4 h-4" />
-              <span className="text-sm">ダッシュボード</span>
-            </Link>
+            <>
+              <Link href="/dashboard" className="flex items-center gap-1 hover:opacity-80 transition-opacity">
+                <User className="w-4 h-4" />
+                <span className="text-sm">ダッシュボード</span>
+              </Link>
+              <NotificationCenter />
+            </>
           )}
           
           <button

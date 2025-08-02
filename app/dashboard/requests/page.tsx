@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import EnhancedRequestList from '@/components/pharmacy/EnhancedRequestList'
+import ImprovedRequestList from '@/components/pharmacy/ImprovedRequestList'
 
 export default async function PharmacyRequestsPage() {
   const supabase = await createClient()
@@ -42,7 +42,7 @@ export default async function PharmacyRequestsPage() {
           </div>
         </div>
 
-        <EnhancedRequestList initialRequests={requests || []} />
+        <ImprovedRequestList initialRequests={requests || []} />
       </div>
     </div>
   )

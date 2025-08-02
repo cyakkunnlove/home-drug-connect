@@ -45,6 +45,7 @@
 - **Stripe**: Payment processing and subscriptions
 - **Google Maps API**: Geocoding and map display
 - **Resend**: Transactional email delivery
+- **OpenAI API**: AI-powered document generation for medical requests
 
 ### Caching & Performance
 - **Vercel Edge Cache**: CDN and edge caching
@@ -121,6 +122,9 @@ NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
 # Email (Resend)
 RESEND_API_KEY=
 RESEND_FROM_EMAIL=
+
+# AI Integration
+OPENAI_API_KEY=
 
 # App Configuration
 NEXT_PUBLIC_APP_URL=
