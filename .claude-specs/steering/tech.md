@@ -1,15 +1,15 @@
-# HOME-DRUG CONNECT Technology Stack
+# HOME-DRUG CONNECT 技術スタック
 
-## Architecture
+## アーキテクチャ
 
-### System Design
-- **Type**: Monolithic Next.js application with serverless architecture
-- **Deployment Model**: JAMstack on Vercel with external services
-- **API Design**: RESTful API using Next.js App Router API routes
-- **Database Architecture**: PostgreSQL with Row Level Security (RLS)
-- **Real-time Features**: Supabase Realtime subscriptions
+### システム設計
+- **アーキテクチャタイプ**: サーバーレスアーキテクチャを採用したモノリシックなNext.jsアプリケーション
+- **デプロイメントモデル**: Vercel上のJAMstack + 外部サービス連携
+- **API設計**: Next.js App Router API routesを使用したRESTful API
+- **データベース設計**: Row Level Security (RLS)を実装したPostgreSQL
+- **リアルタイム機能**: Supabase Realtimeサブスクリプション
 
-### Infrastructure Overview
+### インフラ概要
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
 │   Client (PWA)  │────▶│  Vercel Edge    │────▶│   Supabase      │
@@ -28,178 +28,178 @@
                     └──────────────────────────┘
 ```
 
-## Frontend
+## フロントエンド
 
-### Core Framework
-- **Next.js 15.4.5** - React framework with App Router
-- **React 19.1.0** - UI library
-- **TypeScript 5.x** - Type safety with strict mode enabled
+### コアフレームワーク
+- **Next.js 15.4.5** - App Routerを採用したReactフレームワーク
+- **React 19.1.0** - UIライブラリ
+- **TypeScript 5.x** - strict modeを有効にした型安全性
 
-### Styling & UI
-- **Tailwind CSS 4.x** - Utility-first CSS framework
-- **Framer Motion 12.x** - Animation library
-- **Lucide React** - Icon library
-- **Custom iOS-style components** - TouchFeedback, IOSButton, etc.
+### スタイリング & UI
+- **Tailwind CSS 4.x** - ユーティリティファーストCSSフレームワーク
+- **Framer Motion 12.x** - アニメーションライブラリ
+- **Lucide React** - アイコンライブラリ
+- **iOS風カスタムコンポーネント** - TouchFeedback、IOSButton等
 
-### State Management
-- **Zustand 5.0.7** - Global state management
-- **React Context API** - Component-level state
-- **React Hook Form** - Form state (minimal usage, prefer native forms)
+### 状態管理
+- **Zustand 5.0.7** - グローバル状態管理
+- **React Context API** - コンポーネントレベルの状態管理
+- **ネイティブフォーム** - React Hook Formは最小限の使用、基本的にネイティブフォームを推奨
 
-### Performance & Optimization
-- **Turbopack** - Next.js bundler for development
-- **React Server Components** - Default for all components
-- **Dynamic imports** - Code splitting for large components
-- **Next/Image** - Optimized image loading
-- **Web Vitals** - Performance monitoring
+### パフォーマンス最適化
+- **Turbopack** - 開発環境用Next.jsバンドラー
+- **React Server Components** - 全コンポーネントでデフォルト採用
+- **動的インポート** - 大規模コンポーネントのコード分割
+- **Next/Image** - 最適化された画像読み込み
+- **Web Vitals** - パフォーマンス監視
 
-## Backend
+## バックエンド
 
-### Runtime & Framework
-- **Node.js 18+** - JavaScript runtime
-- **Vercel Edge Runtime** - Serverless functions
-- **Next.js API Routes** - RESTful API endpoints
+### ランタイム & フレームワーク
+- **Node.js 18+** - JavaScriptランタイム
+- **Vercel Edge Runtime** - サーバーレス関数
+- **Next.js API Routes** - RESTful APIエンドポイント
 
-### Database & ORM
-- **Supabase** - PostgreSQL 15 as a service
-- **Supabase Client** - Type-safe database queries
-- **Row Level Security** - Database-level authorization
-- **PostGIS** - Geospatial queries for pharmacy search
+### データベース & ORM
+- **Supabase** - PostgreSQL 15のマネージドサービス
+- **Supabase Client** - 型安全なデータベースクエリ
+- **Row Level Security (RLS)** - データベースレベルの認可
+- **PostGIS** - 薬局検索用の地理空間クエリ
 
-### Authentication & Authorization
-- **Supabase Auth** - JWT-based authentication
-- **Role-Based Access Control** - doctor, pharmacy_admin, admin roles
-- **httpOnly Cookies** - Secure session management
+### 認証・認可
+- **Supabase Auth** - JWTベースの認証
+- **ロールベースアクセス制御 (RBAC)** - doctor、pharmacy_admin、adminロール
+- **httpOnly Cookie** - セキュアなセッション管理
 
-### External Services Integration
-- **OpenAI API** - GPT-4o-mini for AI document generation and text refinement
-- **Google Maps API** - Geocoding and map visualization
-- **Stripe API** - Subscription payment processing
-- **Resend API** - Transactional email delivery
+### 外部サービス連携
+- **OpenAI API** - GPT-4o-miniによるAI文書生成・文章校閲
+- **Google Maps API** - ジオコーディングと地図表示
+- **Stripe API** - サブスクリプション決済処理
+- **Resend API** - トランザクションメール配信
 
-## Development Environment
+## 開発環境
 
-### Required Tools
+### 必要なツール
 ```bash
-# Core requirements
-Node.js 18.x or higher
-npm 9.x or higher
+# 基本要件
+Node.js 18.x以上
+npm 9.x以上
 Git
 
-# Recommended IDE
-Visual Studio Code with extensions:
+# 推奨IDE
+Visual Studio Code + 拡張機能:
 - ESLint
 - Prettier
 - Tailwind CSS IntelliSense
 - TypeScript and JavaScript Language Features
 ```
 
-### Local Development Setup
+### ローカル開発環境セットアップ
 ```bash
-# Clone repository
+# リポジトリのクローン
 git clone <repository-url>
 cd home-drug-connect
 
-# Install dependencies
+# 依存関係のインストール
 npm install
 
-# Set up environment variables
+# 環境変数の設定
 cp .env.example .env.local
-# Edit .env.local with your credentials
+# .env.localに必要な認証情報を設定
 
-# Run development server
+# 開発サーバーの起動
 npm run dev
 ```
 
-### Common Commands
+### 主要コマンド
 ```bash
-# Development
-npm run dev          # Start development server with Turbopack
-npm run build        # Production build
-npm run start        # Start production server
-npm run lint         # Run ESLint
-npm run type-check   # TypeScript type checking
+# 開発
+npm run dev          # Turbopackを使用した開発サーバー起動
+npm run build        # 本番ビルド
+npm run start        # 本番サーバー起動
+npm run lint         # ESLint実行
+npm run type-check   # TypeScript型チェック（※現在未定義）
 
-# Database
-npm run db:migrate   # Run Supabase migrations
-npm run db:reset     # Reset database
+# データベース
+npm run db:migrate   # Supabaseマイグレーション実行
+npm run db:reset     # データベースリセット
 
-# Drug Data Management
-npm run import:drugs     # Import drug data from Excel
-npm run generate:drugs   # Generate static JSON files
-npm run etl:drugs       # Full ETL process
+# 薬剤データ管理
+npm run import:drugs     # Excelから薬剤データインポート
+npm run generate:drugs   # 静的JSONファイル生成
+npm run etl:drugs       # 完全なETL処理
 
-# Testing & Debugging
-npm run create:test-account  # Create test accounts
-npm run verify:flow         # Verify user flows
+# テスト・デバッグ（※現在未定義）
+npm run create:test-account  # テストアカウント作成
+npm run verify:flow         # ユーザーフロー検証
 ```
 
-## Environment Variables
+## 環境変数
 
-### Required Variables
+### 必須環境変数
 ```bash
-# Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL=          # Supabase project URL
-NEXT_PUBLIC_SUPABASE_ANON_KEY=     # Supabase anonymous key
-SUPABASE_SERVICE_ROLE_KEY=         # Service role key (server-side only)
+# Supabase設定
+NEXT_PUBLIC_SUPABASE_URL=          # SupabaseプロジェクトURL
+NEXT_PUBLIC_SUPABASE_ANON_KEY=     # Supabase匿名キー
+SUPABASE_SERVICE_ROLE_KEY=         # サービスロールキー（サーバーサイドのみ）
 
 # Google Maps
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=   # Maps JavaScript API key
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=   # Maps JavaScript APIキー
 
-# Stripe Payment
-STRIPE_SECRET_KEY=                  # Stripe secret key
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY= # Stripe publishable key
-STRIPE_WEBHOOK_SECRET=              # Webhook endpoint secret
-STRIPE_SUBSCRIPTION_PRICE_ID=       # Subscription price ID
+# Stripe決済
+STRIPE_SECRET_KEY=                  # Stripeシークレットキー
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY= # Stripe公開可能キー
+STRIPE_WEBHOOK_SECRET=              # Webhookエンドポイントシークレット
+STRIPE_SUBSCRIPTION_PRICE_ID=       # サブスクリプション価格ID
 
 # OpenAI
-OPENAI_API_KEY=                     # OpenAI API key
+OPENAI_API_KEY=                     # OpenAI APIキー
 
-# Email Service
-RESEND_API_KEY=                     # Resend API key
-EMAIL_FROM=                         # Sender email address
+# メールサービス
+RESEND_API_KEY=                     # Resend APIキー
+EMAIL_FROM=                         # 送信元メールアドレス
 
-# Application
-NEXT_PUBLIC_APP_URL=                # Production URL
+# アプリケーション
+NEXT_PUBLIC_APP_URL=                # 本番環境URL
 ```
 
-### Development vs Production
-- Development: Use `.env.local` file
-- Production: Set in Vercel dashboard
-- Never commit `.env` files to Git
+### 開発環境 vs 本番環境
+- 開発環境: `.env.local`ファイルを使用
+- 本番環境: Vercelダッシュボードで設定
+- `.env`ファイルは絶対にGitにコミットしない
 
-## Port Configuration
+## ポート設定
 
-### Default Ports
+### デフォルトポート
 ```bash
-3000  # Next.js development server
-54321 # Supabase local PostgreSQL
-54322 # Supabase local Studio
+3000  # Next.js開発サーバー
+54321 # SupabaseローカルPostgreSQL
+54322 # SupabaseローカルStudio
 ```
 
-### Production URLs
-- Application: `https://home-drug-connect.vercel.app`
-- API: Same domain with `/api/*` routes
+### 本番環境URL
+- アプリケーション: `https://home-drug-connect.vercel.app`
+- API: 同一ドメインの`/api/*`ルート
 - Supabase: `https://<project-id>.supabase.co`
 
-## Build & Deployment
+## ビルド & デプロイメント
 
-### Build Process
-1. **Pre-build**: Generate static drug JSON files
-2. **Build**: Next.js production build with TypeScript compilation
-3. **Post-build**: Critters for critical CSS extraction
+### ビルドプロセス
+1. **ビルド前処理**: 静的薬剤JSONファイルの生成
+2. **ビルド**: TypeScriptコンパイルを含むNext.js本番ビルド
+3. **ビルド後処理**: Crittersによるクリティカルパス最適化
 
-### Deployment Pipeline
-- **Platform**: Vercel
-- **Branch Strategy**: 
-  - `main` → Production
-  - Pull requests → Preview deployments
-- **Environment Variables**: Managed in Vercel dashboard
-- **Edge Functions**: Automatic deployment to Vercel Edge Network
+### デプロイメントパイプライン
+- **プラットフォーム**: Vercel
+- **ブランチ戦略**: 
+  - `main` → 本番環境
+  - プルリクエスト → プレビューデプロイメント
+- **環境変数**: Vercelダッシュボードで管理
+- **Edge Functions**: Vercel Edge Networkへの自動デプロイ
 
-### Performance Optimizations
-- **Static Generation**: For public pages
-- **Incremental Static Regeneration**: For pharmacy profiles
-- **Edge Caching**: API responses cached at edge
-- **Image Optimization**: Automatic via Next.js
-- **Font Optimization**: Geist font via next/font
+### パフォーマンス最適化
+- **静的生成 (SSG)**: 公開ページ用
+- **増分静的再生成 (ISR)**: 薬局プロフィール用
+- **エッジキャッシング**: APIレスポンスのエッジキャッシュ
+- **画像最適化**: Next.jsによる自動最適化
+- **フォント最適化**: next/fontによるGeistフォント

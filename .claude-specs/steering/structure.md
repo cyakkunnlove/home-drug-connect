@@ -1,218 +1,220 @@
-# HOME-DRUG CONNECT Project Structure
+# HOME-DRUG CONNECT プロジェクト構造
 
-## Root Directory Organization
+## ルートディレクトリ構成
 
 ```
 home-drug-connect/
-├── app/                    # Next.js App Router (pages, layouts, API routes)
-├── components/             # Reusable React components
-├── lib/                    # Utilities, helpers, and service integrations
-├── types/                  # TypeScript type definitions
-├── public/                 # Static assets and generated files
-├── scripts/                # Build and maintenance scripts
-├── supabase/              # Database migrations and configuration
-├── docs/                   # Project documentation
-├── .claude-specs/         # Kiro spec-driven development files
-└── [config files]         # Configuration files at root level
+├── app/                    # Next.js App Router（ページ、レイアウト、APIルート）
+├── components/             # 再利用可能なReactコンポーネント
+├── lib/                    # ユーティリティ、ヘルパー、サービス統合
+├── types/                  # TypeScript型定義
+├── public/                 # 静的アセットと生成ファイル
+├── scripts/                # ビルド・メンテナンススクリプト
+├── supabase/              # データベースマイグレーションと設定
+├── docs/                   # プロジェクトドキュメント
+├── .claude-specs/         # Kiroスペック駆動開発ファイル
+└── [設定ファイル]         # ルートレベルの設定ファイル
 ```
 
-## Subdirectory Structures
+## サブディレクトリ構造
 
 ### `/app` - Next.js App Router
 ```
 app/
-├── (public)/              # Route group for public pages
-├── admin/                 # Admin dashboard routes
-├── api/                   # API endpoints
-│   ├── auth/             # Authentication endpoints
-│   ├── ai/               # AI integration endpoints
-│   ├── drugs/            # Drug search endpoints
-│   └── [resource]/       # RESTful resource endpoints
-├── dashboard/             # Pharmacy dashboard routes
-├── doctor/                # Doctor portal routes
-├── pharmacy/              # Individual pharmacy pages
-├── auth/                  # Authentication pages
-├── search/                # Search functionality
-├── globals.css           # Global styles
-├── layout.tsx            # Root layout
-└── page.tsx              # Homepage
+├── (public)/              # 公開ページ用ルートグループ
+├── admin/                 # 管理者ダッシュボードルート
+├── api/                   # APIエンドポイント
+│   ├── auth/             # 認証エンドポイント
+│   ├── ai/               # AI統合エンドポイント
+│   ├── drugs/            # 薬剤検索エンドポイント
+│   └── [resource]/       # RESTfulリソースエンドポイント
+├── dashboard/             # 薬局ダッシュボードルート
+├── doctor/                # 医師ポータルルート
+├── pharmacy/              # 個別薬局ページ
+├── auth/                  # 認証ページ
+├── search/                # 検索機能
+├── globals.css           # グローバルスタイル
+├── layout.tsx            # ルートレイアウト
+└── page.tsx              # ホームページ
 ```
 
-### `/components` - Component Organization
+### `/components` - コンポーネント構成
 ```
 components/
-├── auth/                  # Authentication-related components
-├── dashboard/             # Dashboard-specific components
-├── doctor/                # Doctor portal components
-├── forms/                 # Reusable form components
-├── layout/                # Layout components (Header, Footer, etc.)
-├── maps/                  # Google Maps integration components
-├── pharmacy/              # Pharmacy-related components
-├── search/                # Search interface components
-├── settings/              # Settings page components
-└── ui/                    # Generic UI components
-    ├── AnimatedPage.tsx   # Page transition wrapper
-    ├── TouchFeedback.tsx  # iOS-style touch interactions
-    ├── IOSButton.tsx      # iOS-style button
-    └── Modal.tsx          # Modal dialog component
+├── auth/                  # 認証関連コンポーネント
+├── dashboard/             # ダッシュボード固有コンポーネント
+├── doctor/                # 医師ポータルコンポーネント
+│   ├── OfflineDrugAutocomplete.tsx  # 薬剤名オートコンプリート
+│   └── RequestForm.tsx             # 依頼フォーム
+├── forms/                 # 再利用可能なフォームコンポーネント
+├── layout/                # レイアウトコンポーネント（Header、Footer等）
+├── maps/                  # Google Maps統合コンポーネント
+├── pharmacy/              # 薬局関連コンポーネント
+├── search/                # 検索インターフェースコンポーネント
+├── settings/              # 設定ページコンポーネント
+└── ui/                    # 汎用UIコンポーネント
+    ├── AnimatedPage.tsx   # ページ遷移ラッパー
+    ├── TouchFeedback.tsx  # iOS風タッチインタラクション
+    ├── IOSButton.tsx      # iOS風ボタン
+    └── Modal.tsx          # モーダルダイアログコンポーネント
 ```
 
-### `/lib` - Library Code
+### `/lib` - ライブラリコード
 ```
 lib/
-├── auth/                  # Authentication utilities
-│   └── actions.ts        # Server actions for auth
-├── email/                 # Email service integration
-│   ├── client.ts         # Resend client setup
-│   └── templates/        # Email HTML templates
-├── google-maps/           # Google Maps utilities
-├── monitoring/            # Performance monitoring
-├── stripe/                # Stripe payment integration
-├── supabase/              # Database client configuration
-│   ├── client.ts         # Browser client
-│   └── server.ts         # Server client
-└── utils/                 # General utilities
+├── auth/                  # 認証ユーティリティ
+│   └── actions.ts        # 認証用サーバーアクション
+├── email/                 # メールサービス統合
+│   ├── client.ts         # Resendクライアント設定
+│   └── templates/        # メールHTMLテンプレート
+├── google-maps/           # Google Mapsユーティリティ
+├── monitoring/            # パフォーマンス監視
+├── stripe/                # Stripe決済統合
+├── supabase/              # データベースクライアント設定
+│   ├── client.ts         # ブラウザクライアント
+│   └── server.ts         # サーバークライアント
+└── utils/                 # 汎用ユーティリティ
 ```
 
-## Code Organization Patterns
+## コード組織パターン
 
-### Component Structure
-- **Server Components**: Default for all components
-- **Client Components**: Explicitly marked with `'use client'`
-- **Component Files**: PascalCase naming (e.g., `RequestForm.tsx`)
-- **Utility Files**: camelCase naming (e.g., `formatDate.ts`)
+### コンポーネント構造
+- **サーバーコンポーネント**: 全コンポーネントのデフォルト
+- **クライアントコンポーネント**: `'use client'`で明示的にマーク
+- **コンポーネントファイル**: PascalCase命名（例: `RequestForm.tsx`）
+- **ユーティリティファイル**: camelCase命名（例: `formatDate.ts`）
 
-### Route Organization
-- **Route Groups**: Used for logical grouping without URL impact
-- **Dynamic Routes**: Square brackets for parameters `[id]`
-- **Route Handlers**: `route.ts` files for API endpoints
-- **Layouts**: Nested layouts for shared UI structure
+### ルート構成
+- **ルートグループ**: URLに影響しない論理的グルーピング
+- **動的ルート**: パラメータ用の角括弧 `[id]`
+- **ルートハンドラー**: APIエンドポイント用の`route.ts`ファイル
+- **レイアウト**: 共通UI構造のためのネストレイアウト
 
-### API Structure
+### API構造
 ```typescript
-// Standard API route pattern
+// 標準APIルートパターン
 export async function GET(request: NextRequest) { }
 export async function POST(request: NextRequest) { }
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) { }
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) { }
 ```
 
-## File Naming Conventions
+## ファイル命名規則
 
-### TypeScript/JavaScript Files
-- **Components**: `PascalCase.tsx` (e.g., `PharmacyCard.tsx`)
-- **Hooks**: `use` prefix with camelCase (e.g., `usePharmacySearch.ts`)
-- **Utilities**: camelCase (e.g., `calculateDistance.ts`)
-- **Constants**: UPPER_SNAKE_CASE in files (e.g., `MAX_SEARCH_RADIUS`)
-- **Types**: PascalCase for interfaces/types (e.g., `PharmacyData`)
+### TypeScript/JavaScriptファイル
+- **コンポーネント**: `PascalCase.tsx`（例: `PharmacyCard.tsx`）
+- **フック**: `use`プレフィックス + camelCase（例: `usePharmacySearch.ts`）
+- **ユーティリティ**: camelCase（例: `calculateDistance.ts`）
+- **定数**: UPPER_SNAKE_CASE（例: `MAX_SEARCH_RADIUS`）
+- **型**: インターフェース/型はPascalCase（例: `PharmacyData`）
 
-### Route Files
-- **Pages**: `page.tsx` for route pages
-- **Layouts**: `layout.tsx` for route layouts
-- **API Routes**: `route.ts` for API endpoints
-- **Loading**: `loading.tsx` for loading states
-- **Error**: `error.tsx` for error boundaries
+### ルートファイル
+- **ページ**: ルートページ用の`page.tsx`
+- **レイアウト**: ルートレイアウト用の`layout.tsx`
+- **APIルート**: APIエンドポイント用の`route.ts`
+- **ローディング**: ローディング状態用の`loading.tsx`
+- **エラー**: エラーバウンダリ用の`error.tsx`
 
-### Database Files
-- **Migrations**: `xxx_description.sql` (e.g., `001_initial_schema.sql`)
-- **Types**: Generated in `types/database.ts`
+### データベースファイル
+- **マイグレーション**: `xxx_description.sql`（例: `001_initial_schema.sql`）
+- **型**: `types/database.ts`に生成
 
-## Import Organization
+## インポート構成
 
-### Standard Import Order
+### 標準インポート順序
 ```typescript
-// 1. React and Next.js imports
+// 1. ReactとNext.jsのインポート
 import { useState, useEffect } from 'react'
 import { NextRequest, NextResponse } from 'next/server'
 
-// 2. External library imports
+// 2. 外部ライブラリのインポート
 import { createClient } from '@supabase/supabase-js'
 import { z } from 'zod'
 
-// 3. Internal absolute imports
+// 3. 内部絶対インポート
 import { Button } from '@/components/ui/Button'
 import { useAuth } from '@/lib/auth/hooks'
 
-// 4. Relative imports
+// 4. 相対インポート
 import { formatPharmacyData } from './utils'
 
-// 5. Type imports
+// 5. 型インポート
 import type { Database } from '@/types/database'
 ```
 
-### Path Aliases
-- `@/*` maps to project root
-- Used for clean imports: `@/components/...`, `@/lib/...`
+### パスエイリアス
+- `@/*` はプロジェクトルートにマッピング
+- クリーンなインポートに使用: `@/components/...`、`@/lib/...`
 
-## Key Architectural Principles
+## 主要アーキテクチャ原則
 
-### 1. **Server-First Architecture**
-- Server Components by default
-- Client Components only when needed (forms, interactivity)
-- Server Actions for mutations
+### 1. **サーバーファーストアーキテクチャ**
+- デフォルトでサーバーコンポーネント
+- クライアントコンポーネントは必要時のみ（フォーム、インタラクティビティ）
+- ミューテーションにはサーバーアクション
 
-### 2. **Type Safety**
-- Strict TypeScript configuration
-- Generated types from Supabase schema
-- Zod validation for runtime type checking
+### 2. **型安全性**
+- 厳格なTypeScript設定
+- Supabaseスキーマからの型生成
+- 実行時型チェックのZodバリデーション
 
-### 3. **Performance Optimization**
-- Static generation where possible
-- Dynamic imports for code splitting
-- Optimistic UI updates
-- Edge function deployment
+### 3. **パフォーマンス最適化**
+- 可能な限り静的生成
+- コード分割のための動的インポート
+- オプティミスティックUI更新
+- Edge関数デプロイメント
 
-### 4. **Security by Design**
-- Row Level Security (RLS) at database level
-- Server-side authentication checks
-- Environment variable separation
-- Input validation and sanitization
+### 4. **セキュリティ・バイ・デザイン**
+- データベースレベルのRow Level Security (RLS)
+- サーバーサイド認証チェック
+- 環境変数の分離
+- 入力バリデーションとサニタイズ
 
-### 5. **Mobile-First Responsive Design**
-- iOS-style interactions and animations
-- Touch-optimized UI components
-- Progressive Web App capabilities
-- Responsive breakpoints: mobile → tablet → desktop
+### 5. **モバイルファーストレスポンシブデザイン**
+- iOS風インタラクションとアニメーション
+- タッチ最適化UIコンポーネント
+- Progressive Web App機能
+- レスポンシブブレークポイント: モバイル → タブレット → デスクトップ
 
-### 6. **Modular Service Integration**
-- Separate client modules for each service
-- Clear separation of concerns
-- Dependency injection pattern
-- Testable service interfaces
+### 6. **モジュラーサービス統合**
+- 各サービスごとの独立クライアントモジュール
+- 明確な関心の分離
+- 依存性注入パターン
+- テスト可能なサービスインターフェース
 
-## Development Patterns
+## 開発パターン
 
-### State Management
+### 状態管理
 ```typescript
-// Global state with Zustand
+// Zustandでのグローバル状態
 const useSearchStore = create<SearchState>((set) => ({
   filters: {},
   setFilters: (filters) => set({ filters }),
 }))
 
-// Local state with React hooks
+// Reactフックでのローカル状態
 const [isLoading, setIsLoading] = useState(false)
 ```
 
-### Error Handling
+### エラーハンドリング
 ```typescript
-// Consistent error response format
+// 一貫性のあるエラーレスポンス形式
 try {
-  // operation
+  // 処理
 } catch (error) {
   return NextResponse.json(
-    { success: false, error: { code: 'ERROR_CODE', message: 'User-friendly message' } },
+    { success: false, error: { code: 'ERROR_CODE', message: 'ユーザーフレンドリーなメッセージ' } },
     { status: 400 }
   )
 }
 ```
 
-### Data Fetching
+### データフェッチング
 ```typescript
-// Server Components - Direct database access
+// サーバーコンポーネント - 直接データベースアクセス
 const pharmacy = await supabase.from('pharmacies').select('*').single()
 
-// Client Components - API routes
+// クライアントコンポーネント - APIルート
 const response = await fetch('/api/pharmacies/search')
 const data = await response.json()
 ```

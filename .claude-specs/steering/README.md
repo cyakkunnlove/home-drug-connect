@@ -1,70 +1,70 @@
-# Kiro Steering Documents
+# Kiroステアリングドキュメント
 
-This directory contains foundational steering documents that provide persistent knowledge about the HOME-DRUG CONNECT project. These documents guide AI interactions to ensure consistency and alignment with project standards throughout spec-driven development.
+このディレクトリには、HOME-DRUG CONNECTプロジェクトに関する永続的な知識を提供する基礎的なステアリングドキュメントが含まれています。これらのドキュメントは、スペック駆動開発全体を通じて一貫性とプロジェクト標準への整合性を確保するために、AIインタラクションをガイドします。
 
-## Purpose
+## 目的
 
-Steering documents serve as the "north star" for AI assistants, providing essential context that should be considered in every interaction. They ensure that generated code, documentation, and specifications align with established patterns and decisions.
+ステアリングドキュメントは、AIアシスタントにとっての「北極星」として機能し、すべてのインタラクションで考慮すべき重要なコンテキストを提供します。生成されるコード、ドキュメント、仕様が確立されたパターンと決定事項に沿うことを保証します。
 
-## Core Documents
+## コアドキュメント
 
-### 1. **product.md** - Product Overview
-Defines what the product is, who it serves, and why it exists. This helps AI understand the business context behind technical decisions.
+### 1. **product.md** - 製品概要
+製品が何であるか、誰に向けたものか、なぜ存在するかを定義します。これにより、AIが技術的決定の背後にあるビジネスコンテキストを理解できます。
 
-**Key Sections:**
-- Product overview and mission
-- Core features for each user type
-- Target use cases and scenarios
-- Value proposition and competitive advantages
-- Business model and success metrics
+**主要セクション:**
+- 製品概要とビジョン
+- 各ユーザータイプ向けのコア機能
+- ターゲットユースケースとシナリオ
+- 価値提案と競争優位性
+- ビジネスモデルと成功指標
 
-### 2. **tech.md** - Technology Stack
-Documents all technology choices, development environment setup, and deployment configurations. This ensures AI suggests solutions using established technologies.
+### 2. **tech.md** - 技術スタック
+すべての技術選択、開発環境のセットアップ、デプロイメント構成を文書化します。これにより、AIが確立された技術を使用したソリューションを提案することを保証します。
 
-**Key Sections:**
-- System architecture overview
-- Frontend and backend technology choices
-- Development environment and tools
-- Common commands and workflows
-- Environment variables and configuration
-- Build and deployment processes
+**主要セクション:**
+- システムアーキテクチャ概要
+- フロントエンドとバックエンドの技術選択
+- 開発環境とツール
+- 主要コマンドとワークフロー
+- 環境変数と設定
+- ビルドとデプロイメントプロセス
 
-### 3. **structure.md** - Project Structure
-Outlines how the codebase is organized, naming conventions, and architectural patterns. This helps AI generate code that fits seamlessly into the existing structure.
+### 3. **structure.md** - プロジェクト構造
+コードベースの構成方法、命名規則、アーキテクチャパターンを概説します。これにより、AIが既存の構造にシームレスに適合するコードを生成できます。
 
-**Key Sections:**
-- Directory organization
-- Code patterns and conventions
-- File naming standards
-- Import organization rules
-- Key architectural principles
-- Development patterns
+**主要セクション:**
+- ディレクトリ構成
+- コードパターンと規約
+- ファイル命名標準
+- インポート構成ルール
+- 主要アーキテクチャ原則
+- 開発パターン
 
-## Usage in Spec-Driven Development
+## スペック駆動開発での使用
 
-These steering documents are automatically loaded during AI interactions to:
+これらのステアリングドキュメントは、AIインタラクション中に自動的にロードされ、以下を実現します：
 
-1. **Inform Specifications**: When creating new specs, AI references these documents to ensure alignment
-2. **Guide Implementation**: During coding, patterns and conventions are followed automatically
-3. **Maintain Consistency**: All generated code follows established standards
-4. **Reduce Repetition**: Common questions are answered by referencing steering docs
+1. **仕様の通知**: 新しいスペックを作成する際、AIはこれらのドキュメントを参照して整合性を確保
+2. **実装のガイド**: コーディング中、パターンと規約が自動的に従われる
+3. **一貫性の維持**: 生成されるすべてのコードが確立された標準に従う
+4. **繰り返しの削減**: 一般的な質問はステアリングドキュメントを参照して回答される
 
-## Maintenance
+## メンテナンス
 
-Steering documents should be updated when:
-- Major architectural decisions change
-- New technologies are adopted
-- Significant patterns emerge
-- Business model or product direction shifts
+ステアリングドキュメントは以下の場合に更新すべきです：
+- 主要なアーキテクチャ決定が変更された場合
+- 新しい技術が採用された場合
+- 重要なパターンが出現した場合
+- ビジネスモデルや製品の方向性が変わった場合
 
-Use the `/steering-update` command to refresh steering documents after significant changes.
+重要な変更後は `/steering-update` コマンドを使用してステアリングドキュメントを更新してください。
 
-## Custom Steering
+## カスタムステアリング
 
-Additional steering documents can be created for specialized contexts:
-- `api-standards.md` - API design patterns
-- `testing-approach.md` - Testing strategies
-- `security-policies.md` - Security requirements
-- `performance-standards.md` - Performance targets
+特殊なコンテキスト用に追加のステアリングドキュメントを作成できます：
+- `api-standards.md` - APIデザインパターン
+- `testing-approach.md` - テスト戦略
+- `security-policies.md` - セキュリティ要件
+- `performance-standards.md` - パフォーマンス目標
 
-These can be configured for conditional loading based on file patterns or manual inclusion.
+これらはファイルパターンに基づく条件付きロードまたは手動インクルード用に設定できます。

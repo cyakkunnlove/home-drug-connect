@@ -1,67 +1,86 @@
-# HOME-DRUG CONNECT Product Overview
+# HOME-DRUG CONNECT 製品概要
 
-## Product Overview
+## 製品ビジョン
+在宅医療における薬局と医師の連携を革新的に簡素化し、患者の薬物療法継続を支援するプラットフォーム
 
-HOME-DRUG CONNECT is a B2B2C platform that digitally connects home healthcare doctors with pharmacies specializing in home medical care. The platform streamlines patient referrals and medication management for home healthcare patients, addressing the critical challenge of finding pharmacies equipped to handle complex home care needs.
+## 製品概要
+HOME-DRUG CONNECTは、在宅医療における薬局と医師のマッチングプラットフォームです。医師が患者の処方薬情報を入力すると、AIが適切な薬局への依頼文を自動生成し、地理的条件と薬局の対応能力を考慮してマッチングを行います。
 
-## Core Features
+## 主要機能
 
-### For Doctors
-- **Smart Pharmacy Search**: Location-based search with real-time capacity and service filtering
-- **AI-Powered Request Generation**: Automated patient referral documents using OpenAI
-- **Digital Request Management**: Track and manage all patient referrals in one place
-- **Drug Database Integration**: Comprehensive medication autocomplete with 6,801+ drugs
+### 1. 薬局検索・マッチング
+- 位置情報ベースの薬局検索（Google Maps API連携）
+- リアルタイム空き状況表示
+- 24時間対応、無菌調剤室、麻薬取扱いなどの特殊対応フィルタ
+- 満床薬局の自動除外
 
-### For Pharmacies
-- **Digital Storefront**: Professional profile with service capabilities and real-time availability
-- **Request Management Dashboard**: Centralized inbox for patient referrals with accept/decline workflow
-- **Analytics & Insights**: Track profile views, conversion rates, and patient capacity
-- **Subscription Management**: Stripe-integrated billing for premium features
+### 2. AI依頼文生成
+- 患者情報（服用薬、既往歴、治療方針）からの自動文書生成
+- OpenAI GPT-4o-miniを活用した医療文書の構成・校閲
+- 医師の入力負担を大幅に軽減
 
-### For System Administrators
-- **Pharmacy Verification**: Manual approval process for quality control
-- **System Monitoring**: Overview of platform usage and performance metrics
+### 3. 薬局管理ダッシュボード
+- プロフィールビュー数、問い合わせ数の分析
+- 受け入れ患者数の管理
+- 依頼の承認/却下機能
+- 営業時間、サービス内容の細かな設定
 
-## Target Use Case
+### 4. 医師ポータル
+- 薬剤名オートコンプリート（オフライン対応）
+- 依頼履歴管理
+- 承認率の可視化
 
-### Primary Scenarios
-1. **Doctor Referral Flow**: A home care doctor needs to find a pharmacy that can handle a bedridden patient's complex medication needs including sterile preparations and controlled substances
-2. **Pharmacy Discovery**: Pharmacies specializing in home care can be discovered by doctors based on location, services, and availability
-3. **Urgent Care Coordination**: Emergency medication needs for home patients requiring 24/7 pharmacy support
+### 5. 企業間マルチテナンシー
+- 企業（company）単位でのユーザー・薬局管理
+- 企業ごとの独立したデータ管理
 
-### User Personas
-- **Home Care Doctors**: Medical professionals managing patients who cannot visit clinics
-- **Specialized Pharmacies**: Pharmacies equipped for home medical care (無菌調剤室, 麻薬取扱い, 24時間対応)
-- **Healthcare Coordinators**: Staff managing patient transitions and medication logistics
+## ターゲットユーザー
 
-## Key Value Proposition
+### 医師（プライマリユーザー）
+- 在宅医療を行うクリニックの医師
+- 訪問診療専門医
+- 患者の薬物療法継続に課題を感じている医療従事者
 
-### For Healthcare Providers
-- **Time Savings**: Reduce phone tag and manual coordination from hours to minutes
-- **Better Patient Outcomes**: Match patients with pharmacies equipped for their specific needs
-- **Digital Paper Trail**: Complete documentation of all referrals and communications
+### 薬局（セカンダリユーザー）
+- 在宅医療対応薬局
+- 24時間対応薬局
+- 地域密着型薬局
 
-### For Pharmacies
-- **Increased Visibility**: Be discovered by doctors actively seeking home care pharmacy services
-- **Operational Efficiency**: Manage all referrals through a single dashboard
-- **Business Growth**: Track metrics and optimize for higher conversion rates
+### 管理者
+- システム全体の運用管理者
+- 薬局承認権限を持つ管理者
 
-### Competitive Advantages
-1. **Specialization**: Focused exclusively on home healthcare pharmacy connections
-2. **Real-time Availability**: Live capacity updates prevent wasted referrals
-3. **AI Integration**: Automated document generation saves 10-15 minutes per referral
-4. **Mobile-First Design**: Optimized for doctors on the go with iOS-style interactions
-5. **Trust & Verification**: Manual pharmacy approval ensures quality standards
+## 価値提案
 
-## Business Model
+### 医師への価値
+1. **時間短縮**: 薬局探しと依頼文作成の自動化
+2. **確実性**: 対応可能な薬局のみが表示される
+3. **品質向上**: AI支援による依頼文の標準化
 
-- **Freemium for Doctors**: Free access to encourage adoption and network effects
-- **Subscription for Pharmacies**: Monthly SaaS fee for profile listing and request management
-- **Future Revenue Streams**: Transaction fees, premium analytics, API access
+### 薬局への価値
+1. **集客**: 地域の医師からの依頼獲得
+2. **効率化**: 構造化された依頼情報の受信
+3. **分析**: ダッシュボードによる業務分析
 
-## Success Metrics
+### 患者への価値（間接的）
+1. **継続性**: 薬物療法の確実な継続
+2. **アクセス**: 最適な薬局の選定
+3. **安心**: 医療連携の強化
 
-- **Network Growth**: Number of active doctors and verified pharmacies
-- **Engagement**: Monthly active referrals and acceptance rates
-- **Efficiency**: Average time from search to accepted referral
-- **Satisfaction**: User retention and Net Promoter Score (NPS)
+## 差別化要因
+
+1. **AIによる依頼文生成**: 医師の入力負担を最小化
+2. **リアルタイム空き状況**: 無駄なやり取りを削減
+3. **薬剤名オートコンプリート**: 17,000件以上の薬剤データベース
+4. **企業単位の管理**: スケーラブルなマルチテナンシー
+
+## ビジネスモデル
+- SaaSサブスクリプションモデル（Stripe決済）
+- 薬局向け月額課金
+- 将来的な従量課金オプション
+
+## 成功指標
+- 月間アクティブ医師数
+- 依頼承認率
+- 薬局の平均稼働率
+- ユーザー満足度（NPS）

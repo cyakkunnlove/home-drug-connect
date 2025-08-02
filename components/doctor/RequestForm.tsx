@@ -31,13 +31,82 @@ interface RequestFormProps {
 }
 
 const CONDITIONS = [
-  '高血圧',
+  // 循環器系
+  '高血圧症',
+  '心不全',
+  '虚血性心疾患',
+  '不整脈',
+  '脳血管疾患',
+  // 代謝・内分泌系
   '糖尿病',
-  '心疾患',
-  '呼吸器疾患',
-  '腎機能障害',
+  '脂質異常症',
+  '甲状腺疾患',
+  '痛風',
+  // 呼吸器系
+  '気管支喘息',
+  'COPD',
+  '肺炎の既往',
+  '睡眠時無呼吸症候群',
+  // 消化器系
+  '胃潰瘍・十二指腸潰瘍',
+  '逆流性食道炎',
   '肝機能障害',
-  'アレルギー歴'
+  '慢性便秘',
+  // 腎・泌尿器系
+  '慢性腎臓病',
+  '前立腺肥大症',
+  '尿路感染症',
+  // 神経・精神系
+  '認知症',
+  'パーキンソン病',
+  'うつ病',
+  '不眠症',
+  '脳梗塞後遺症',
+  // 運動器系
+  '骨粗鬆症',
+  '関節リウマチ',
+  '変形性関節症',
+  // その他
+  'アレルギー疾患',
+  '悪性腫瘍',
+  '褥瘡'
+]
+
+// 治療方針テンプレート
+const TREATMENT_PLAN_TEMPLATES = [
+  {
+    category: '状態管理',
+    items: [
+      { id: 'stable', text: '現在の処方を継続し、症状の安定を維持' },
+      { id: 'adjustment', text: '症状に応じて薬剤の調整を検討' },
+      { id: 'monitoring', text: '定期的なモニタリングを継続' }
+    ]
+  },
+  {
+    category: '生活習慣',
+    items: [
+      { id: 'diet', text: '食事療法の指導を継続' },
+      { id: 'exercise', text: '適度な運動療法を推奨' },
+      { id: 'weight', text: '体重管理の継続' },
+      { id: 'smoking', text: '禁煙指導の継続' }
+    ]
+  },
+  {
+    category: '検査・評価',
+    items: [
+      { id: 'blood_test', text: '定期的な血液検査での評価' },
+      { id: 'vital', text: 'バイタルサインの定期的な確認' },
+      { id: 'imaging', text: '必要に応じて画像検査を実施' }
+    ]
+  },
+  {
+    category: '連携・サポート',
+    items: [
+      { id: 'family', text: '家族との連携を強化' },
+      { id: 'care', text: '介護サービスとの連携' },
+      { id: 'emergency', text: '緊急時の対応体制の確認' }
+    ]
+  }
 ]
 
 const FREQUENCIES = [
@@ -65,6 +134,10 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
   const [conditions, setConditions] = useState<string[]>([])
   const [otherCondition, setOtherCondition] = useState('')
   const [treatmentPlan, setTreatmentPlan] = useState('')
+  const [treatmentPlanTemplates, setTreatmentPlanTemplates] = useState<string[]>([])
+  const [customTreatmentPlan, setCustomTreatmentPlan] = useState('')
+  const [medicationStock, setMedicationStock] = useState('')
+  const [nextVisitDate, setNextVisitDate] = useState('')
   const [notes, setNotes] = useState('')
   const [isRefiningText, setIsRefiningText] = useState(false)
   const [hasRefinedText, setHasRefinedText] = useState(false)
@@ -93,8 +166,37 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
     )
   }
 
+  const toggleTreatmentPlanTemplate = (templateId: string) => {
+    setTreatmentPlanTemplates(prev =>
+      prev.includes(templateId)
+        ? prev.filter(id => id !== templateId)
+        : [...prev, templateId]
+    )
+  }
+
+  // 選択されたテンプレートから治療方針のテキストを生成
+  const generateTreatmentPlanFromTemplates = () => {
+    const selectedTexts: string[] = []
+    
+    TREATMENT_PLAN_TEMPLATES.forEach(category => {
+      category.items.forEach(item => {
+        if (treatmentPlanTemplates.includes(item.id)) {
+          selectedTexts.push(item.text)
+        }
+      })
+    })
+    
+    const templateText = selectedTexts.join('。')
+    const fullText = customTreatmentPlan 
+      ? `${templateText}${templateText ? '。' : ''}${customTreatmentPlan}`
+      : templateText
+    
+    return fullText
+  }
+
   const refineTreatmentPlan = async () => {
-    if (!treatmentPlan || treatmentPlan.length <= 20) return
+    const fullTreatmentPlan = generateTreatmentPlanFromTemplates()
+    if (!fullTreatmentPlan || fullTreatmentPlan.length <= 20) return
     
     setIsRefiningText(true)
     try {
@@ -102,7 +204,7 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          text: treatmentPlan,
+          text: fullTreatmentPlan,
           field: 'treatmentPlan'
         })
       })
@@ -137,6 +239,9 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
     console.log('[RequestForm] Starting AI document generation')
     
     try {
+      // 治療方針を生成
+      const fullTreatmentPlan = treatmentPlan || generateTreatmentPlanFromTemplates()
+      
       const requestBody = {
         pharmacyName: pharmacy.name,
         doctorInfo,
@@ -145,7 +250,9 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
           conditions: otherCondition 
             ? [...conditions, `その他: ${otherCondition}`]
             : conditions,
-          treatmentPlan,
+          treatmentPlan: fullTreatmentPlan,
+          medicationStock,
+          nextVisitDate,
           notes
         }
       }
@@ -231,6 +338,9 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
 
     setIsSubmitting(true)
     try {
+      // 治療方針を生成
+      const fullTreatmentPlan = treatmentPlan || generateTreatmentPlanFromTemplates()
+      
       const response = await fetch('/api/requests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -242,7 +352,9 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
             conditions: otherCondition 
               ? [...conditions, `その他: ${otherCondition}`]
               : conditions,
-            treatmentPlan,
+            treatmentPlan: fullTreatmentPlan,
+            medicationStock,
+            nextVisitDate,
             notes
           },
           aiDocument
@@ -411,81 +523,238 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
         <label className="block text-sm font-medium text-gray-700 mb-2">
           既往・現疾患
         </label>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {CONDITIONS.map(condition => (
-              <label key={condition} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md transition-colors">
-                <input
-                  type="checkbox"
-                  checked={conditions.includes(condition)}
-                  onChange={() => toggleCondition(condition)}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4"
-                />
-                <span className="text-sm text-gray-900 select-none">{condition}</span>
-              </label>
-            ))}
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          {/* 循環器系 */}
+          <div className="p-4 border-b border-gray-100">
+            <h4 className="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wider">循環器系</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {CONDITIONS.slice(0, 5).map(condition => (
+                <label key={condition} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={conditions.includes(condition)}
+                    onChange={() => toggleCondition(condition)}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4"
+                  />
+                  <span className="text-sm text-gray-900 select-none">{condition}</span>
+                </label>
+              ))}
+            </div>
           </div>
-          <div className="mt-4 pt-4 border-t border-gray-100">
+          
+          {/* 代謝・内分泌系 */}
+          <div className="p-4 border-b border-gray-100">
+            <h4 className="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wider">代謝・内分泌系</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {CONDITIONS.slice(5, 9).map(condition => (
+                <label key={condition} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={conditions.includes(condition)}
+                    onChange={() => toggleCondition(condition)}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4"
+                  />
+                  <span className="text-sm text-gray-900 select-none">{condition}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+          
+          {/* 呼吸器系 */}
+          <div className="p-4 border-b border-gray-100">
+            <h4 className="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wider">呼吸器系</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {CONDITIONS.slice(9, 13).map(condition => (
+                <label key={condition} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={conditions.includes(condition)}
+                    onChange={() => toggleCondition(condition)}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4"
+                  />
+                  <span className="text-sm text-gray-900 select-none">{condition}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* その他の系統も同様に追加（省略のため折りたたみ） */}
+          <details className="group">
+            <summary className="px-4 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-700">その他の疾患を表示</span>
+              <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <div className="p-4 space-y-4">
+              {/* 消化器系 */}
+              <div className="border-t border-gray-100 pt-4">
+                <h4 className="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wider">消化器系</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {CONDITIONS.slice(13, 17).map(condition => (
+                    <label key={condition} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={conditions.includes(condition)}
+                        onChange={() => toggleCondition(condition)}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4"
+                      />
+                      <span className="text-sm text-gray-900 select-none">{condition}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              
+              {/* 残りの疾患 */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {CONDITIONS.slice(17).map(condition => (
+                  <label key={condition} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={conditions.includes(condition)}
+                      onChange={() => toggleCondition(condition)}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4"
+                    />
+                    <span className="text-sm text-gray-900 select-none">{condition}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </details>
+          
+          <div className="p-4 bg-gray-50">
             <input
               type="text"
               value={otherCondition}
               onChange={(e) => setOtherCondition(e.target.value)}
-              placeholder="その他（自由記入）"
+              placeholder="その他の疾患（自由記入）"
               className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
             />
           </div>
         </div>
       </div>
 
-      {/* Treatment Plan */}
-      <div>
-        <div className="flex items-center justify-between mb-1">
-          <label htmlFor="treatmentPlan" className="block text-sm font-medium text-gray-700">
-            今後の治療方針
+      {/* Additional Information */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="medicationStock" className="block text-sm font-medium text-gray-700 mb-1">
+            薬の残量
           </label>
-          {treatmentPlan.length > 20 && (
-            <button
-              type="button"
-              onClick={refineTreatmentPlan}
-              disabled={isRefiningText}
-              className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-md transition-colors ${
-                hasRefinedText
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-              } disabled:opacity-50`}
-            >
-              {isRefiningText ? (
-                <>
-                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                  校閲中...
-                </>
-              ) : hasRefinedText ? (
-                <>
-                  <Check className="h-3 w-3 mr-1" />
-                  校閲済み
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-3 w-3 mr-1" />
-                  AI校閲
-                </>
-              )}
-            </button>
-          )}
+          <select
+            id="medicationStock"
+            value={medicationStock}
+            onChange={(e) => setMedicationStock(e.target.value)}
+            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm bg-white min-h-[44px]"
+          >
+            <option value="">選択してください</option>
+            <option value="本日分まで">本日分まで</option>
+            <option value="1〜2日分">1〜2日分</option>
+            <option value="3〜4日分">3〜4日分</option>
+            <option value="1週間分">1週間分</option>
+            <option value="2週間分">2週間分</option>
+            <option value="3週間分">3週間分</option>
+            <option value="1ヶ月分">1ヶ月分</option>
+            <option value="それ以上">それ以上</option>
+          </select>
         </div>
-        <textarea
-          id="treatmentPlan"
-          value={treatmentPlan}
-          onChange={(e) => {
-            setTreatmentPlan(e.target.value)
-            setHasRefinedText(false)
-          }}
-          rows={3}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-white"
-          placeholder="今後の治療方針を入力してください"
-        />
-        {treatmentPlan.length > 10 && treatmentPlan.length <= 20 && (
-          <p className="mt-1 text-xs text-gray-500">もう少し詳しく記載するとAI校閲が利用できます</p>
+        
+        <div>
+          <label htmlFor="nextVisitDate" className="block text-sm font-medium text-gray-700 mb-1">
+            次回往診予定日
+          </label>
+          <input
+            type="date"
+            id="nextVisitDate"
+            value={nextVisitDate}
+            onChange={(e) => setNextVisitDate(e.target.value)}
+            min={new Date().toISOString().split('T')[0]}
+            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm bg-white min-h-[44px]"
+          />
+        </div>
+      </div>
+
+      {/* Treatment Plan Templates */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          今後の治療方針
+        </label>
+        
+        {/* テンプレート選択 */}
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden mb-4">
+          {TREATMENT_PLAN_TEMPLATES.map((category, categoryIndex) => (
+            <div key={category.category} className={`p-4 ${categoryIndex > 0 ? 'border-t border-gray-100' : ''}`}>
+              <h4 className="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wider">{category.category}</h4>
+              <div className="space-y-2">
+                {category.items.map(item => (
+                  <label key={item.id} className="flex items-start space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={treatmentPlanTemplates.includes(item.id)}
+                      onChange={() => toggleTreatmentPlanTemplate(item.id)}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4 mt-0.5"
+                    />
+                    <span className="text-sm text-gray-900 select-none">{item.text}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        {/* カスタム入力 */}
+        <div>
+          <label htmlFor="customTreatmentPlan" className="block text-sm font-medium text-gray-600 mb-1">
+            追加の治療方針（任意）
+          </label>
+          <textarea
+            id="customTreatmentPlan"
+            value={customTreatmentPlan}
+            onChange={(e) => setCustomTreatmentPlan(e.target.value)}
+            rows={2}
+            className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-white"
+            placeholder="テンプレート以外の治療方針があれば入力してください"
+          />
+        </div>
+        
+        {/* 生成された治療方針のプレビュー */}
+        {(treatmentPlanTemplates.length > 0 || customTreatmentPlan) && (
+          <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-medium text-blue-800">生成される治療方針</p>
+              {generateTreatmentPlanFromTemplates().length > 20 && (
+                <button
+                  type="button"
+                  onClick={refineTreatmentPlan}
+                  disabled={isRefiningText}
+                  className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-md transition-colors ${
+                    hasRefinedText
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                  } disabled:opacity-50`}
+                >
+                  {isRefiningText ? (
+                    <>
+                      <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                      校閲中...
+                    </>
+                  ) : hasRefinedText ? (
+                    <>
+                      <Check className="h-3 w-3 mr-1" />
+                      校閲済み
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-3 w-3 mr-1" />
+                      AI校閲
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+            <p className="text-sm text-blue-700">
+              {treatmentPlan || generateTreatmentPlanFromTemplates() || 'テンプレートを選択するか、カスタム入力してください'}
+            </p>
+          </div>
         )}
       </div>
 

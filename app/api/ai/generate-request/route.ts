@@ -24,6 +24,8 @@ interface GenerateRequestBody {
     }>
     conditions?: string[]
     treatmentPlan?: string
+    medicationStock?: string
+    nextVisitDate?: string
     notes?: string
   }
 }
@@ -115,10 +117,12 @@ export async function POST(request: NextRequest) {
 1. 依頼医師・医療機関の情報
 2. 患者の薬物療法の概要
 3. 現在の病状と管理上の注意点
-4. 薬局に期待する対応
-5. 特別な配慮が必要な事項
+4. 薬の残量と次回往診予定日（提供された場合）
+5. 薬局に期待する対応（特に緊急性がある場合は強調）
+6. 特別な配慮が必要な事項
 
-文章は敬語を使い、プロフェッショナルな内容にしてください。`
+文章は敬語を使い、プロフェッショナルな内容にしてください。
+薬の残量が少ない場合や、次回往診まで期間が短い場合は、その緊急性を適切に伝えてください。`
 
     const doctorInfoText = doctorInfo ? `
 依頼医師: ${doctorInfo.name || 'Dr.'}
@@ -133,6 +137,10 @@ ${medicationsList}
 既往・現疾患: ${conditionsList}
 
 今後の治療方針: ${patientInfo.treatmentPlan || '記載なし'}
+
+薬の残量: ${patientInfo.medicationStock || '記載なし'}
+
+次回往診予定日: ${patientInfo.nextVisitDate ? new Date(patientInfo.nextVisitDate).toLocaleDateString('ja-JP') : '記載なし'}
 
 備考: ${patientInfo.notes || 'なし'}`
 
@@ -151,6 +159,10 @@ ${medicationsList}
 
 ■ 今後の治療方針:
 ${patientInfo.treatmentPlan || '記載なし'}
+
+■ 薬の残量: ${patientInfo.medicationStock || '記載なし'}
+
+■ 次回往診予定日: ${patientInfo.nextVisitDate ? new Date(patientInfo.nextVisitDate).toLocaleDateString('ja-JP') : '記載なし'}
 
 ■ 備考:
 ${patientInfo.notes || 'なし'}
@@ -227,6 +239,10 @@ ${medicationsList}
 
 ■ 今後の治療方針:
 ${patientInfo.treatmentPlan || '記載なし'}
+
+■ 薬の残量: ${patientInfo.medicationStock || '記載なし'}
+
+■ 次回往診予定日: ${patientInfo.nextVisitDate ? new Date(patientInfo.nextVisitDate).toLocaleDateString('ja-JP') : '記載なし'}
 
 ■ 備考:
 ${patientInfo.notes || 'なし'}
