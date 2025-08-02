@@ -26,10 +26,17 @@ app/
 ├── api/                   # APIエンドポイント
 │   ├── auth/             # 認証エンドポイント
 │   ├── ai/               # AI統合エンドポイント
+│   │   ├── generate-request/    # 依頼文生成
+│   │   └── refine-text/        # 文章校閲
 │   ├── drugs/            # 薬剤検索エンドポイント
+│   ├── profile/          # プロフィール管理
+│   ├── requests/         # 依頼管理
 │   └── [resource]/       # RESTfulリソースエンドポイント
 ├── dashboard/             # 薬局ダッシュボードルート
 ├── doctor/                # 医師ポータルルート
+│   ├── requests/         # 依頼管理
+│   ├── settings/         # 設定ページ
+│   └── request/new/      # 新規依頼作成
 ├── pharmacy/              # 個別薬局ページ
 ├── auth/                  # 認証ページ
 ├── search/                # 検索機能
@@ -42,38 +49,66 @@ app/
 ```
 components/
 ├── auth/                  # 認証関連コンポーネント
+│   └── ProfileEditForm.tsx # プロフィール編集フォーム（再利用可能）
 ├── dashboard/             # ダッシュボード固有コンポーネント
 ├── doctor/                # 医師ポータルコンポーネント
 │   ├── OfflineDrugAutocomplete.tsx  # 薬剤名オートコンプリート
-│   └── RequestForm.tsx             # 依頼フォーム
+│   ├── DrugAutocompleteWrapper.tsx  # オートコンプリートラッパー
+│   └── RequestForm.tsx             # 拡張依頼フォーム
 ├── forms/                 # 再利用可能なフォームコンポーネント
-├── layout/                # レイアウトコンポーネント（Header、Footer等）
+├── layout/                # レイアウトコンポーネント
+│   ├── Header.tsx        # ヘッダー
+│   ├── Footer.tsx        # フッター
+│   └── MobileNav.tsx     # モバイルナビゲーション
 ├── maps/                  # Google Maps統合コンポーネント
+│   ├── GoogleMapComponent.tsx    # 地図表示
+│   └── PharmacyMarker.tsx       # カスタムマーカー
 ├── pharmacy/              # 薬局関連コンポーネント
+│   ├── PharmacyCard.tsx         # 薬局カード
+│   ├── PharmacyFormExtended.tsx # 拡張薬局設定フォーム
+│   ├── ImprovedResponseForm.tsx # 改善された返信フォーム
+│   └── PharmacyDetails.tsx      # 薬局詳細表示
 ├── search/                # 検索インターフェースコンポーネント
 ├── settings/              # 設定ページコンポーネント
 └── ui/                    # 汎用UIコンポーネント
     ├── AnimatedPage.tsx   # ページ遷移ラッパー
     ├── TouchFeedback.tsx  # iOS風タッチインタラクション
     ├── IOSButton.tsx      # iOS風ボタン
-    └── Modal.tsx          # モーダルダイアログコンポーネント
+    ├── Modal.tsx          # モーダルダイアログ
+    └── LoadingSpinner.tsx # ローディング表示
 ```
 
 ### `/lib` - ライブラリコード
 ```
 lib/
 ├── auth/                  # 認証ユーティリティ
-│   └── actions.ts        # 認証用サーバーアクション
+│   ├── actions.ts        # 認証用サーバーアクション
+│   └── middleware.ts     # 認証ミドルウェア
 ├── email/                 # メールサービス統合
 │   ├── client.ts         # Resendクライアント設定
 │   └── templates/        # メールHTMLテンプレート
 ├── google-maps/           # Google Mapsユーティリティ
+│   ├── config.ts         # Maps設定
+│   └── geocoding.ts      # ジオコーディング処理
 ├── monitoring/            # パフォーマンス監視
 ├── stripe/                # Stripe決済統合
 ├── supabase/              # データベースクライアント設定
 │   ├── client.ts         # ブラウザクライアント
-│   └── server.ts         # サーバークライアント
+│   ├── server.ts         # サーバークライアント
+│   └── middleware.ts     # Supabaseミドルウェア
 └── utils/                 # 汎用ユーティリティ
+    ├── format.ts         # フォーマット関数
+    ├── validation.ts     # バリデーション
+    └── constants.ts      # 定数定義
+```
+
+### `/public` - 静的ファイル
+```
+public/
+├── images/               # 画像アセット
+├── drugs/                # 薬剤データJSONファイル
+│   └── drug-data.json   # 17,000件以上の薬剤データ
+└── manifest.json        # PWAマニフェスト
 ```
 
 ## コード組織パターン
@@ -218,3 +253,20 @@ const pharmacy = await supabase.from('pharmacies').select('*').single()
 const response = await fetch('/api/pharmacies/search')
 const data = await response.json()
 ```
+
+## 最近の構造的変更
+
+### 2025年8月の更新
+- **拡張されたコンポーネント**:
+  - `RequestForm.tsx`: 30項目以上の既往歴、治療方針テンプレート、薬局期待事項
+  - `ImprovedResponseForm.tsx`: 3段階返信システム（11テンプレート）
+  - `ProfileEditForm.tsx`: 再利用可能なプロフィール編集
+  
+- **新規APIエンドポイント**:
+  - `/api/ai/refine-text`: 文章校閲機能
+  - `/api/profile/update`: プロフィール更新
+  
+- **データ構造の拡張**:
+  - 薬局期待事項の配列化
+  - 条件付き受け入れのサポート
+  - 薬剤在庫・往診日管理

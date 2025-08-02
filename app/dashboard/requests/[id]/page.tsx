@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, User, Clock, MapPin } from 'lucide-react'
-import ResponseForm from '@/components/pharmacy/ResponseForm'
+import ImprovedResponseForm from '@/components/pharmacy/ImprovedResponseForm'
 
 export default async function PharmacyRequestDetailPage({
   params
@@ -150,6 +150,63 @@ export default async function PharmacyRequestDetailPage({
               </div>
             )}
 
+            {/* Pharmacy Expectations */}
+            {request.patient_info?.pharmacyExpectations?.length > 0 && (
+              <div className="mb-4">
+                <h3 className="text-sm font-medium text-gray-700 mb-2">薬局への期待事項</h3>
+                <div className="flex flex-wrap gap-2">
+                  {request.patient_info.pharmacyExpectations.map((expectation: string) => {
+                    const expectationMap: { [key: string]: string } = {
+                      'twentyfour': '24時間対応',
+                      'night': '夜間対応',
+                      'holiday': '休日対応',
+                      'emergency': '緊急時対応',
+                      'sterile': '無菌製剤調製',
+                      'narcotics': '麻薬調剤',
+                      'anticancer': '抗がん剤調剤',
+                      'pediatric': '小児用製剤調製',
+                      'enteral': '経管栄養剤管理',
+                      'medical_device': '在宅医療機器管理',
+                      'sanitary_materials': '衛生材料供給',
+                      'medical_materials': '医療材料管理',
+                      'home_visit': '訪問薬剤管理指導',
+                      'medication_calendar': '服薬カレンダー作成',
+                      'leftover_management': '残薬管理',
+                      'multidisciplinary': '多職種連携',
+                      'caregiver_guidance': '介護者への服薬指導',
+                      'insurance': '保険薬局としての対応',
+                      'self_pay': '自費対応可能',
+                      'delivery': '配送サービス',
+                      'online_guidance': 'オンライン服薬指導'
+                    }
+                    return (
+                      <span key={expectation} className="px-2 py-1 text-xs font-medium bg-amber-100 text-amber-800 rounded-full">
+                        {expectationMap[expectation] || expectation}
+                      </span>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Medication Stock and Next Visit */}
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              {request.patient_info?.medicationStock && (
+                <div>
+                  <h3 className="text-sm font-medium text-gray-700 mb-1">薬の残量</h3>
+                  <p className="text-sm text-gray-600">{request.patient_info.medicationStock}</p>
+                </div>
+              )}
+              {request.patient_info?.nextVisitDate && (
+                <div>
+                  <h3 className="text-sm font-medium text-gray-700 mb-1">次回往診予定日</h3>
+                  <p className="text-sm text-gray-600">
+                    {new Date(request.patient_info.nextVisitDate).toLocaleDateString('ja-JP')}
+                  </p>
+                </div>
+              )}
+            </div>
+
             {/* Notes */}
             {request.patient_info?.notes && (
               <div>
@@ -234,7 +291,7 @@ export default async function PharmacyRequestDetailPage({
                 <h2 className="text-lg font-medium text-gray-900 mb-4">
                   回答する
                 </h2>
-                <ResponseForm 
+                <ImprovedResponseForm 
                   requestId={request.id} 
                   pharmacyId={pharmacy.id}
                 />
