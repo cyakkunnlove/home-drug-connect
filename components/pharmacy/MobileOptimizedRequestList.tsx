@@ -31,6 +31,10 @@ interface Request {
     accepted: boolean
   }>
   ai_document?: string
+  pharmacy?: {
+    name: string
+    address: string
+  }
 }
 
 interface RequestListProps {
@@ -298,9 +302,19 @@ export default function MobileOptimizedRequestList({ initialRequests }: RequestL
 
                         {/* Card Content */}
                         <div className="px-4 pb-4 space-y-3">
+                          {/* Pharmacy Info (if multiple pharmacies) */}
+                          {request.pharmacy && (
+                            <div className="flex items-center space-x-2 text-sm">
+                              <Building2 className="h-4 w-4 text-blue-500" />
+                              <span className="text-gray-700 font-medium">
+                                {request.pharmacy.name}
+                              </span>
+                            </div>
+                          )}
+                          
                           {/* Doctor Info */}
                           <div className="flex items-center space-x-2 text-sm">
-                            <Building2 className="h-4 w-4 text-gray-400" />
+                            <User className="h-4 w-4 text-gray-400" />
                             <span className="text-gray-700 font-medium">
                               {request.doctor_info?.organization || request.doctor?.organization_name || '医療機関'}
                             </span>

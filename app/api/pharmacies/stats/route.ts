@@ -14,36 +14,53 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Get user's pharmacy
-    const { data: pharmacy } = await supabase
-      .from('pharmacies')
-      .select('id')
-      .eq('user_id', user.id)
+    // Get user's company info first
+    const { data: userInfo } = await supabase
+      .from('users')
+      .select('company_id, email')
+      .eq('id', user.id)
       .single()
 
-    if (!pharmacy) {
-      // Try with email as fallback
-      const { data: userInfo } = await supabase
-        .from('users')
-        .select('email')
-        .eq('id', user.id)
-        .single()
+    // Get all pharmacies for stats aggregation
+    let pharmacyIds: string[] = []
+    
+    if (userInfo?.company_id) {
+      // Get all pharmacies for the company
+      const { data: companyPharmacies } = await supabase
+        .from('pharmacies')
+        .select('id')
+        .eq('company_id', userInfo.company_id)
       
-      if (userInfo?.email) {
-        const { data: pharmacyByEmail } = await supabase
+      if (companyPharmacies && companyPharmacies.length > 0) {
+        pharmacyIds = companyPharmacies.map(p => p.id)
+      }
+    } else {
+      // Fallback: try with user_id
+      const { data: userPharmacies } = await supabase
+        .from('pharmacies')
+        .select('id')
+        .eq('user_id', user.id)
+      
+      if (userPharmacies && userPharmacies.length > 0) {
+        pharmacyIds = userPharmacies.map(p => p.id)
+      } else if (userInfo?.email) {
+        // Final fallback: try with email
+        const { data: emailPharmacies } = await supabase
           .from('pharmacies')
           .select('id')
           .eq('email', userInfo.email)
-          .single()
         
-        if (!pharmacyByEmail) {
-          return NextResponse.json(
-            { error: 'No pharmacy found' },
-            { status: 404 }
-          )
+        if (emailPharmacies && emailPharmacies.length > 0) {
+          pharmacyIds = emailPharmacies.map(p => p.id)
         }
-        pharmacy.id = pharmacyByEmail.id
       }
+    }
+
+    if (pharmacyIds.length === 0) {
+      return NextResponse.json(
+        { error: 'No pharmacy found' },
+        { status: 404 }
+      )
     }
 
     // Get current month date range
@@ -51,34 +68,34 @@ export async function GET(request: NextRequest) {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
 
-    // Get profile views count for this month
+    // Get profile views count for this month (aggregate all pharmacies)
     const { count: viewsCount } = await supabase
       .from('pharmacy_views')
       .select('*', { count: 'exact', head: true })
-      .eq('pharmacy_id', pharmacy.id)
+      .in('pharmacy_id', pharmacyIds)
       .gte('created_at', startOfMonth.toISOString())
       .lte('created_at', endOfMonth.toISOString())
 
-    // Get inquiries count for this month
+    // Get inquiries count for this month (aggregate all pharmacies)
     const { count: inquiriesCount } = await supabase
       .from('inquiries')
       .select('*', { count: 'exact', head: true })
-      .eq('pharmacy_id', pharmacy.id)
+      .in('pharmacy_id', pharmacyIds)
       .gte('created_at', startOfMonth.toISOString())
       .lte('created_at', endOfMonth.toISOString())
 
-    // Get accepted requests count
+    // Get accepted requests count (aggregate all pharmacies)
     const { count: acceptedCount } = await supabase
       .from('requests')
       .select('*', { count: 'exact', head: true })
-      .eq('pharmacy_id', pharmacy.id)
+      .in('pharmacy_id', pharmacyIds)
       .eq('status', 'accepted')
 
-    // Get pending requests count
+    // Get pending requests count (aggregate all pharmacies)
     const { count: pendingCount } = await supabase
       .from('requests')
       .select('*', { count: 'exact', head: true })
-      .eq('pharmacy_id', pharmacy.id)
+      .in('pharmacy_id', pharmacyIds)
       .eq('status', 'pending')
 
     return NextResponse.json({
