@@ -27,6 +27,7 @@ interface GenerateRequestBody {
     medicationStock?: string
     nextVisitDate?: string
     notes?: string
+    pharmacyExpectations?: string[]
   }
 }
 
@@ -109,6 +110,40 @@ export async function POST(request: NextRequest) {
 
     const conditionsList = patientInfo.conditions?.join('、') || 'なし'
 
+    // Map pharmacy expectations to human-readable text
+    const expectationMap: { [key: string]: string } = {
+      // 対応時間・体制
+      'twentyfour': '24時間対応',
+      'night': '夜間対応',
+      'holiday': '休日対応',
+      'emergency': '緊急時対応',
+      // 専門的な調剤
+      'sterile': '無菌製剤調製',
+      'narcotics': '麻薬調剤',
+      'anticancer': '抗がん剤調剤',
+      'pediatric': '小児用製剤調製',
+      'enteral': '経管栄養剤管理',
+      // 医療機器・材料
+      'medical_device': '在宅医療機器管理',
+      'sanitary_materials': '衛生材料供給',
+      'medical_materials': '医療材料管理',
+      // サービス内容
+      'home_visit': '訪問薬剤管理指導',
+      'medication_calendar': '服薬カレンダー作成',
+      'leftover_management': '残薬管理',
+      'multidisciplinary': '多職種連携',
+      'caregiver_guidance': '介護者への服薬指導',
+      // その他の対応
+      'insurance': '保険薬局としての対応',
+      'self_pay': '自費対応可能',
+      'delivery': '配送サービス',
+      'online_guidance': 'オンライン服薬指導'
+    }
+
+    const pharmacyExpectationsList = patientInfo.pharmacyExpectations
+      ?.map(exp => expectationMap[exp] || exp)
+      .join('、') || 'なし'
+
     // Generate AI document using OpenAI
     const systemPrompt = `あなたは医師から薬局への患者受け入れ依頼文を作成する専門家です。
 以下の情報を基に、薬局が患者の受け入れ可否を判断しやすい、簡潔で専門的な依頼文を日本語で作成してください。
@@ -118,11 +153,12 @@ export async function POST(request: NextRequest) {
 2. 患者の薬物療法の概要
 3. 現在の病状と管理上の注意点
 4. 薬の残量と次回往診予定日（提供された場合）
-5. 薬局に期待する対応（特に緊急性がある場合は強調）
+5. 薬局に期待する具体的なサービスや対応（選択された期待事項を適切に文章化）
 6. 特別な配慮が必要な事項
 
 文章は敬語を使い、プロフェッショナルな内容にしてください。
-薬の残量が少ない場合や、次回往診まで期間が短い場合は、その緊急性を適切に伝えてください。`
+薬の残量が少ない場合や、次回往診まで期間が短い場合は、その緊急性を適切に伝えてください。
+薬局への期待事項は、自然な文章として組み込んでください。`
 
     const doctorInfoText = doctorInfo ? `
 依頼医師: ${doctorInfo.name || 'Dr.'}
@@ -141,6 +177,8 @@ ${medicationsList}
 薬の残量: ${patientInfo.medicationStock || '記載なし'}
 
 次回往診予定日: ${patientInfo.nextVisitDate ? new Date(patientInfo.nextVisitDate).toLocaleDateString('ja-JP') : '記載なし'}
+
+薬局への期待事項: ${pharmacyExpectationsList}
 
 備考: ${patientInfo.notes || 'なし'}`
 
@@ -163,6 +201,9 @@ ${patientInfo.treatmentPlan || '記載なし'}
 ■ 薬の残量: ${patientInfo.medicationStock || '記載なし'}
 
 ■ 次回往診予定日: ${patientInfo.nextVisitDate ? new Date(patientInfo.nextVisitDate).toLocaleDateString('ja-JP') : '記載なし'}
+
+■ 薬局への期待事項:
+${pharmacyExpectationsList}
 
 ■ 備考:
 ${patientInfo.notes || 'なし'}
@@ -243,6 +284,9 @@ ${patientInfo.treatmentPlan || '記載なし'}
 ■ 薬の残量: ${patientInfo.medicationStock || '記載なし'}
 
 ■ 次回往診予定日: ${patientInfo.nextVisitDate ? new Date(patientInfo.nextVisitDate).toLocaleDateString('ja-JP') : '記載なし'}
+
+■ 薬局への期待事項:
+${pharmacyExpectationsList}
 
 ■ 備考:
 ${patientInfo.notes || 'なし'}

@@ -109,6 +109,56 @@ const TREATMENT_PLAN_TEMPLATES = [
   }
 ]
 
+// 薬局への期待事項
+const PHARMACY_EXPECTATIONS = [
+  {
+    category: '対応時間・体制',
+    items: [
+      { id: 'twentyfour', text: '24時間対応' },
+      { id: 'night', text: '夜間対応' },
+      { id: 'holiday', text: '休日対応' },
+      { id: 'emergency', text: '緊急時対応' }
+    ]
+  },
+  {
+    category: '専門的な調剤',
+    items: [
+      { id: 'sterile', text: '無菌製剤調製' },
+      { id: 'narcotics', text: '麻薬調剤' },
+      { id: 'anticancer', text: '抗がん剤調剤' },
+      { id: 'pediatric', text: '小児用製剤調製' },
+      { id: 'enteral', text: '経管栄養剤管理' }
+    ]
+  },
+  {
+    category: '医療機器・材料',
+    items: [
+      { id: 'medical_device', text: '在宅医療機器管理' },
+      { id: 'sanitary_materials', text: '衛生材料供給' },
+      { id: 'medical_materials', text: '医療材料管理' }
+    ]
+  },
+  {
+    category: 'サービス内容',
+    items: [
+      { id: 'home_visit', text: '訪問薬剤管理指導' },
+      { id: 'medication_calendar', text: '服薬カレンダー作成' },
+      { id: 'leftover_management', text: '残薬管理' },
+      { id: 'multidisciplinary', text: '多職種連携' },
+      { id: 'caregiver_guidance', text: '介護者への服薬指導' }
+    ]
+  },
+  {
+    category: 'その他の対応',
+    items: [
+      { id: 'insurance', text: '保険薬局としての対応' },
+      { id: 'self_pay', text: '自費対応可能' },
+      { id: 'delivery', text: '配送サービス' },
+      { id: 'online_guidance', text: 'オンライン服薬指導' }
+    ]
+  }
+]
+
 const FREQUENCIES = [
   '1日1回',
   '1日2回',
@@ -141,6 +191,7 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
   const [notes, setNotes] = useState('')
   const [isRefiningText, setIsRefiningText] = useState(false)
   const [hasRefinedText, setHasRefinedText] = useState(false)
+  const [pharmacyExpectations, setPharmacyExpectations] = useState<string[]>([])
 
   const addMedication = () => {
     setMedications([...medications, { name: '', dosage: '', frequency: '' }])
@@ -171,6 +222,14 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
       prev.includes(templateId)
         ? prev.filter(id => id !== templateId)
         : [...prev, templateId]
+    )
+  }
+
+  const togglePharmacyExpectation = (expectationId: string) => {
+    setPharmacyExpectations(prev =>
+      prev.includes(expectationId)
+        ? prev.filter(id => id !== expectationId)
+        : [...prev, expectationId]
     )
   }
 
@@ -253,7 +312,8 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
           treatmentPlan: fullTreatmentPlan,
           medicationStock,
           nextVisitDate,
-          notes
+          notes,
+          pharmacyExpectations
         }
       }
       
@@ -355,7 +415,8 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
             treatmentPlan: fullTreatmentPlan,
             medicationStock,
             nextVisitDate,
-            notes
+            notes,
+            pharmacyExpectations
           },
           aiDocument
         })
@@ -753,6 +814,47 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
             </div>
             <p className="text-sm text-blue-700">
               {treatmentPlan || generateTreatmentPlanFromTemplates() || 'テンプレートを選択するか、カスタム入力してください'}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Pharmacy Expectations */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          薬局への期待事項
+        </label>
+        <p className="text-xs text-gray-500 mb-3">必要なサービスや対応を選択してください</p>
+        
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          {PHARMACY_EXPECTATIONS.map((category, categoryIndex) => (
+            <div key={category.category} className={`p-4 ${categoryIndex > 0 ? 'border-t border-gray-100' : ''}`}>
+              <h4 className="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wider">{category.category}</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {category.items.map(item => (
+                  <label key={item.id} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={pharmacyExpectations.includes(item.id)}
+                      onChange={() => togglePharmacyExpectation(item.id)}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4"
+                    />
+                    <span className="text-sm text-gray-900 select-none">{item.text}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        {/* 選択された期待事項のプレビュー */}
+        {pharmacyExpectations.length > 0 && (
+          <div className="mt-3 p-3 bg-amber-50 rounded-lg border border-amber-200">
+            <p className="text-xs font-medium text-amber-800 mb-1">選択された期待事項</p>
+            <p className="text-sm text-amber-700">
+              {PHARMACY_EXPECTATIONS.flatMap(cat => 
+                cat.items.filter(item => pharmacyExpectations.includes(item.id))
+              ).map(item => item.text).join('、')}
             </p>
           </div>
         )}
