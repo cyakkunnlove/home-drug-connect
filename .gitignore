@@ -67,4 +67,4 @@ tmp/
 # Drug data JSON files (generated)
 public/drugs.v*.json
 public/drugs.latest.json
-public/data/
+public/data/*.json

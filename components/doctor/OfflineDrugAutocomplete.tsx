@@ -92,10 +92,17 @@ export default function OfflineDrugAutocomplete({
     }
 
     // 2. 完全データをバックグラウンドでロード
-    const fullResponse = await fetch('/data/drugs-full.json')
-    if (!fullResponse.ok) throw new Error('データロード失敗')
+    try {
+      const fullResponse = await fetch('/data/drugs-full.json')
+      if (fullResponse.ok) {
+        return await fullResponse.json()
+      }
+    } catch (e) {
+      console.log('完全薬剤データのロードをスキップ')
+    }
     
-    return await fullResponse.json()
+    // データがない場合は空配列を返す
+    return []
   }
 
   // ローカル検索（高速）

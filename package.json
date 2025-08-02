@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "npm run generate:drugs && next build",
+    "build": "next build",
+    "build:with-drugs": "npm run generate:drugs && next build",
     "start": "next start",
     "lint": "next lint",
     "etl:drugs": "tsx scripts/etl-drugs.ts",

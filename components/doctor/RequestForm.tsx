@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import OfflineDrugAutocomplete from './OfflineDrugAutocomplete'
+import DrugAutocompleteWrapper from './DrugAutocompleteWrapper'
 import { Plus, Trash2, Loader2, Building2, Mail, User } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -304,7 +304,7 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
                   <label className="block text-xs font-medium text-gray-600 mb-1">
                     薬剤名
                   </label>
-                  <OfflineDrugAutocomplete
+                  <DrugAutocompleteWrapper
                     value={medication.name}
                     onChange={(value) => updateMedication(index, 'name', value)}
                     onSelect={(drug) => updateMedication(index, 'name', drug.name)}
