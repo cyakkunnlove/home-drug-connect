@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronLeft, User, Shield, Bell, CreditCard } from 'lucide-react'
 import DeleteAccountSection from '@/components/settings/DeleteAccountSection'
+import ProfileEditForm from '@/components/settings/ProfileEditForm'
 
 export const dynamic = 'force-dynamic'
 
@@ -37,9 +38,12 @@ export default async function SettingsPage() {
         <div className="max-w-4xl mx-auto space-y-6">
           {/* プロフィール設定 */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <User className="w-5 h-5 text-gray-600" />
-              <h2 className="text-lg font-semibold text-gray-900">プロフィール設定</h2>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <User className="w-5 h-5 text-gray-600" />
+                <h2 className="text-lg font-semibold text-gray-900">プロフィール設定</h2>
+              </div>
+              <ProfileEditForm profile={profile} userRole="pharmacy_admin" />
             </div>
             <div className="space-y-4">
               <div>
@@ -47,6 +51,7 @@ export default async function SettingsPage() {
                   メールアドレス
                 </label>
                 <p className="text-gray-900">{user.email}</p>
+                <p className="text-xs text-gray-500 mt-1">※メールアドレスは変更できません</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
