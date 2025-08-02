@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import DrugAutocomplete from './DrugAutocomplete'
+import OfflineDrugAutocomplete from './OfflineDrugAutocomplete'
 import { Plus, Trash2, Loader2, Building2, Mail, User } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -304,11 +304,12 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
                   <label className="block text-xs font-medium text-gray-600 mb-1">
                     薬剤名
                   </label>
-                  <DrugAutocomplete
+                  <OfflineDrugAutocomplete
                     value={medication.name}
                     onChange={(value) => updateMedication(index, 'name', value)}
                     onSelect={(drug) => updateMedication(index, 'name', drug.name)}
-                    placeholder="薬剤名を入力"
+                    placeholder="薬剤名を入力（2文字以上）"
+                    minChars={2}
                   />
                 </div>
                 

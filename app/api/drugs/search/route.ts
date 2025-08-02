@@ -6,23 +6,25 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient()
     const { searchParams } = new URL(request.url)
     const query = searchParams.get('query')
-    const limit = parseInt(searchParams.get('limit') || '50')
+    const limit = parseInt(searchParams.get('limit') || '20') // デフォルトを20に削減
     
-    // Check authentication (optional for drug search - could be public)
-    const { data: { user } } = await supabase.auth.getUser()
+    // キャッシュヘッダーを設定（5分間）
+    const headers = {
+      'Cache-Control': 'public, max-age=300, stale-while-revalidate=60'
+    }
     
     if (!query || query.length < 2) {
       return NextResponse.json({
         success: true,
         drugs: []
-      })
+      }, { headers })
     }
 
     // Use the search_drugs function we created in the database
     const { data: drugs, error: searchError } = await supabase
       .rpc('search_drugs', {
         search_query: query,
-        limit_count: Math.min(limit, 100) // Cap at 100
+        limit_count: Math.min(limit, 30) // Cap at 30 for performance
       })
 
     if (searchError) {
@@ -46,13 +48,13 @@ export async function GET(request: NextRequest) {
         success: true,
         drugs: fallbackDrugs || [],
         fallback: true
-      })
+      }, { headers })
     }
 
     return NextResponse.json({
       success: true,
       drugs: drugs || []
-    })
+    }, { headers })
 
   } catch (error) {
     console.error('Error in drug search:', error)
