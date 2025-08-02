@@ -236,7 +236,18 @@ export default function OfflineDrugAutocomplete({
           {suggestions.map((drug, index) => (
             <div
               key={drug.id}
-              onClick={() => handleSelect(drug)}
+              onClick={() => {
+                // 先発品がある場合は先発品名を使用
+                if (drug.b && !drug.g?.length) {
+                  onChange(drug.b)
+                  if (onSelect) {
+                    onSelect(drug)
+                  }
+                } else {
+                  handleSelect(drug)
+                }
+                setShowSuggestions(false)
+              }}
               onMouseEnter={() => setSelectedIndex(index)}
               className={`px-3 py-2 cursor-pointer ${
                 selectedIndex === index

@@ -307,7 +307,7 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
                   <DrugAutocompleteWrapper
                     value={medication.name}
                     onChange={(value) => updateMedication(index, 'name', value)}
-                    onSelect={(drug) => updateMedication(index, 'name', drug.name)}
+                    onSelect={(drug) => updateMedication(index, 'name', drug.n || drug.name)}
                     placeholder="薬剤名を入力（2文字以上）"
                     minChars={2}
                   />

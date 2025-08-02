@@ -7,9 +7,10 @@ import OptimizedDrugAutocomplete from './OptimizedDrugAutocomplete'
 interface DrugAutocompleteWrapperProps {
   value: string
   onChange: (value: string) => void
-  onSelect?: (drug: any) => void
+  onSelect?: (drug: any, manufacturer?: string) => void
   placeholder?: string
   className?: string
+  minChars?: number
 }
 
 export default function DrugAutocompleteWrapper(props: DrugAutocompleteWrapperProps) {
