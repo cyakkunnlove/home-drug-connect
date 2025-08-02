@@ -57,7 +57,7 @@ export default async function DoctorSettingsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   氏名
                 </label>
-                <p className="text-gray-900">{profile?.name || '-'}</p>
+                <p className="text-gray-900">{profile?.full_name || profile?.name || '-'}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">

@@ -27,7 +27,7 @@ export default async function NewRequestPage({
   // Get doctor information
   const { data: doctorData, error: doctorError } = await supabase
     .from('users')
-    .select('full_name, organization_name, email')
+    .select('full_name, name, organization_name, email')
     .eq('id', user.id)
     .single()
   
@@ -65,7 +65,7 @@ export default async function NewRequestPage({
             <RequestForm 
               pharmacy={pharmacy} 
               doctorInfo={{
-                name: doctorData?.full_name || doctorData?.email?.split('@')[0] || 'Unknown Doctor',
+                name: doctorData?.full_name || doctorData?.name || doctorData?.email?.split('@')[0] || 'Unknown Doctor',
                 organization: doctorData?.organization_name || '未設定',
                 email: doctorData?.email || user.email || ''
               }}

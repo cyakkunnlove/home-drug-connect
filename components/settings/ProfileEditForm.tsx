@@ -14,7 +14,7 @@ export default function ProfileEditForm({ profile, userRole }: ProfileEditFormPr
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [formData, setFormData] = useState({
-    name: profile?.name || '',
+    name: profile?.full_name || profile?.name || '',
     organization_name: profile?.organization_name || '',
     clinic_name: profile?.clinic_name || '',
     medical_license_number: profile?.medical_license_number || '',
@@ -55,7 +55,7 @@ export default function ProfileEditForm({ profile, userRole }: ProfileEditFormPr
     setError('')
     // Reset form data
     setFormData({
-      name: profile?.name || '',
+      name: profile?.full_name || profile?.name || '',
       organization_name: profile?.organization_name || '',
       clinic_name: profile?.clinic_name || '',
       medical_license_number: profile?.medical_license_number || '',
