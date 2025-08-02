@@ -35,16 +35,12 @@ export async function PUT(request: NextRequest) {
     
     if (currentUser.role === 'doctor') {
       // ドクターが更新できるフィールド
-      const allowedFields = ['full_name', 'organization_name', 'clinic_name', 'medical_license_number', 'phone']
+      const allowedFields = ['name', 'organization_name', 'clinic_name', 'medical_license_number', 'phone']
       allowedFields.forEach(field => {
         if (body[field] !== undefined) {
           updateData[field] = body[field]
         }
       })
-      // nameフィールドをfull_nameにマッピング（後方互換性のため）
-      if (body.name !== undefined && !body.full_name) {
-        updateData.full_name = body.name
-      }
     } else if (currentUser.role === 'pharmacy_admin') {
       // 薬局管理者が更新できるフィールド
       const allowedFields = ['organization_name', 'phone']
