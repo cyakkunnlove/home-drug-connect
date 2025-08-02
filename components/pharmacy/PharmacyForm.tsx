@@ -11,7 +11,8 @@ import {
   Mail, 
   Clock, 
   AlertCircle,
-  Save
+  Save,
+  Globe
 } from 'lucide-react'
 import type { Database } from '@/types/supabase'
 
@@ -69,6 +70,7 @@ export default function PharmacyForm({ pharmacy }: { pharmacy: Pharmacy | null }
       address: formData.get('address') as string,
       phone: formData.get('phone') as string,
       email: formData.get('email') as string,
+      website_url: formData.get('website_url') as string || null,
       twenty_four_support: formData.get('twenty_four_support') === 'on',
       holiday_support: formData.get('holiday_support') === 'on',
       emergency_support: formData.get('emergency_support') === 'on',
@@ -198,6 +200,25 @@ export default function PharmacyForm({ pharmacy }: { pharmacy: Pharmacy | null }
             name="email"
             type="email"
             defaultValue={pharmacy?.email || ''}
+            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label htmlFor="website_url" className="block text-sm font-medium text-gray-700 mb-2">
+          ホームページURL
+        </label>
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Globe className="h-5 w-5 text-gray-400" />
+          </div>
+          <input
+            id="website_url"
+            name="website_url"
+            type="url"
+            placeholder="https://example.com"
+            defaultValue={pharmacy?.website_url || ''}
             className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>

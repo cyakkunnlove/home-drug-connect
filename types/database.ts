@@ -29,6 +29,7 @@ export interface Pharmacy {
   }
   phone: string
   email?: string
+  website_url?: string
   twenty_four_support: boolean
   holiday_support: boolean
   emergency_support: boolean

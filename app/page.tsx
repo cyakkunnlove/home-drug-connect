@@ -32,8 +32,8 @@ export default function Home() {
             </h1>
             
             <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-2xl mx-auto leading-relaxed">
-              24時間対応可能な薬局を簡単検索。
-              医療機関と薬局をつなぐマッチングプラットフォーム
+              24時間対応可能な在宅対応薬局を簡単検索。
+              医療機関と在宅対応薬局をつなぐマッチングプラットフォーム
             </p>
             
             {/* メインCTAボタン */}
@@ -43,7 +43,7 @@ export default function Home() {
                 className="group inline-flex items-center justify-center gap-3 bg-white text-blue-700 px-8 py-4 rounded-xl hover:shadow-2xl hover:shadow-white/20 transition-all duration-300 text-lg font-bold transform hover:-translate-y-1"
               >
                 <MapPin className="w-6 h-6" />
-                薬局を今すぐ検索
+                在宅対応薬局を今すぐ検索
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
@@ -51,7 +51,7 @@ export default function Home() {
             {/* サブボタン */}
             <div className="flex gap-6 justify-center text-white/80 text-sm">
               <Link href="/pharmacy/register" className="hover:text-white transition-colors">
-                薬局として登録 →
+                在宅対応薬局として登録 →
               </Link>
               <Link href="/doctor/register" className="hover:text-white transition-colors">
                 医師として登録 →
@@ -67,7 +67,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             <div className="text-center">
               <div className="text-4xl font-bold text-blue-600 mb-2">500+</div>
-              <p className="text-gray-600">登録薬局数</p>
+              <p className="text-gray-600">登録在宅対応薬局数</p>
             </div>
             <div className="text-center">
               <div className="text-4xl font-bold text-blue-600 mb-2">24/7</div>
@@ -103,18 +103,18 @@ export default function Home() {
                   医師の悩みを解決
                 </h3>
                 <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-                  「夜間・休日に対応できる薬局が見つからない...」<br />
-                  「無菌調剤が必要だけど、どこに頼めばいいか分からない...」<br />
-                  「緊急の処方箋を受けてくれる薬局を探すのに時間がかかる...」
+                  「夜間・休日に対応できる在宅対応薬局が見つからない...」<br />
+                  「無菌調剤が必要だけど、どこの在宅対応薬局に頼めばいいか分からない...」<br />
+                  「緊急の処方箋を受けてくれる在宅対応薬局を探すのに時間がかかる...」
                 </p>
                 <div className="bg-blue-100 border-l-4 border-blue-600 p-4 rounded">
                   <p className="text-blue-900 font-medium">
-                    💡 HOME-DRUG CONNECTなら、条件に合う薬局を瞬時に検索！
+                    💡 HOME-DRUG CONNECTなら、条件に合う在宅対応薬局を瞬時に検索！
                   </p>
                 </div>
               </div>
               <div className="order-1 md:order-2 bg-white rounded-3xl shadow-2xl p-8 transform hover:scale-105 transition-transform duration-300">
-                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23f0f9ff' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' font-size='80' fill='%233b82f6'%3E🔍%3C/text%3E%3Ctext x='200' y='200' text-anchor='middle' font-size='20' fill='%236b7280'%3E薬局を瞬時に検索%3C/text%3E%3C/svg%3E" alt="検索イメージ" className="w-full h-64 object-cover rounded-lg" />
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23f0f9ff' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' font-size='80' fill='%233b82f6'%3E🔍%3C/text%3E%3Ctext x='200' y='200' text-anchor='middle' font-size='20' fill='%236b7280'%3E在宅対応薬局を瞬時に検索%3C/text%3E%3C/svg%3E" alt="検索イメージ" className="w-full h-64 object-cover rounded-lg" />
               </div>
             </div>
           </div>
@@ -126,7 +126,7 @@ export default function Home() {
               <h3 className="text-2xl font-bold mb-4 text-gray-900">24時間365日対応</h3>
               <p className="text-gray-700 leading-relaxed mb-6">
                 深夜でも休日でも<br />
-                対応可能な薬局が<br />
+                対応可能な在宅対応薬局が<br />
                 すぐに見つかります
               </p>
               <div className="flex flex-wrap gap-2 justify-center">
@@ -141,7 +141,7 @@ export default function Home() {
               <h3 className="text-2xl font-bold mb-4 text-gray-900">位置情報で最適化</h3>
               <p className="text-gray-700 leading-relaxed mb-6">
                 患者様のご自宅から<br />
-                最も近い薬局を<br />
+                最も近い在宅対応薬局を<br />
                 自動的に表示します
               </p>
               <div className="flex flex-wrap gap-2 justify-center">
@@ -155,7 +155,7 @@ export default function Home() {
               <div className="text-6xl mb-6 group-hover:scale-110 transition-transform">🔒</div>
               <h3 className="text-2xl font-bold mb-4 text-gray-900">安心の認証制度</h3>
               <p className="text-gray-700 leading-relaxed mb-6">
-                全ての薬局は<br />
+                全ての在宅対応薬局は<br />
                 厳格な審査を通過<br />
                 安心してご利用可能
               </p>
@@ -167,8 +167,48 @@ export default function Home() {
             </div>
           </div>
 
+          {/* AI機能紹介 */}
+          <div className="mt-20 bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl p-8 md:p-12 text-white">
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-8">
+                <div className="text-6xl mb-4">🤖</div>
+                <h3 className="text-3xl font-bold mb-4">AI文書作成補助機能</h3>
+                <p className="text-xl text-white/90 max-w-2xl mx-auto">
+                  医師の依頼作成をAIがサポート。患者情報を入力するだけで、<br />
+                  在宅対応薬局への適切な依頼文を自動生成します。
+                </p>
+              </div>
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
+                  <div className="text-4xl mb-3">⏱️</div>
+                  <h4 className="font-bold mb-2">時間短縮</h4>
+                  <p className="text-sm text-white/80">
+                    依頼文作成時間を<br />
+                    大幅に短縮
+                  </p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
+                  <div className="text-4xl mb-3">📋</div>
+                  <h4 className="font-bold mb-2">情報の網羅性</h4>
+                  <p className="text-sm text-white/80">
+                    必要な情報を<br />
+                    漏れなく記載
+                  </p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
+                  <div className="text-4xl mb-3">✨</div>
+                  <h4 className="font-bold mb-2">プロフェッショナル</h4>
+                  <p className="text-sm text-white/80">
+                    適切で丁寧な<br />
+                    文書を自動生成
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* 特殊対応 */}
-          <div className="mt-20 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-8 md:p-12 text-white">
+          <div className="mt-12 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-8 md:p-12 text-white">
             <h3 className="text-3xl font-bold mb-6 text-center">特殊な要望にも対応</h3>
             <div className="grid md:grid-cols-4 gap-6 text-center">
               <div>
@@ -246,7 +286,7 @@ export default function Home() {
               <div className="grid md:grid-cols-2 gap-8 items-center">
                 <div className="order-2 md:order-1 text-center">
                   <div className="text-9xl">🏪</div>
-                  <p className="text-gray-600 mt-4">条件に合う薬局が表示</p>
+                  <p className="text-gray-600 mt-4">条件に合う在宅対応薬局が表示</p>
                 </div>
                 <div className="order-1 md:order-2 bg-white rounded-3xl shadow-xl p-8 md:p-12">
                   <div className="flex items-center mb-6">
@@ -260,9 +300,9 @@ export default function Home() {
                   </div>
                   <div className="bg-green-50 rounded-2xl p-6">
                     <p className="text-lg text-gray-700 mb-4">
-                      ✅ 24時間対応可能な薬局<br />
-                      ✅ 無菌調剤室がある薬局<br />
-                      ✅ 現在受入可能な薬局
+                      ✅ 24時間対応可能な在宅対応薬局<br />
+                      ✅ 無菌調剤室がある在宅対応薬局<br />
+                      ✅ 現在受入可能な在宅対応薬局
                     </p>
                     <div className="flex gap-2 flex-wrap">
                       <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">距離順</span>
@@ -295,6 +335,7 @@ export default function Home() {
                   <div className="bg-purple-50 rounded-2xl p-6">
                     <p className="text-lg text-gray-700 mb-4">
                       📝 患者情報を入力<br />
+                      🤖 AIが依頼文を自動作成<br />
                       💊 処方内容を記載<br />
                       📤 ワンクリックで送信
                     </p>
@@ -305,7 +346,7 @@ export default function Home() {
                 </div>
                 <div className="text-center">
                   <div className="text-9xl">📨</div>
-                  <p className="text-gray-600 mt-4">薬局へ依頼が送信されます</p>
+                  <p className="text-gray-600 mt-4">在宅対応薬局へ依頼が送信されます</p>
                 </div>
               </div>
             </div>
@@ -315,7 +356,7 @@ export default function Home() {
               <div className="text-6xl mb-4">🎊</div>
               <h3 className="text-3xl font-bold mb-4">これで完了！</h3>
               <p className="text-xl">
-                薬局から連絡が来るのを待つだけ。<br />
+                在宅対応薬局から連絡が来るのを待つだけ。<br />
                 平均応答時間は約15分です。
               </p>
             </div>
@@ -342,12 +383,12 @@ export default function Home() {
               <h3 className="text-2xl font-bold mb-4 text-gray-900">医師の方</h3>
               <p className="text-gray-700 mb-6">
                 在宅患者様への処方箋対応で<br />
-                薬局をお探しの方
+                在宅対応薬局をお探しの方
               </p>
               <ul className="text-left space-y-3 mb-8">
                 <li className="flex items-center gap-3">
                   <span className="text-blue-600">✓</span>
-                  <span>24時間対応薬局を検索</span>
+                  <span>24時間対応の在宅対応薬局を検索</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <span className="text-blue-600">✓</span>
@@ -373,7 +414,7 @@ export default function Home() {
               <h3 className="text-2xl font-bold mb-4 text-gray-900">薬局の方</h3>
               <p className="text-gray-700 mb-6">
                 在宅医療に対応可能な<br />
-                薬局として登録したい方
+                在宅対応薬局として登録したい方
               </p>
               <ul className="text-left space-y-3 mb-8">
                 <li className="flex items-center gap-3">
@@ -393,7 +434,7 @@ export default function Home() {
                 href="/pharmacy/register"
                 className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-300 font-bold"
               >
-                薬局として登録する
+                在宅対応薬局として登録する
                 <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
@@ -406,17 +447,17 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              今すぐ薬局を検索しましょう
+              今すぐ在宅対応薬局を検索しましょう
             </h2>
             <p className="text-xl text-white/90 mb-8">
-              患者様のご自宅から最適な薬局が見つかります
+              患者様のご自宅から最適な在宅対応薬局が見つかります
             </p>
             <Link
               href="/search"
               className="inline-flex items-center justify-center gap-3 bg-white text-blue-700 px-8 py-4 rounded-xl hover:shadow-2xl hover:shadow-black/20 transition-all duration-300 text-lg font-bold group"
             >
               <MapPin className="w-6 h-6" />
-              薬局検索を開始
+              在宅対応薬局検索を開始
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
@@ -437,8 +478,8 @@ export default function Home() {
             <div>
               <h4 className="font-semibold mb-4">サービス</h4>
               <ul className="space-y-2 text-gray-400 text-sm">
-                <li><Link href="/search" className="hover:text-white transition-colors">薬局検索</Link></li>
-                <li><Link href="/pharmacy/register" className="hover:text-white transition-colors">薬局登録</Link></li>
+                <li><Link href="/search" className="hover:text-white transition-colors">在宅対応薬局検索</Link></li>
+                <li><Link href="/pharmacy/register" className="hover:text-white transition-colors">在宅対応薬局登録</Link></li>
                 <li><Link href="/doctor/register" className="hover:text-white transition-colors">医師登録</Link></li>
               </ul>
             </div>

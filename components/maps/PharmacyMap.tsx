@@ -141,18 +141,31 @@ export default function PharmacyMap({
         markerColor = '#FBBC04' // 空きが多い場合は黄色
       }
 
+      // 機能を表示するアイコンを作成
+      const features = []
+      if (pharmacy.twenty_four_support) features.push('24')
+      if (pharmacy.has_clean_room) features.push('C')
+      if (pharmacy.handles_narcotics) features.push('N')
+      
       const marker = new google.maps.Marker({
         position: { lat: pharmacy.lat, lng: pharmacy.lng },
         map,
         title: pharmacy.name,
         icon: {
           url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-            <svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
-              <rect x="5" y="5" width="20" height="20" fill="${markerColor}" stroke="white" stroke-width="2" transform="rotate(45 15 15)"/>
+            <svg width="40" height="50" viewBox="0 0 40 50" xmlns="http://www.w3.org/2000/svg">
+              <!-- メインのピンマーカー -->
+              <path d="M20 0C8.95 0 0 8.95 0 20c0 15 20 30 20 30s20-15 20-30C40 8.95 31.05 0 20 0z" fill="${markerColor}" stroke="white" stroke-width="2"/>
+              <!-- 中央の円 -->
+              <circle cx="20" cy="18" r="14" fill="white" opacity="0.9"/>
+              <!-- テキスト -->
+              <text x="20" y="${features.length > 0 ? '23' : '25'}" text-anchor="middle" font-family="sans-serif" font-size="${features.length > 2 ? '10' : '12'}" font-weight="bold" fill="${markerColor}">
+                ${features.length > 0 ? features.join('･') : '薬'}
+              </text>
             </svg>
           `),
-          scaledSize: new google.maps.Size(30, 30),
-          anchor: new google.maps.Point(15, 15),
+          scaledSize: new google.maps.Size(40, 50),
+          anchor: new google.maps.Point(20, 50),
         },
       })
 
@@ -259,7 +272,7 @@ export default function PharmacyMap({
       
       {/* マップの凡例 */}
       {!mapError && (
-        <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 bg-white rounded-lg shadow-lg p-3 sm:p-4 text-xs sm:text-sm border border-gray-200 max-w-[180px] sm:max-w-[200px]">
+        <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 bg-white rounded-lg shadow-lg p-3 sm:p-4 text-xs sm:text-sm border border-gray-200 max-w-[220px] sm:max-w-[250px]">
         <h3 className="font-bold text-gray-800 mb-2 sm:mb-3 text-sm sm:text-base flex items-center gap-2">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
@@ -274,21 +287,42 @@ export default function PharmacyMap({
             </div>
             <span className="text-gray-700">検索地点</span>
           </div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-sm transform rotate-45 flex-shrink-0"></div>
-            <span className="text-gray-700">24時間対応</span>
+          <div className="pt-2 border-t border-gray-200">
+            <div className="text-xs text-gray-600 font-semibold mb-1">マーカー色</div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <svg width="16" height="20" viewBox="0 0 40 50" className="flex-shrink-0">
+                  <path d="M20 0C8.95 0 0 8.95 0 20c0 15 20 30 20 30s20-15 20-30C40 8.95 31.05 0 20 0z" fill="#34A853"/>
+                </svg>
+                <span className="text-gray-700">24時間対応</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg width="16" height="20" viewBox="0 0 40 50" className="flex-shrink-0">
+                  <path d="M20 0C8.95 0 0 8.95 0 20c0 15 20 30 20 30s20-15 20-30C40 8.95 31.05 0 20 0z" fill="#FBBC04"/>
+                </svg>
+                <span className="text-gray-700">空き多数</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg width="16" height="20" viewBox="0 0 40 50" className="flex-shrink-0">
+                  <path d="M20 0C8.95 0 0 8.95 0 20c0 15 20 30 20 30s20-15 20-30C40 8.95 31.05 0 20 0z" fill="#EA4335"/>
+                </svg>
+                <span className="text-gray-700">空きあり</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg width="16" height="20" viewBox="0 0 40 50" className="flex-shrink-0">
+                  <path d="M20 0C8.95 0 0 8.95 0 20c0 15 20 30 20 30s20-15 20-30C40 8.95 31.05 0 20 0z" fill="#9E9E9E"/>
+                </svg>
+                <span className="text-gray-500">満床</span>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-yellow-500 rounded-sm transform rotate-45 flex-shrink-0"></div>
-            <span className="text-gray-700">空き多数</span>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded-sm transform rotate-45 flex-shrink-0"></div>
-            <span className="text-gray-700">空きあり</span>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-400 rounded-sm transform rotate-45 flex-shrink-0"></div>
-            <span className="text-gray-500">満床</span>
+          <div className="pt-2 border-t border-gray-200">
+            <div className="text-xs text-gray-600 font-semibold mb-1">機能表示</div>
+            <div className="space-y-0.5 text-xs">
+              <div><span className="font-bold text-gray-700">24</span> = 24時間対応</div>
+              <div><span className="font-bold text-gray-700">C</span> = 無菌室あり</div>
+              <div><span className="font-bold text-gray-700">N</span> = 麻薬取扱い</div>
+            </div>
           </div>
         </div>
         </div>

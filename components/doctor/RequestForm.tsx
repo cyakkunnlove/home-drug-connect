@@ -440,24 +440,32 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
 
       {/* AI Document Generation */}
       <div className="border-t pt-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-medium text-gray-900">AI依頼文</h3>
-          <IOSButton
-            variant="primary"
-            size="medium"
-            onClick={generateAIDocument}
-            disabled={isGeneratingAI || medications.every(m => !m.name)}
-            className="min-w-[120px]"
-          >
-            {isGeneratingAI ? (
-              <>
-                <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4" />
-                生成中...
-              </>
-            ) : (
-              'AI依頼文を生成'
-            )}
-          </IOSButton>
+        <div className="mb-4">
+          <div className="flex justify-between items-start mb-3">
+            <h3 className="text-lg font-medium text-gray-900">AI依頼文</h3>
+            <IOSButton
+              variant="primary"
+              size="medium"
+              onClick={generateAIDocument}
+              disabled={isGeneratingAI || medications.every(m => !m.name)}
+              className="min-w-[120px]"
+            >
+              {isGeneratingAI ? (
+                <>
+                  <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4" />
+                  生成中...
+                </>
+              ) : (
+                'AI依頼文を生成'
+              )}
+            </IOSButton>
+          </div>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <p className="text-sm text-blue-800 flex items-start">
+              <span className="text-blue-600 mr-2 flex-shrink-0">💡</span>
+              <span>AIが患者情報を元に、在宅対応薬局への依頼文を自動作成します。薬剤情報や患者の状態を適切に伝える文書を瞬時に生成し、スムーズな連携をサポートします。</span>
+            </p>
+          </div>
         </div>
         
         <AnimatePresence>
