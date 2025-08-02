@@ -169,7 +169,7 @@ export default async function ImprovedPharmacyRequestDetailPage({
                   <div>
                     <p className="font-medium text-gray-900 mb-1">AI要約</p>
                     <p className="text-sm text-gray-700">
-                      {request.doctor.organization_name}からの依頼です。
+                      {request.doctor?.organization_name || '医療機関'}からの依頼です。
                       薬剤{request.patient_info?.medications?.length || 0}種類の管理が必要で、
                       {request.patient_info?.conditions?.length > 0 && 
                         `既往歴として${request.patient_info.conditions.join('、')}があります。`
@@ -191,7 +191,7 @@ export default async function ImprovedPharmacyRequestDetailPage({
                 <div>
                   <p className="text-sm text-gray-500 mb-1">医療機関</p>
                   <p className="font-medium text-gray-900">
-                    {request.doctor.organization_name || '未設定'}
+                    {request.doctor?.organization_name || '未設定'}
                   </p>
                 </div>
                 <div>

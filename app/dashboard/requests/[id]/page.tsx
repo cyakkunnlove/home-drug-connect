@@ -96,10 +96,10 @@ export default async function PharmacyRequestDetailPage({
                 <User className="h-5 w-5 text-gray-400 mr-2" />
                 <div>
                   <p className="font-medium text-gray-900">
-                    {request.doctor.organization_name || 'ドクター'}
+                    {request.doctor?.organization_name || 'ドクター'}
                   </p>
                   <p className="text-sm text-gray-500">
-                    {request.doctor.email}
+                    {request.doctor?.email || 'メールアドレスなし'}
                   </p>
                 </div>
               </div>

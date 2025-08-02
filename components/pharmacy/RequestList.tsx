@@ -127,7 +127,7 @@ export default function RequestList({ initialRequests }: RequestListProps) {
                         <div className="ml-4">
                           <div className="flex items-center">
                             <p className="text-sm font-medium text-gray-900">
-                              {request.doctor.organization_name || request.doctor.email}
+                              {request.doctor?.organization_name || request.doctor?.email || '医療機関情報なし'}
                             </p>
                             {request.status === 'pending' && (
                               <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">

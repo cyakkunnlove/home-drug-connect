@@ -225,7 +225,7 @@ export default function ImprovedRequestList({ initialRequests }: RequestListProp
                             <div className="flex-1">
                               <div className="flex items-center gap-3 mb-2">
                                 <h3 className="text-lg font-semibold text-gray-900">
-                                  {request.doctor.organization_name || request.doctor.email}
+                                  {request.doctor?.organization_name || request.doctor?.email || '医療機関情報なし'}
                                 </h3>
                                 
                                 {/* ラベル */}
