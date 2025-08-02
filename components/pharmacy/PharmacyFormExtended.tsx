@@ -131,7 +131,10 @@ export default function PharmacyFormExtended({ pharmacy, companyId }: PharmacyFo
       setSuccess(true)
       setAddressVerified(true)
       setVerifiedAddress(formattedAddress)
-      router.refresh()
+      // フォームの成功メッセージを表示した後、しばらくしてからリフレッシュ
+      setTimeout(() => {
+        router.refresh()
+      }, 2000)
     } catch (err) {
       const error = err as { message?: string }
       setError(error.message || '保存に失敗しました')

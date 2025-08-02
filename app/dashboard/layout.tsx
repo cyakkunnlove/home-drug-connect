@@ -78,7 +78,7 @@ export default function DashboardLayout({
 
   const navigation = [
     { name: 'ダッシュボード', href: '/dashboard', icon: LayoutDashboard },
-    { name: '薬局管理', href: '/dashboard/pharmacies', icon: Store },
+    { name: '薬局管理', href: '/dashboard/pharmacy', icon: Store },
     { name: 'お問い合わせ', href: '/dashboard/inquiries', icon: MessageSquare },
     { name: 'アナリティクス', href: '/dashboard/analytics', icon: BarChart3 },
     { name: 'サブスクリプション', href: '/dashboard/subscription', icon: CreditCard },

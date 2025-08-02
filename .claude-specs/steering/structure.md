@@ -30,10 +30,15 @@ app/
 │   ├── requests/         # Medical request management
 │   ├── responses/        # Pharmacy responses
 │   ├── inquiries/        # Direct messaging
+│   ├── profile/          # User profile management
 │   ├── stripe/           # Payment webhooks
 │   └── admin/            # Admin-only endpoints
 ├── dashboard/             # Authenticated pharmacy dashboard
+│   └── settings/         # Pharmacy user settings
+│       └── password/     # Password change page
 ├── doctor/               # Doctor portal
+│   └── settings/         # Doctor user settings
+│       └── password/     # Password change page
 ├── admin/                # System admin interface
 ├── search/               # Public search interface
 ├── pharmacy/             # Public pharmacy profiles
@@ -72,7 +77,8 @@ components/
 │   ├── LoadingSpinner.tsx
 │   └── TouchFeedback.tsx
 └── settings/             # Settings components
-    └── DeleteAccountSection.tsx
+    ├── DeleteAccountSection.tsx
+    └── ProfileEditForm.tsx
 ```
 
 ### `/lib` - Core Libraries

@@ -46,6 +46,29 @@ This document tracks recent significant updates to the HOME-DRUG CONNECT platfor
 - **Database Access**: Confirmed server-side only access pattern
 - **RLS Policies**: Maintained for all database operations
 
+### 7. Profile Management Features
+- **What**: Added comprehensive profile editing for both pharmacy and doctor accounts
+- **Components**:
+  - Reusable `ProfileEditForm` component
+  - Role-based field restrictions
+  - Real-time validation
+- **Features**:
+  - Edit organization/clinic information
+  - Update contact details
+  - Modify service capabilities (pharmacy only)
+  - Professional license management (doctors only)
+
+### 8. Password Change Functionality
+- **What**: Secure password update feature for all user types
+- **Implementation**:
+  - Separate password change pages for each user role
+  - Current password verification required
+  - Strong password requirements
+  - Success/error feedback
+- **Security**: 
+  - Server-side validation
+  - Secure password hashing via Supabase Auth
+
 ## Migration Notes
 - Database migration required for `website_url` field
 - No breaking changes to existing functionality
