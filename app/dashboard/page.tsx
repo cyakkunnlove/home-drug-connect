@@ -16,6 +16,12 @@ import { useRouter } from 'next/navigation'
 export default function DashboardPage() {
   const [userData, setUserData] = useState<any>(null)
   const [pharmacyCount, setPharmacyCount] = useState(0)
+  const [stats, setStats] = useState({
+    profileViews: 0,
+    inquiries: 0,
+    acceptedPatients: 0,
+    pendingRequests: 0
+  })
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   const supabase = createClient()
@@ -54,6 +60,23 @@ export default function DashboardPage() {
             .eq('user_id', user.id)
           setPharmacyCount(count || 0)
         }
+
+        // Fetch pharmacy stats
+        try {
+          const response = await fetch('/api/pharmacies/stats', {
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+          })
+
+          if (response.ok) {
+            const data = await response.json()
+            if (data.success && data.stats) {
+              setStats(data.stats)
+            }
+          }
+        } catch (error) {
+          console.error('統計データ読み込みエラー:', error)
+        }
       } catch (error) {
         console.error('データ読み込みエラー:', error)
       } finally {
@@ -81,8 +104,8 @@ export default function DashboardPage() {
     )
   }
 
-  // 統計情報（現時点ではモックデータ）
-  const stats = [
+  // 統計情報
+  const statsData = [
     {
       name: '管理薬局数',
       value: `${pharmacyCount || 0}店舗`,
@@ -91,19 +114,20 @@ export default function DashboardPage() {
     },
     {
       name: 'プロフィール閲覧数',
-      value: '0回',
+      value: `${stats.profileViews}回`,
       icon: Eye,
       description: '今月',
     },
     {
-      name: '会社ステータス',
-      value: userData?.companies?.status === 'active' ? '運用中' : '停止中',
-      icon: Building2,
-      description: userData?.companies?.name || '',
+      name: '承認済み患者数',
+      value: `${stats.acceptedPatients}名`,
+      icon: Users,
+      description: '累計',
+      highlight: stats.pendingRequests > 0 ? `新規${stats.pendingRequests}件` : undefined,
     },
     {
       name: '問い合わせ数',
-      value: '0件',
+      value: `${stats.inquiries}件`,
       icon: TrendingUp,
       description: '今月',
     },
@@ -146,11 +170,16 @@ export default function DashboardPage() {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
-        {stats.map((stat) => (
+        {statsData.map((stat) => (
           <div
             key={stat.name}
-            className="bg-white rounded-lg shadow-sm p-4 md:p-6 border border-gray-200"
+            className="bg-white rounded-lg shadow-sm p-4 md:p-6 border border-gray-200 relative"
           >
+            {stat.highlight && (
+              <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                {stat.highlight}
+              </div>
+            )}
             <div className="flex items-center justify-between mb-2 md:mb-4">
               <stat.icon className="w-6 h-6 md:w-8 md:h-8 text-blue-600" />
               <span className="text-xl md:text-2xl font-bold text-gray-900">

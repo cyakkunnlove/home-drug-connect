@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import DrugAutocompleteWrapper from './DrugAutocompleteWrapper'
-import { Plus, Trash2, Loader2, Building2, Mail, User, Sparkles, Check } from 'lucide-react'
+import { Plus, Trash2, Loader2, Building2, Mail, User, Sparkles, Check, Edit2, Save, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { motion, AnimatePresence } from 'framer-motion'
 import TouchFeedback, { IOSButton } from '@/components/ui/TouchFeedback'
@@ -176,6 +176,8 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [aiDocument, setAiDocument] = useState('')
   const [isGeneratingAI, setIsGeneratingAI] = useState(false)
+  const [isEditingAI, setIsEditingAI] = useState(false)
+  const [editedAiDocument, setEditedAiDocument] = useState('')
   const formRef = useRef<HTMLFormElement>(null)
   
   const [medications, setMedications] = useState<Medication[]>([
@@ -361,6 +363,8 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
       
       if (data.success && data.aiDocument) {
         setAiDocument(data.aiDocument)
+        setEditedAiDocument(data.aiDocument)
+        setIsEditingAI(false)
         
         let successMessage = 'AI依頼文を生成しました'
         if (data.usingTemplate) {
@@ -914,14 +918,62 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
               transition={{ duration: 0.3 }}
               className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200"
             >
-              <motion.pre 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-                className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed"
-              >
-                {aiDocument}
-              </motion.pre>
+              <div className="flex justify-end mb-2 space-x-2">
+                {isEditingAI ? (
+                  <>
+                    <IOSButton
+                      variant="secondary"
+                      size="small"
+                      onClick={() => {
+                        setEditedAiDocument(aiDocument)
+                        setIsEditingAI(false)
+                      }}
+                    >
+                      <X className="h-4 w-4 mr-1" />
+                      キャンセル
+                    </IOSButton>
+                    <IOSButton
+                      variant="primary"
+                      size="small"
+                      onClick={() => {
+                        setAiDocument(editedAiDocument)
+                        setIsEditingAI(false)
+                        toast.success('AI依頼文を更新しました')
+                      }}
+                    >
+                      <Save className="h-4 w-4 mr-1" />
+                      保存
+                    </IOSButton>
+                  </>
+                ) : (
+                  <IOSButton
+                    variant="ghost"
+                    size="small"
+                    onClick={() => setIsEditingAI(true)}
+                  >
+                    <Edit2 className="h-4 w-4 mr-1" />
+                    編集
+                  </IOSButton>
+                )}
+              </div>
+              
+              {isEditingAI ? (
+                <textarea
+                  value={editedAiDocument}
+                  onChange={(e) => setEditedAiDocument(e.target.value)}
+                  className="w-full min-h-[400px] p-4 text-sm text-gray-700 leading-relaxed bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-y"
+                  placeholder="依頼文を編集..."
+                />
+              ) : (
+                <motion.pre 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed"
+                >
+                  {aiDocument}
+                </motion.pre>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
