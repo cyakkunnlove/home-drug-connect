@@ -1,55 +1,67 @@
 # HOME-DRUG CONNECT Product Overview
 
 ## Product Overview
-HOME-DRUG CONNECT is a B2B SaaS platform that connects 在宅対応薬局 (home-visit pharmacies) with medical institutions (clinics and hospitals) in Japan. The platform streamlines the process of finding and communicating with pharmacies that offer home medical services, addressing the growing need for at-home pharmaceutical care in Japan's aging society.
+
+HOME-DRUG CONNECT is a B2B2C platform that digitally connects home healthcare doctors with pharmacies specializing in home medical care. The platform streamlines patient referrals and medication management for home healthcare patients, addressing the critical challenge of finding pharmacies equipped to handle complex home care needs.
 
 ## Core Features
-- **在宅対応薬局ディレクトリ**: リアルタイムで利用可能な在宅対応薬局の検索可能なデータベース
-- **位置ベース検索**: 住所や現在地を使用して近隣の在宅対応薬局を地図表示で検索
-- **AI文書作成補助**: 患者情報を基に医療機関から薬局への依頼文を自動生成
-- **リアルタイム受入状況管理**: 薬局は患者受入可能数をリアルタイムで更新
-- **ダイレクトコミュニケーション**: 医療機関と薬局間の安全なメッセージングシステム
-- **サービスフィルタリング**: 特定サービスによる検索（24時間対応、祝日対応、無菌調剤、麻薬取り扱い）
-- **サブスクリプション管理**: 薬局向け月額制モデル（¥2,200/月）
-- **マルチロールアクセス**: 薬局管理者、医療スタッフ、システム管理者向けの個別インターフェース
-- **分析ダッシュボード**: 検索パターン、コンバージョン率、薬局パフォーマンスの追跡
-- **モバイルレスポンシブデザイン**: デスクトップとモバイル両方に最適化
-- **プロフィール管理**: 薬局・医療機関両方のユーザーが自身の情報を更新可能
-- **セキュアなパスワード変更**: 現在のパスワード確認を含む安全なパスワード更新機能
+
+### For Doctors
+- **Smart Pharmacy Search**: Location-based search with real-time capacity and service filtering
+- **AI-Powered Request Generation**: Automated patient referral documents using OpenAI
+- **Digital Request Management**: Track and manage all patient referrals in one place
+- **Drug Database Integration**: Comprehensive medication autocomplete with 6,801+ drugs
+
+### For Pharmacies
+- **Digital Storefront**: Professional profile with service capabilities and real-time availability
+- **Request Management Dashboard**: Centralized inbox for patient referrals with accept/decline workflow
+- **Analytics & Insights**: Track profile views, conversion rates, and patient capacity
+- **Subscription Management**: Stripe-integrated billing for premium features
+
+### For System Administrators
+- **Pharmacy Verification**: Manual approval process for quality control
+- **System Monitoring**: Overview of platform usage and performance metrics
 
 ## Target Use Case
-### Primary Users
-1. **Medical Institutions**: Hospitals and clinics needing to find pharmacies for their home-care patients
-2. **Home Medical Pharmacies**: Pharmacies offering home visit services seeking to expand their patient base
-3. **Medical Professionals**: Doctors and nurses coordinating patient care
 
-### Key Scenarios
-- 病院の退院調整担当者が、複雑な薬物療法を必要とする患者のための在宅対応薬局を見つける
-- クリニックの医師が、終末期患者のために24時間対応可能な在宅対応薬局を探す
-- AIが患者情報から適切な依頼文を自動生成し、医療機関の事務負担を軽減する
-- 薬局が利用可能な受入能力を効率的に管理し、潜在的な紹介者に伝える
-- ヘルスケアコーディネーターが薬局の利用パターンを追跡・分析する
+### Primary Scenarios
+1. **Doctor Referral Flow**: A home care doctor needs to find a pharmacy that can handle a bedridden patient's complex medication needs including sterile preparations and controlled substances
+2. **Pharmacy Discovery**: Pharmacies specializing in home care can be discovered by doctors based on location, services, and availability
+3. **Urgent Care Coordination**: Emergency medication needs for home patients requiring 24/7 pharmacy support
+
+### User Personas
+- **Home Care Doctors**: Medical professionals managing patients who cannot visit clinics
+- **Specialized Pharmacies**: Pharmacies equipped for home medical care (無菌調剤室, 麻薬取扱い, 24時間対応)
+- **Healthcare Coordinators**: Staff managing patient transitions and medication logistics
 
 ## Key Value Proposition
-### For Medical Institutions
-- **時間節約**: 在宅対応薬局の空き状況確認にかかる電話時間を大幅削減
-- **AI文書作成支援**: 患者情報に基づく依頼文の自動生成で事務作業を効率化
-- **患者アウトカムの向上**: 患者に適切な在宅対応薬局サービスを迅速にマッチング
-- **透明性**: 薬局の能力と受入可能数をリアルタイムで確認
-- **一元的コミュニケーション**: すべての薬局とのやり取りを1つのプラットフォームで管理
 
-### For 在宅対応薬局
-- **認知度向上**: 在宅医療サービスを積極的に求める医療機関に発見されやすくなる
-- **効率的な受入管理**: 過剰予約を防ぎ、患者負荷を最適化
-- **収益成長**: 質の高い紹介の安定した流れへのアクセス
-- **専門的ネットワーク**: 地域の医療機関との関係構築
-- **公式サイトへの誘導**: 薬局の詳細情報やサービスを自社サイトで紹介可能
+### For Healthcare Providers
+- **Time Savings**: Reduce phone tag and manual coordination from hours to minutes
+- **Better Patient Outcomes**: Match patients with pharmacies equipped for their specific needs
+- **Digital Paper Trail**: Complete documentation of all referrals and communications
+
+### For Pharmacies
+- **Increased Visibility**: Be discovered by doctors actively seeking home care pharmacy services
+- **Operational Efficiency**: Manage all referrals through a single dashboard
+- **Business Growth**: Track metrics and optimize for higher conversion rates
 
 ### Competitive Advantages
-- **リアルタイム更新**: 従来のディレクトリとは異なり、受入能力と利用可能性が常に最新
-- **AI駆動の効率化**: 医療機関の依頼文作成を自動化し、コミュニケーションを円滑化
-- **サービス特化型検索**: 在宅対応薬局の専門的な能力による詳細なフィルタリング
-- **低い参入障壁**: 月額¥2,200の手頃な価格設定、初期費用なし
-- **日本特化**: 日本の在宅医療システム要件に特化して構築
-- **データ駆動型インサイト**: 分析により両者の運営を最適化
-EOF < /dev/null
+1. **Specialization**: Focused exclusively on home healthcare pharmacy connections
+2. **Real-time Availability**: Live capacity updates prevent wasted referrals
+3. **AI Integration**: Automated document generation saves 10-15 minutes per referral
+4. **Mobile-First Design**: Optimized for doctors on the go with iOS-style interactions
+5. **Trust & Verification**: Manual pharmacy approval ensures quality standards
+
+## Business Model
+
+- **Freemium for Doctors**: Free access to encourage adoption and network effects
+- **Subscription for Pharmacies**: Monthly SaaS fee for profile listing and request management
+- **Future Revenue Streams**: Transaction fees, premium analytics, API access
+
+## Success Metrics
+
+- **Network Growth**: Number of active doctors and verified pharmacies
+- **Engagement**: Monthly active referrals and acceptance rates
+- **Efficiency**: Average time from search to accepted referral
+- **Satisfaction**: User retention and Net Promoter Score (NPS)

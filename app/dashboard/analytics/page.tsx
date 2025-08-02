@@ -26,11 +26,23 @@ export default function AnalyticsPage() {
           return;
         }
 
-        // Get user's pharmacies
+        // Get user's company
+        const { data: userData } = await supabase
+          .from('users')
+          .select('company_id')
+          .eq('id', user.id)
+          .single();
+
+        if (!userData?.company_id) {
+          setLoading(false);
+          return;
+        }
+
+        // Get company's pharmacies
         const { data: pharmaciesData } = await supabase
           .from('pharmacies')
           .select('id, name')
-          .eq('user_id', user.id);
+          .eq('company_id', userData.company_id);
 
         if (!pharmaciesData || pharmaciesData.length === 0) {
           setLoading(false);

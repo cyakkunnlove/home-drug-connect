@@ -1,18 +1,19 @@
 # HOME-DRUG CONNECT Project Structure
 
 ## Root Directory Organization
+
 ```
 home-drug-connect/
-├── app/                    # Next.js 15 App Router pages and API routes
+├── app/                    # Next.js App Router (pages, layouts, API routes)
 ├── components/             # Reusable React components
-├── lib/                    # Utility functions and service clients
-├── hooks/                  # Custom React hooks
+├── lib/                    # Utilities, helpers, and service integrations
 ├── types/                  # TypeScript type definitions
-├── public/                 # Static assets
-├── supabase/              # Database migrations and configurations
-├── scripts/               # Development and deployment scripts
-├── docs/                  # Project documentation
-└── .claude-specs/         # AI steering and specifications
+├── public/                 # Static assets and generated files
+├── scripts/                # Build and maintenance scripts
+├── supabase/              # Database migrations and configuration
+├── docs/                   # Project documentation
+├── .claude-specs/         # Kiro spec-driven development files
+└── [config files]         # Configuration files at root level
 ```
 
 ## Subdirectory Structures
@@ -20,216 +21,198 @@ home-drug-connect/
 ### `/app` - Next.js App Router
 ```
 app/
-├── (public)/              # Unauthenticated routes group
-│   └── doctor/           
-│       ├── login/        # Doctor login page
-│       └── register/     # Doctor registration
-├── api/                   # API routes
+├── (public)/              # Route group for public pages
+├── admin/                 # Admin dashboard routes
+├── api/                   # API endpoints
 │   ├── auth/             # Authentication endpoints
-│   ├── pharmacies/       # Pharmacy CRUD operations
-│   ├── requests/         # Medical request management
-│   ├── responses/        # Pharmacy responses
-│   ├── inquiries/        # Direct messaging
-│   ├── profile/          # User profile management
-│   ├── stripe/           # Payment webhooks
-│   └── admin/            # Admin-only endpoints
-├── dashboard/             # Authenticated pharmacy dashboard
-│   └── settings/         # Pharmacy user settings
-│       └── password/     # Password change page
-├── doctor/               # Doctor portal
-│   └── settings/         # Doctor user settings
-│       └── password/     # Password change page
-├── admin/                # System admin interface
-├── search/               # Public search interface
-├── pharmacy/             # Public pharmacy profiles
-│   └── [id]/            # Dynamic pharmacy pages
-├── login/                # General login
+│   ├── ai/               # AI integration endpoints
+│   ├── drugs/            # Drug search endpoints
+│   └── [resource]/       # RESTful resource endpoints
+├── dashboard/             # Pharmacy dashboard routes
+├── doctor/                # Doctor portal routes
+├── pharmacy/              # Individual pharmacy pages
+├── auth/                  # Authentication pages
+├── search/                # Search functionality
+├── globals.css           # Global styles
 ├── layout.tsx            # Root layout
-├── page.tsx              # Homepage
-└── globals.css           # Global styles
+└── page.tsx              # Homepage
 ```
 
-### `/components` - UI Components
+### `/components` - Component Organization
 ```
 components/
-├── auth/                  # Authentication forms
-│   ├── LoginForm.tsx
-│   ├── RegisterForm.tsx
-│   └── DoctorRegisterForm.tsx
+├── auth/                  # Authentication-related components
 ├── dashboard/             # Dashboard-specific components
-│   └── MobileNav.tsx
-├── doctor/               # Doctor portal components
-│   ├── RequestForm.tsx
-│   └── DrugAutocomplete.tsx
-├── pharmacy/             # Pharmacy management
-│   ├── PharmacyForm.tsx
-│   ├── RequestList.tsx
-│   ├── ResponseForm.tsx
-│   └── InquiryForm.tsx
-├── maps/                 # Map components
-│   ├── GoogleMap.tsx
-│   └── PharmacyMap.tsx
-├── layout/               # Layout components
-│   ├── Header.tsx
-│   └── AuthenticatedHeader.tsx
-├── ui/                   # Generic UI components
-│   ├── Modal.tsx
-│   ├── LoadingSpinner.tsx
-│   └── TouchFeedback.tsx
-└── settings/             # Settings components
-    ├── DeleteAccountSection.tsx
-    └── ProfileEditForm.tsx
+├── doctor/                # Doctor portal components
+├── forms/                 # Reusable form components
+├── layout/                # Layout components (Header, Footer, etc.)
+├── maps/                  # Google Maps integration components
+├── pharmacy/              # Pharmacy-related components
+├── search/                # Search interface components
+├── settings/              # Settings page components
+└── ui/                    # Generic UI components
+    ├── AnimatedPage.tsx   # Page transition wrapper
+    ├── TouchFeedback.tsx  # iOS-style touch interactions
+    ├── IOSButton.tsx      # iOS-style button
+    └── Modal.tsx          # Modal dialog component
 ```
 
-### `/lib` - Core Libraries
+### `/lib` - Library Code
 ```
 lib/
-├── supabase/             # Supabase client configuration
-│   ├── client.ts        # Client-side instance
-│   ├── server.ts        # Server-side instance
-│   └── pool.ts          # Connection pooling
-├── auth/                 # Authentication utilities
-│   └── actions.ts       # Server actions
-├── stripe/               # Stripe integration
-│   ├── client.ts
-│   ├── config.ts
-│   └── subscription.ts
-├── google-maps/          # Maps integration
-│   └── geocoding.ts
-├── email/                # Email service
-│   ├── client.ts
-│   ├── notifications.ts
-│   └── templates/
-├── cache/                # Caching utilities
-│   ├── redis.ts
-│   └── integration.ts
-├── monitoring/           # Performance monitoring
-│   └── performance.ts
-├── rate-limit/           # API rate limiting
-│   └── index.ts
-├── state/                # State management
-│   └── search-store.ts
-└── utils/                # General utilities
-```
-
-### `/types` - TypeScript Definitions
-```
-types/
-├── database.ts           # Database schema types
-└── supabase.ts          # Auto-generated Supabase types
-```
-
-### `/supabase` - Database Configuration
-```
-supabase/
-└── migrations/           # SQL migration files
-    ├── 001_initial_schema.sql
-    ├── 002_analytics_functions.sql
-    ├── 003_doctor_features.sql
-    ├── 004_performance_indexes.sql
-    └── 009_fix_registration_issues.sql
+├── auth/                  # Authentication utilities
+│   └── actions.ts        # Server actions for auth
+├── email/                 # Email service integration
+│   ├── client.ts         # Resend client setup
+│   └── templates/        # Email HTML templates
+├── google-maps/           # Google Maps utilities
+├── monitoring/            # Performance monitoring
+├── stripe/                # Stripe payment integration
+├── supabase/              # Database client configuration
+│   ├── client.ts         # Browser client
+│   └── server.ts         # Server client
+└── utils/                 # General utilities
 ```
 
 ## Code Organization Patterns
 
 ### Component Structure
-- **Presentational Components**: Pure UI components in `/components/ui`
-- **Feature Components**: Business logic components organized by feature
-- **Page Components**: Top-level route components in `/app`
+- **Server Components**: Default for all components
+- **Client Components**: Explicitly marked with `'use client'`
+- **Component Files**: PascalCase naming (e.g., `RequestForm.tsx`)
+- **Utility Files**: camelCase naming (e.g., `formatDate.ts`)
 
-### API Route Pattern
+### Route Organization
+- **Route Groups**: Used for logical grouping without URL impact
+- **Dynamic Routes**: Square brackets for parameters `[id]`
+- **Route Handlers**: `route.ts` files for API endpoints
+- **Layouts**: Nested layouts for shared UI structure
+
+### API Structure
 ```typescript
-// Standard API route structure
-export async function GET(request: Request) { }
-export async function POST(request: Request) { }
-export async function PUT(request: Request, { params }: { params: { id: string } }) { }
-export async function DELETE(request: Request, { params }: { params: { id: string } }) { }
+// Standard API route pattern
+export async function GET(request: NextRequest) { }
+export async function POST(request: NextRequest) { }
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) { }
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) { }
 ```
-
-### Service Layer Pattern
-- Database queries isolated in service modules
-- External API integrations wrapped in client libraries
-- Business logic separated from route handlers
 
 ## File Naming Conventions
 
-### Components
-- **PascalCase**: Component files (e.g., `PharmacyForm.tsx`)
-- **Index files**: For component directories (e.g., `components/auth/index.ts`)
+### TypeScript/JavaScript Files
+- **Components**: `PascalCase.tsx` (e.g., `PharmacyCard.tsx`)
+- **Hooks**: `use` prefix with camelCase (e.g., `usePharmacySearch.ts`)
+- **Utilities**: camelCase (e.g., `calculateDistance.ts`)
+- **Constants**: UPPER_SNAKE_CASE in files (e.g., `MAX_SEARCH_RADIUS`)
+- **Types**: PascalCase for interfaces/types (e.g., `PharmacyData`)
 
-### Pages & Routes
-- **kebab-case**: Route segments (e.g., `forgot-password/page.tsx`)
-- **Brackets**: Dynamic routes (e.g., `[id]/page.tsx`)
-- **Parentheses**: Route groups (e.g., `(public)/`)
+### Route Files
+- **Pages**: `page.tsx` for route pages
+- **Layouts**: `layout.tsx` for route layouts
+- **API Routes**: `route.ts` for API endpoints
+- **Loading**: `loading.tsx` for loading states
+- **Error**: `error.tsx` for error boundaries
 
-### Utilities & Hooks
-- **camelCase**: Utility functions (e.g., `geocodeAddress.ts`)
-- **use prefix**: Custom hooks (e.g., `usePharmacySearch.ts`)
-
-### Database & Migrations
-- **snake_case**: Database tables and columns
-- **Numbered prefix**: Migration files (e.g., `001_initial_schema.sql`)
+### Database Files
+- **Migrations**: `xxx_description.sql` (e.g., `001_initial_schema.sql`)
+- **Types**: Generated in `types/database.ts`
 
 ## Import Organization
-```typescript
-// 1. React/Next.js imports
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 
-// 2. External libraries
+### Standard Import Order
+```typescript
+// 1. React and Next.js imports
+import { useState, useEffect } from 'react'
+import { NextRequest, NextResponse } from 'next/server'
+
+// 2. External library imports
 import { createClient } from '@supabase/supabase-js'
 import { z } from 'zod'
 
 // 3. Internal absolute imports
 import { Button } from '@/components/ui/Button'
-import { createClient } from '@/lib/supabase/client'
+import { useAuth } from '@/lib/auth/hooks'
 
 // 4. Relative imports
-import { PharmacyCard } from './PharmacyCard'
+import { formatPharmacyData } from './utils'
 
 // 5. Type imports
-import type { Database } from '@/types/supabase'
+import type { Database } from '@/types/database'
 ```
+
+### Path Aliases
+- `@/*` maps to project root
+- Used for clean imports: `@/components/...`, `@/lib/...`
 
 ## Key Architectural Principles
 
-### 1. Server-First Approach
-- Prefer Server Components for data fetching
-- Use Client Components only when necessary (interactivity)
-- Implement Server Actions for mutations
+### 1. **Server-First Architecture**
+- Server Components by default
+- Client Components only when needed (forms, interactivity)
+- Server Actions for mutations
 
-### 2. Type Safety
-- Full TypeScript coverage
+### 2. **Type Safety**
+- Strict TypeScript configuration
 - Generated types from Supabase schema
-- Zod validation for runtime safety
+- Zod validation for runtime type checking
 
-### 3. Security by Default
-- Row Level Security (RLS) on all tables
-- API routes check authentication
-- Input validation at all boundaries
-
-### 4. Performance Optimization
+### 3. **Performance Optimization**
 - Static generation where possible
 - Dynamic imports for code splitting
 - Optimistic UI updates
+- Edge function deployment
 
-### 5. Mobile-First Design
-- Responsive components by default
-- Touch-optimized interactions
+### 4. **Security by Design**
+- Row Level Security (RLS) at database level
+- Server-side authentication checks
+- Environment variable separation
+- Input validation and sanitization
+
+### 5. **Mobile-First Responsive Design**
+- iOS-style interactions and animations
+- Touch-optimized UI components
 - Progressive Web App capabilities
+- Responsive breakpoints: mobile → tablet → desktop
 
-### 6. Separation of Concerns
-- Business logic in services
-- UI logic in components
-- Data access in dedicated modules
+### 6. **Modular Service Integration**
+- Separate client modules for each service
+- Clear separation of concerns
+- Dependency injection pattern
+- Testable service interfaces
 
-### 7. Error Handling
-- Graceful degradation
-- User-friendly error messages
-- Proper error boundaries
+## Development Patterns
 
-### 8. Testing Strategy
-- Unit tests for utilities
-- Integration tests for API routes
-- E2E tests for critical user flows
-EOF < /dev/null
+### State Management
+```typescript
+// Global state with Zustand
+const useSearchStore = create<SearchState>((set) => ({
+  filters: {},
+  setFilters: (filters) => set({ filters }),
+}))
+
+// Local state with React hooks
+const [isLoading, setIsLoading] = useState(false)
+```
+
+### Error Handling
+```typescript
+// Consistent error response format
+try {
+  // operation
+} catch (error) {
+  return NextResponse.json(
+    { success: false, error: { code: 'ERROR_CODE', message: 'User-friendly message' } },
+    { status: 400 }
+  )
+}
+```
+
+### Data Fetching
+```typescript
+// Server Components - Direct database access
+const pharmacy = await supabase.from('pharmacies').select('*').single()
+
+// Client Components - API routes
+const response = await fetch('/api/pharmacies/search')
+const data = await response.json()
+```

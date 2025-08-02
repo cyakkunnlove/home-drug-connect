@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { geocodeAddress } from '@/lib/google-maps/geocoding'
 import { 
@@ -16,7 +17,9 @@ import {
   Shield,
   Heart,
   Users,
-  CheckCircle
+  CheckCircle,
+  Globe,
+  Info
 } from 'lucide-react'
 import type { Database } from '@/types/supabase'
 
@@ -34,6 +37,34 @@ export default function PharmacyFormExtended({ pharmacy, companyId }: PharmacyFo
   const [success, setSuccess] = useState(false)
   const [addressVerified, setAddressVerified] = useState(false)
   const [verifiedAddress, setVerifiedAddress] = useState<string>('')
+  const [profileWarning, setProfileWarning] = useState<string | null>(null)
+
+  useEffect(() => {
+    const checkProfile = async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (user) {
+        const { data: profile } = await supabase
+          .from('users')
+          .select('organization_name, phone')
+          .eq('id', user.id)
+          .single()
+        
+        if (profile) {
+          const warnings = []
+          if (!profile.organization_name) warnings.push('組織名')
+          if (!profile.phone) warnings.push('電話番号')
+          
+          if (warnings.length > 0) {
+            setProfileWarning(`プロフィール設定で${warnings.join('と')}を入力することをお勧めします。`)
+          }
+        }
+      }
+    }
+    
+    checkProfile()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -74,6 +105,7 @@ export default function PharmacyFormExtended({ pharmacy, companyId }: PharmacyFo
       postal_code: postalCode,
       phone: formData.get('phone') as string,
       email: formData.get('email') as string,
+      website_url: formData.get('website_url') as string,
       location: `POINT(${lng} ${lat})`,
       latitude: lat,
       longitude: lng,
@@ -131,9 +163,9 @@ export default function PharmacyFormExtended({ pharmacy, companyId }: PharmacyFo
       setSuccess(true)
       setAddressVerified(true)
       setVerifiedAddress(formattedAddress)
-      // フォームの成功メッセージを表示した後、しばらくしてからリフレッシュ
+      // フォームの成功メッセージを表示した後、薬局一覧にリダイレクト
       setTimeout(() => {
-        router.refresh()
+        router.push('/dashboard/pharmacies')
       }, 2000)
     } catch (err) {
       const error = err as { message?: string }
@@ -201,6 +233,21 @@ export default function PharmacyFormExtended({ pharmacy, companyId }: PharmacyFo
       {success && (
         <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
           <p className="text-sm">保存しました</p>
+        </div>
+      )}
+
+      {profileWarning && (
+        <div className="flex items-start gap-2 p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-700">
+          <Info className="w-5 h-5 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm">{profileWarning}</p>
+            <Link 
+              href="/dashboard/settings"
+              className="text-sm underline hover:no-underline mt-1 inline-block"
+            >
+              設定ページへ移動
+            </Link>
+          </div>
         </div>
       )}
 
@@ -288,21 +335,42 @@ export default function PharmacyFormExtended({ pharmacy, companyId }: PharmacyFo
           </button>
         </div>
 
-        <div className="mt-6">
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-            メールアドレス
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Mail className="h-5 w-5 text-gray-400" />
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              メールアドレス
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Mail className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                defaultValue={pharmacy?.email || ''}
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              defaultValue={pharmacy?.email || ''}
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+          </div>
+
+          <div>
+            <label htmlFor="website_url" className="block text-sm font-medium text-gray-700 mb-2">
+              ホームページURL
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Globe className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                id="website_url"
+                name="website_url"
+                type="url"
+                placeholder="https://example.com"
+                defaultValue={pharmacy?.website_url || ''}
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -398,45 +466,56 @@ export default function PharmacyFormExtended({ pharmacy, companyId }: PharmacyFo
             <label htmlFor="max_capacity" className="block text-sm font-medium text-gray-700 mb-2">
               最大受入人数 <span className="text-red-500">*</span>
             </label>
-            <input
+            <select
               id="max_capacity"
               name="max_capacity"
-              type="number"
-              min="0"
               required
               defaultValue={pharmacy?.max_capacity || 10}
               className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+            >
+              {[...Array(51)].map((_, i) => (
+                <option key={i} value={i}>{i}名</option>
+              ))}
+            </select>
           </div>
 
           <div>
             <label htmlFor="current_capacity" className="block text-sm font-medium text-gray-700 mb-2">
               現在の受入人数 <span className="text-red-500">*</span>
             </label>
-            <input
+            <select
               id="current_capacity"
               name="current_capacity"
-              type="number"
-              min="0"
               required
               defaultValue={pharmacy?.current_capacity || 0}
               className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+            >
+              {[...Array(51)].map((_, i) => (
+                <option key={i} value={i}>{i}名</option>
+              ))}
+            </select>
           </div>
 
           <div>
             <label htmlFor="service_radius_km" className="block text-sm font-medium text-gray-700 mb-2">
-              対応可能範囲（km）
+              対応可能範囲
             </label>
-            <input
+            <select
               id="service_radius_km"
               name="service_radius_km"
-              type="number"
-              min="0"
-              step="0.1"
               defaultValue={pharmacy?.service_radius_km || 5.0}
               className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+            >
+              <option value="1">1km</option>
+              <option value="2">2km</option>
+              <option value="3">3km</option>
+              <option value="5">5km</option>
+              <option value="10">10km</option>
+              <option value="15">15km</option>
+              <option value="20">20km</option>
+              <option value="30">30km</option>
+              <option value="50">50km</option>
+            </select>
           </div>
         </div>
         

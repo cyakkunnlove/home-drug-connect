@@ -12,7 +12,8 @@ import {
   Users, 
   Edit, 
   Calendar,
-  Building2
+  Building2,
+  Globe
 } from 'lucide-react'
 export const dynamic = 'force-dynamic'
 
@@ -124,6 +125,22 @@ export default async function PharmacyDetailPage({
                     メールアドレス
                   </p>
                   <p className="font-medium text-gray-900">{pharmacy.email}</p>
+                </div>
+              )}
+              {pharmacy.website_url && (
+                <div>
+                  <p className="text-sm text-gray-600 mb-1 flex items-center gap-1">
+                    <Globe className="w-4 h-4" />
+                    ホームページ
+                  </p>
+                  <Link 
+                    href={pharmacy.website_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="font-medium text-blue-600 hover:text-blue-800 underline"
+                  >
+                    {pharmacy.website_url}
+                  </Link>
                 </div>
               )}
             </div>

@@ -14,11 +14,29 @@ export default async function InquiriesPage() {
     redirect('/pharmacy/login');
   }
 
-  // Get user's pharmacies
+  // Get user's company
+  const { data: userData } = await supabase
+    .from('users')
+    .select('company_id')
+    .eq('id', user.id)
+    .single();
+
+  if (!userData?.company_id) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">お問い合わせ管理</h1>
+          <p className="text-gray-600 mt-2">会社情報を設定してください。</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Get company's pharmacies
   const { data: pharmacies } = await supabase
     .from('pharmacies')
     .select('id, name')
-    .eq('user_id', user.id);
+    .eq('company_id', userData.company_id);
 
   if (!pharmacies || pharmacies.length === 0) {
     return (

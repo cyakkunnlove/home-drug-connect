@@ -31,14 +31,16 @@ export default function MobileNav({ navigation, profile, isAdmin }: MobileNavPro
       {/* モバイルヘッダー */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
         <div className="flex items-center justify-between p-4">
-          <div>
-            <h2 className="text-lg font-bold text-gray-900">
+          <div className="flex-1 min-w-0 mr-2">
+            <h2 className="text-lg font-bold text-gray-900 truncate">
               HOME-DRUG CONNECT
             </h2>
-            <div className="text-xs text-gray-600">
-              {profile?.name && <p>{profile.name} 先生</p>}
-              <p>{profile?.organization_name}</p>
-            </div>
+            {(profile?.name || profile?.organization_name) && (
+              <div className="text-xs text-gray-600 mt-1">
+                {profile?.name && <p className="truncate">{profile.name} 先生</p>}
+                {profile?.organization_name && <p className="truncate">{profile.organization_name}</p>}
+              </div>
+            )}
           </div>
           <button
             onClick={() => setIsOpen(!isOpen)}
