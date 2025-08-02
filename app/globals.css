@@ -172,3 +172,139 @@ input[type="checkbox"] {
   color: #111827 !important;
   -webkit-text-fill-color: #111827 !important;
 }
+
+/* iOS-style improvements */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* Prevent text selection on buttons */
+button, 
+.button,
+[role="button"] {
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: pointer;
+}
+
+/* iOS-style scrollbar hiding */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Elastic scrolling on iOS */
+.overscroll-bounce {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: auto;
+}
+
+/* Pull-to-refresh support */
+.overscroll-none {
+  overscroll-behavior-y: none;
+}
+
+/* iOS-style backdrop blur */
+.backdrop-blur-ios {
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+/* Safe area insets for notched devices */
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* iOS-style transitions */
+.transition-ios {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-duration: 300ms;
+}
+
+/* Active states */
+.active\:scale-95:active {
+  transform: scale(0.95);
+}
+
+/* Focus states without outline */
+button:focus,
+[role="button"]:focus,
+a:focus {
+  outline: none;
+}
+
+/* iOS-style loading animation */
+@keyframes pulse-scale {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+}
+
+.animate-pulse-scale {
+  animation: pulse-scale 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Haptic feedback simulation */
+.haptic-light {
+  transition: transform 50ms ease-out;
+}
+
+.haptic-light:active {
+  transform: scale(0.98);
+}
+
+.haptic-medium {
+  transition: transform 80ms ease-out;
+}
+
+.haptic-medium:active {
+  transform: scale(0.96);
+}
+
+/* iOS-style shadows */
+.shadow-ios-sm {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-ios {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.shadow-ios-lg {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Prevent page zoom on input focus on iOS */
+@supports (-webkit-touch-callout: none) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
