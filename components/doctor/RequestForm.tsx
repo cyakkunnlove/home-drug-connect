@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import DrugAutocompleteWrapper from './DrugAutocompleteWrapper'
-import { Plus, Trash2, Loader2, Building2, Mail, User } from 'lucide-react'
+import { Plus, Trash2, Loader2, Building2, Mail, User, Sparkles, Check } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { motion, AnimatePresence } from 'framer-motion'
 import TouchFeedback, { IOSButton } from '@/components/ui/TouchFeedback'
@@ -66,6 +66,8 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
   const [otherCondition, setOtherCondition] = useState('')
   const [treatmentPlan, setTreatmentPlan] = useState('')
   const [notes, setNotes] = useState('')
+  const [isRefiningText, setIsRefiningText] = useState(false)
+  const [hasRefinedText, setHasRefinedText] = useState(false)
 
   const addMedication = () => {
     setMedications([...medications, { name: '', dosage: '', frequency: '' }])
@@ -89,6 +91,38 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
         ? prev.filter(c => c !== condition)
         : [...prev, condition]
     )
+  }
+
+  const refineTreatmentPlan = async () => {
+    if (!treatmentPlan || treatmentPlan.length <= 20) return
+    
+    setIsRefiningText(true)
+    try {
+      const response = await fetch('/api/ai/refine-text', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: treatmentPlan,
+          field: 'treatmentPlan'
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to refine text')
+      }
+
+      const data = await response.json()
+      if (data.success && data.refinedText) {
+        setTreatmentPlan(data.refinedText)
+        setHasRefinedText(true)
+        toast.success('文章を校閲しました')
+      }
+    } catch (error) {
+      console.error('Error refining text:', error)
+      toast.error('文章の校閲に失敗しました')
+    } finally {
+      setIsRefiningText(false)
+    }
   }
 
   const generateAIDocument = async () => {
@@ -246,24 +280,18 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
             依頼医師情報
           </h3>
           <div className="space-y-1">
-            {doctorInfo.name && (
-              <p className="text-sm text-green-700 flex items-center">
-                <User className="h-3 w-3 mr-2" />
-                {doctorInfo.name}
-              </p>
-            )}
-            {doctorInfo.organization && (
-              <p className="text-sm text-green-700 flex items-center">
-                <Building2 className="h-3 w-3 mr-2" />
-                {doctorInfo.organization}
-              </p>
-            )}
-            {doctorInfo.email && (
-              <p className="text-sm text-green-600 flex items-center">
-                <Mail className="h-3 w-3 mr-2" />
-                {doctorInfo.email}
-              </p>
-            )}
+            <p className="text-sm text-green-700 flex items-center">
+              <User className="h-3 w-3 mr-2" />
+              {doctorInfo.name || 'Unknown Doctor'}
+            </p>
+            <p className="text-sm text-green-700 flex items-center">
+              <Building2 className="h-3 w-3 mr-2" />
+              {doctorInfo.organization || '未設定'}
+            </p>
+            <p className="text-sm text-green-600 flex items-center">
+              <Mail className="h-3 w-3 mr-2" />
+              {doctorInfo.email || 'メールアドレス未設定'}
+            </p>
           </div>
         </motion.div>
       )}
@@ -411,17 +439,54 @@ export default function RequestForm({ pharmacy, doctorInfo }: RequestFormProps) 
 
       {/* Treatment Plan */}
       <div>
-        <label htmlFor="treatmentPlan" className="block text-sm font-medium text-gray-700">
-          今後の治療方針
-        </label>
+        <div className="flex items-center justify-between mb-1">
+          <label htmlFor="treatmentPlan" className="block text-sm font-medium text-gray-700">
+            今後の治療方針
+          </label>
+          {treatmentPlan.length > 20 && (
+            <button
+              type="button"
+              onClick={refineTreatmentPlan}
+              disabled={isRefiningText}
+              className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-md transition-colors ${
+                hasRefinedText
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+              } disabled:opacity-50`}
+            >
+              {isRefiningText ? (
+                <>
+                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                  校閲中...
+                </>
+              ) : hasRefinedText ? (
+                <>
+                  <Check className="h-3 w-3 mr-1" />
+                  校閲済み
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-3 w-3 mr-1" />
+                  AI校閲
+                </>
+              )}
+            </button>
+          )}
+        </div>
         <textarea
           id="treatmentPlan"
           value={treatmentPlan}
-          onChange={(e) => setTreatmentPlan(e.target.value)}
+          onChange={(e) => {
+            setTreatmentPlan(e.target.value)
+            setHasRefinedText(false)
+          }}
           rows={3}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-white"
           placeholder="今後の治療方針を入力してください"
         />
+        {treatmentPlan.length > 10 && treatmentPlan.length <= 20 && (
+          <p className="mt-1 text-xs text-gray-500">もう少し詳しく記載するとAI校閲が利用できます</p>
+        )}
       </div>
 
       {/* Notes */}

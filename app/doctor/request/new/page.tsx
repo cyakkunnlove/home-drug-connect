@@ -65,9 +65,9 @@ export default async function NewRequestPage({
             <RequestForm 
               pharmacy={pharmacy} 
               doctorInfo={{
-                name: doctorData?.full_name || doctorData?.email || 'Unknown Doctor',
-                organization: doctorData?.organization_name || '',
-                email: doctorData?.email || ''
+                name: doctorData?.full_name || doctorData?.email?.split('@')[0] || 'Unknown Doctor',
+                organization: doctorData?.organization_name || '未設定',
+                email: doctorData?.email || user.email || ''
               }}
             />
           </div>
